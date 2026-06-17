@@ -47,7 +47,7 @@ coverage/
 .eslintcache
 .stylelintcache
 .prettiercache
-/scripts
+scripts/
 # ==========================================
 # Logs & Diagnostic Files
 # ==========================================

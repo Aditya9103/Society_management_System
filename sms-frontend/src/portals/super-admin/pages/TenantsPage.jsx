@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Search, RefreshCw, Building2 } from 'lucide-react';
+import { Plus, RefreshCw, Building2 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
-import StatusBadge from '../components/StatusBadge';
+import SearchInput from '../../../components/ui/SearchInput';
+import StatusBadge from '../../../components/ui/StatusBadge';
 import CreateTenantModal from '../components/CreateTenantModal';
 import CreateSocietyAdminModal from '../components/CreateSocietyAdminModal';
 import {
@@ -62,25 +63,12 @@ export default function TenantsPage() {
                 </div>
             </div>
 
-            {/* Search + Refresh */}
-            <div className="flex items-center gap-3">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search by name, email or slug…"
-                        value={search}
-                        onChange={handleSearchChange}
-                        className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                </div>
-                <button
-                    onClick={refetch}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
-                >
-                    <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-                </button>
-            </div>
+            <SearchInput
+                value={search}
+                onChange={(v) => { setSearch(v); setPage(1); }}
+                placeholder="Search by name, email or slug…"
+                className="max-w-sm"
+            />
 
             {/* Table */}
             <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">

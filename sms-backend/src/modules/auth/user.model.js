@@ -85,6 +85,7 @@ const userSchema = new mongoose.Schema(
                 'COMMITTEE_MEMBER',
                 'ACCOUNTANT',
                 'FACILITY_MANAGER',
+                'HELP_DESK',
                 'SECURITY_GUARD',
                 'RESIDENT',
             ],

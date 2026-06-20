@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { axiosBaseQuery } from './baseApi';
 
+
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: axiosBaseQuery(),
@@ -44,17 +45,16 @@ export const authApi = createApi({
       query: (data) => ({
         url: '/residents/profile',
         method: 'POST',
-        // In reality, this requires the temp token. We will pass headers dynamically in the component or via a baseQuery wrapper.
-        // For simplicity, we can just pass the tempToken in headers here if needed:
-        headers: data.tempToken ? { Authorization: `Bearer ${data.tempToken}` } : {},
+        // Token is injected automatically by the axiosInstance interceptor from localStorage.
+        // The token is stored after OTP verification in step 2.
         data: data.payload,
       }),
     }),
     getPublicSocieties: builder.query({
-      query: () => '/public/societies',
+      query: () => ({ url: '/public/societies', method: 'GET' }),
     }),
     getPublicUnits: builder.query({
-      query: (societyId) => `/public/societies/${societyId}/units`,
+      query: (societyId) => ({ url: `/public/societies/${societyId}/units`, method: 'GET' }),
     }),
     resetPassword: builder.mutation({
       query: (data) => ({

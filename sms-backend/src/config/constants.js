@@ -12,6 +12,7 @@ export const ROLES = Object.freeze({
     COMMITTEE_MEMBER: 'COMMITTEE_MEMBER',
     ACCOUNTANT: 'ACCOUNTANT',
     FACILITY_MANAGER: 'FACILITY_MANAGER',
+    HELP_DESK: 'HELP_DESK',
     SECURITY_GUARD: 'SECURITY_GUARD',
     RESIDENT: 'RESIDENT',
 });
@@ -23,6 +24,7 @@ export const ALL_ROLES = [
     ROLES.COMMITTEE_MEMBER,
     ROLES.ACCOUNTANT,
     ROLES.FACILITY_MANAGER,
+    ROLES.HELP_DESK,
     ROLES.SECURITY_GUARD,
     ROLES.RESIDENT,
 ];
@@ -70,6 +72,10 @@ export const PERMISSIONS = Object.freeze({
     // Analytics
     ANALYTICS_VIEW: 'analytics:view',
 
+    // Document
+    DOCUMENT_MANAGE: 'document:manage',
+    DOCUMENT_READ_OWN: 'document:read:own',
+
     // Society
     SOCIETY_MANAGE: 'society:manage',
     SOCIETY_READ: 'society:read',
@@ -109,7 +115,9 @@ export const ROLE_PERMISSIONS = Object.freeze({
         PERMISSIONS.EMERGENCY_TRIGGER,
         PERMISSIONS.ANALYTICS_VIEW,
         PERMISSIONS.SOCIETY_READ,
+        PERMISSIONS.RESIDENT_APPROVE,  // ⚠ limited — read own group only
         PERMISSIONS.RESIDENT_READ,
+        PERMISSIONS.DOCUMENT_MANAGE,
     ],
 
     [ROLES.ACCOUNTANT]: [
@@ -118,6 +126,9 @@ export const ROLE_PERMISSIONS = Object.freeze({
         PERMISSIONS.INVOICE_GENERATE, PERMISSIONS.INVOICE_READ_ALL,
         PERMISSIONS.EMERGENCY_TRIGGER,
         PERMISSIONS.ANALYTICS_VIEW,
+        PERMISSIONS.SOCIETY_READ,
+        PERMISSIONS.RESIDENT_READ,
+        PERMISSIONS.DOCUMENT_MANAGE,
     ],
 
     [ROLES.FACILITY_MANAGER]: [
@@ -125,12 +136,24 @@ export const ROLE_PERMISSIONS = Object.freeze({
         PERMISSIONS.FACILITY_BOOK, PERMISSIONS.FACILITY_APPROVE,
         PERMISSIONS.EMERGENCY_TRIGGER,
         PERMISSIONS.ANALYTICS_VIEW,
+        PERMISSIONS.SOCIETY_READ,
+        PERMISSIONS.RESIDENT_READ,
+    ],
+
+    // HELP_DESK: assists residents, limited read-only access
+    [ROLES.HELP_DESK]: [
+        PERMISSIONS.COMPLAINT_CREATE, PERMISSIONS.COMPLAINT_READ,
+        PERMISSIONS.NOTICE_READ,
+        PERMISSIONS.RESIDENT_READ,
+        PERMISSIONS.SOCIETY_READ,
+        PERMISSIONS.EMERGENCY_TRIGGER,
     ],
 
     [ROLES.SECURITY_GUARD]: [
         PERMISSIONS.VISITOR_READ, PERMISSIONS.VISITOR_APPROVE,
         PERMISSIONS.COMPLAINT_CREATE,
         PERMISSIONS.EMERGENCY_TRIGGER,
+        PERMISSIONS.RESIDENT_READ,  // ⚠ own-building only
     ],
 
     [ROLES.RESIDENT]: [
@@ -142,6 +165,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
         PERMISSIONS.POLL_VOTE, PERMISSIONS.POLL_READ,
         PERMISSIONS.FACILITY_BOOK,
         PERMISSIONS.EMERGENCY_TRIGGER,
+        PERMISSIONS.DOCUMENT_READ_OWN,
     ],
 });
 
@@ -154,7 +178,7 @@ export const OTP_CONFIG = Object.freeze({
     /** Max verification attempts before OTP is invalidated */
     MAX_ATTEMPTS: 5,
     /** Max resend requests per OTP session */
-    MAX_RESENDS: 3,
+    MAX_RESENDS: 5,
     /** Purpose enum values */
     PURPOSES: Object.freeze({
         LOGIN: 'LOGIN',

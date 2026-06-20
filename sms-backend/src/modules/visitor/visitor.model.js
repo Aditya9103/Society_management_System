@@ -176,7 +176,6 @@ const visitorSchema = new mongoose.Schema(
 visitorSchema.index({ societyId: 1 });
 visitorSchema.index({ hostUnitId: 1 });
 visitorSchema.index({ hostResidentId: 1 });
-visitorSchema.index({ qrCode: 1 });
 visitorSchema.index({ status: 1 });
 visitorSchema.index({ entryTime: -1 });
 visitorSchema.index({ societyId: 1, status: 1 });

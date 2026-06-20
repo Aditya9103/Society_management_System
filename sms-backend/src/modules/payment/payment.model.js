@@ -120,6 +120,5 @@ paymentSchema.index({ societyId: 1 });
 paymentSchema.index({ invoiceId: 1 });
 paymentSchema.index({ residentId: 1 });
 paymentSchema.index({ status: 1 });
-paymentSchema.index({ razorpayPaymentId: 1 });
 
 export default mongoose.model('Payment', paymentSchema);

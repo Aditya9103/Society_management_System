@@ -4,28 +4,60 @@ import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
 import SuperAdminApp from './portals/super-admin/SuperAdminApp';
+import AdminApp from './portals/admin/AdminApp';
+import ResidentApp from './portals/resident/ResidentApp';
+import StaffApp from './portals/staff/StaffApp';
+import GuardApp from './portals/guard/GuardApp';
+
+// ── Role sets ─────────────────────────────────────────────────────────────────
+// Staff portal: committee, accountant, facility, help desk
+const STAFF_ROLES = ['COMMITTEE_MEMBER', 'ACCOUNTANT', 'FACILITY_MANAGER', 'HELP_DESK'];
 
 /**
- * ProtectedRoute — redirects to login if not authenticated,
- * or to home if the user's role doesn't match the required role.
+ * ProtectedRoute — redirects to /auth/login if:
+ *   - not authenticated, OR
+ *   - authenticated but role doesn't match any of the required roles
+ *
+ * @param {string | string[]} requiredRole - one role or array of allowed roles
  */
 function ProtectedRoute({ children, requiredRole }) {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
-  if (requiredRole && user?.role !== requiredRole) return <Navigate to="/auth/login" replace />;
+  const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+  if (requiredRole && !allowedRoles.includes(user?.role)) return <Navigate to="/auth/login" replace />;
   return children;
 }
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <Routes>
+    <div className="relative min-h-screen bg-[#f4f5f7] text-slate-900 overflow-hidden selection:bg-indigo-500/30 font-sans">
+      {/* Premium Modern Ambient Background */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#f8fafc]">
+        {/* Dynamic Glowing Blobs */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-400/20 blur-[120px] animate-blob mix-blend-multiply"></div>
+        <div className="absolute top-[10%] right-[-5%] w-[45%] h-[45%] rounded-full bg-fuchsia-400/20 blur-[120px] animate-blob animation-delay-2000 mix-blend-multiply"></div>
+        <div className="absolute bottom-[-20%] left-[10%] w-[50%] h-[50%] rounded-full bg-violet-400/20 blur-[120px] animate-blob animation-delay-4000 mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] right-[10%] w-[40%] h-[40%] rounded-full bg-amber-400/20 blur-[120px] animate-blob mix-blend-multiply"></div>
+        
+        {/* Subtle Dot Pattern Overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEuNSIgZmlsbD0iI2U1ZTdlYiIgLz48L3N2Zz4=')] opacity-[0.8]"></div>
+        
+        {/* Noise Texture Overlay for premium glassmorphism feel */}
+        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')" }}></div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <Routes>
+        {/* Default → login */}
         <Route path="/" element={<Navigate to="/auth/login" replace />} />
+
+        {/* ── Public / Auth ─────────────────────────────────────────── */}
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* Super Admin Portal */}
+        {/* ── Super Admin Portal ────────────────────────────────────── */}
         <Route
           path="/super-admin/*"
           element={
@@ -34,7 +66,51 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ── Society Admin Portal ──────────────────────────────────── */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute requiredRole="SOCIETY_ADMIN">
+              <AdminApp />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Resident Portal ───────────────────────────────────────── */}
+        <Route
+          path="/resident/*"
+          element={
+            <ProtectedRoute requiredRole="RESIDENT">
+              <ResidentApp />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Staff Portal (Committee, Accountant, FM, Help Desk) ───── */}
+        <Route
+          path="/staff/*"
+          element={
+            <ProtectedRoute requiredRole={STAFF_ROLES}>
+              <StaffApp />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Security Guard Portal (separate dedicated app) ─────────── */}
+        <Route
+          path="/guard/*"
+          element={
+            <ProtectedRoute requiredRole="SECURITY_GUARD">
+              <GuardApp />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Catch-all ─────────────────────────────────────────────── */}
+        <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
+      </div>
     </div>
   );
 }

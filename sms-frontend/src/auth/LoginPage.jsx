@@ -72,11 +72,15 @@ export default function LoginPage() {
             if (authData.user.role === 'SUPER_ADMIN') {
                 navigate('/super-admin');
             } else if (authData.user.role === 'SOCIETY_ADMIN') {
-                navigate('/admin/dashboard');
+                navigate('/admin');
             } else if (authData.user.role === 'RESIDENT') {
-                navigate('/resident/dashboard');
+                navigate('/resident');
+            } else if (authData.user.role === 'SECURITY_GUARD') {
+                // Guard has its own dedicated portal
+                navigate('/guard');
             } else {
-                navigate('/staff/dashboard');
+                // COMMITTEE_MEMBER | ACCOUNTANT | FACILITY_MANAGER | HELP_DESK
+                navigate('/staff');
             }
         } catch (err) {
             setErrorMsg(err.data?.message || err.data?.error || 'Login failed');

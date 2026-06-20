@@ -87,6 +87,7 @@ const domesticStaffSchema = new mongoose.Schema(
 
 domesticStaffSchema.index({ societyId: 1 });
 domesticStaffSchema.index({ registeredBy: 1 });
-domesticStaffSchema.index({ qrCode: 1 });
+domesticStaffSchema.index({ isActive: 1 });
+domesticStaffSchema.index({ role: 1 });
 
 export default mongoose.model('DomesticStaff', domesticStaffSchema);

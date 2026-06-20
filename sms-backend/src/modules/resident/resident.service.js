@@ -48,3 +48,59 @@ export const completeResidentProfile = async (userId, profileData) => {
 
     return profile;
 };
+
+/**
+ * Get the authenticated resident's own profile.
+ * Populates unit and society for dashboard display.
+ *
+ * @param {string} userId
+ * @returns {Promise<ResidentProfileDocument>}
+ */
+export const getMyResidentProfile = async (userId) => {
+    const profile = await residentRepo.findByUserId(userId);
+    if (!profile) return null; // Resident hasn't completed step 3 yet
+    
+    // Populate references
+    await profile.populate('unitId', 'unitNumber bhkType unitType ownershipStatus');
+    await profile.populate('societyId', 'name address city state');
+    await profile.populate('userId', 'firstName lastName email phone registrationStatus');
+    
+    return profile;
+};
+
+// ── Update own profile ────────────────────────────────────────────────────────
+
+export const updateMyProfile = async (userId, data) => {
+    const user = await userRepo.findById(userId);
+    if (!user) throw ApiError.notFound('User not found');
+
+    const allowedFields = ['firstName', 'lastName', 'phone'];
+    const updates = Object.fromEntries(
+        Object.entries(data).filter(([k]) => allowedFields.includes(k))
+    );
+
+    return userRepo.updateUser(userId, updates);
+};
+
+// ── Family Members ────────────────────────────────────────────────────────────
+
+export const addFamilyMember = async (userId, memberData) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    return residentRepo.addFamilyMember(resident._id, memberData);
+};
+
+export const updateFamilyMember = async (userId, memberId, memberData) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    const updated = await residentRepo.updateFamilyMember(resident._id, memberId, memberData);
+    if (!updated) throw ApiError.notFound('Family member not found.');
+    return updated;
+};
+
+export const removeFamilyMember = async (userId, memberId) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    return residentRepo.removeFamilyMember(resident._id, memberId);
+};
+

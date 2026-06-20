@@ -1,0 +1,30 @@
+/**
+ * PageHeader.jsx — Standard page header: title, subtitle, refresh, actions.
+ * Uses cn utility.
+ */
+import React from 'react';
+import { RefreshCw } from 'lucide-react';
+import { cn } from './Button';
+
+export default function PageHeader({ title, subtitle, onRefresh, isFetching, actions, className }) {
+  return (
+    <div className={cn('flex flex-wrap items-start justify-between gap-3', className)}>
+      <div className="min-w-0">
+        <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+        {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            title="Refresh"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700"
+          >
+            <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
+          </button>
+        )}
+        {actions}
+      </div>
+    </div>
+  );
+}

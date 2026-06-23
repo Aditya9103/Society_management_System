@@ -4,6 +4,10 @@ export const findByUserId = (userId) => {
     return Resident.findOne({ userId });
 };
 
+export const findByUnitId = (unitId) => {
+    return Resident.findOne({ unitId });
+};
+
 export const findById = (id) => Resident.findById(id);
 
 export const createResident = (data) => {

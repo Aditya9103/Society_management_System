@@ -10,18 +10,21 @@ import PortalLayout from '../../components/layout/PortalLayout';
 import GuardDashboardPage from './pages/GuardDashboardPage';
 import GuardResidentsPage from './pages/GuardResidentsPage';
 import GuardSocietyPage from './pages/GuardSocietyPage';
+import GuardVisitorsPage from './pages/GuardVisitorsPage';
 import StaffProfilePage from '../staff/pages/StaffProfilePage';
+import { QrCode } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Guard Portal', subtitle: 'Security Guard', Icon: ShieldCheck },
   accentFrom: 'from-amber-500',
   accentTo: 'to-orange-600',
-  navItems: [
-    { to: '/guard', label: 'Dashboard', Icon: ShieldCheck, end: true },
-    { to: '/guard/residents', label: 'Resident Lookup', Icon: Users },
-    { to: '/guard/society', label: 'Emergency Contacts', Icon: Building2 },
-    { to: '/guard/profile', label: 'My Profile', Icon: User },
-  ],
+    navItems: [
+        { to: '/guard', label: 'Dashboard', Icon: ShieldCheck, end: true },
+        { to: '/guard/visitors', label: 'Visitor Gates', Icon: QrCode },
+        { to: '/guard/residents', label: 'Resident Lookup', Icon: Users },
+        { to: '/guard/society', label: 'Emergency Contacts', Icon: Building2 },
+        { to: '/guard/profile', label: 'My Profile', Icon: User },
+    ],
 };
 
 export default function GuardApp() {
@@ -29,6 +32,7 @@ export default function GuardApp() {
     <PortalLayout sidebarConfig={SIDEBAR_CONFIG} maxWidth="max-w-3xl">
       <Routes>
         <Route index element={<GuardDashboardPage />} />
+        <Route path="visitors" element={<GuardVisitorsPage />} />
         <Route path="residents" element={<GuardResidentsPage />} />
         <Route path="society" element={<GuardSocietyPage />} />
         <Route path="profile" element={<StaffProfilePage />} />

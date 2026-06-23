@@ -14,6 +14,7 @@ import ResidentComplaintsPage from './pages/ResidentComplaintsPage';
 import ResidentNoticesPage from './pages/ResidentNoticesPage';
 import ResidentVisitorPage from './pages/ResidentVisitorPage';
 import ResidentInvoicesPage from './pages/ResidentInvoicesPage';
+import ResidentWalkInListener from './components/ResidentWalkInListener';
 
 const SIDEBAR_CONFIG = {
     brand: { title: 'Resident Portal', subtitle: 'My Home Hub', Icon: Home },
@@ -32,6 +33,7 @@ const SIDEBAR_CONFIG = {
 export default function ResidentApp() {
     return (
         <PortalLayout sidebarConfig={SIDEBAR_CONFIG}>
+            <ResidentWalkInListener />
             <Routes>
                 <Route index element={<ResidentDashboardPage />} />
                 <Route path="profile"    element={<ResidentProfilePage />} />

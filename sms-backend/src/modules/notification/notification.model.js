@@ -103,7 +103,6 @@ const notificationSchema = new mongoose.Schema(
 );
 
 notificationSchema.index({ userId: 1, createdAt: -1 });
-notificationSchema.index({ userId: 1, readAt: 1 });
 notificationSchema.index({ societyId: 1 });
 notificationSchema.index(
     { userId: 1, readAt: 1 },

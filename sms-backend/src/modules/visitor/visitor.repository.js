@@ -11,6 +11,11 @@ export const findById = (id) =>
         .populate('hostResidentId', 'residentCode unitId')
         .lean();
 
+export const findByQrCode = (qrCode) => 
+    Visitor.findOne({ qrCode })
+        .populate('hostResidentId', 'residentCode unitId')
+        .lean();
+
 export const findByResident = async (hostResidentId, { page = 1, limit = 20, status } = {}) => {
     const filter = { hostResidentId };
     if (status) filter.status = status;

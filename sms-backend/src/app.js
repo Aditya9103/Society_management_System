@@ -10,6 +10,8 @@ import env from './config/env.js';
 import routes from './routes/index.js';
 import errorMiddleware from './middleware/error.middleware.js';
 import { globalLimiter } from './middleware/rateLimit.middleware.js';
+import { initializeJobs } from './jobs/index.js';
+import { initSocket } from './socket/socket.server.js';
 
 // ── Environment ──────────────────────────────────────────────────────────────
 
@@ -70,6 +72,10 @@ if (NODE_ENV !== 'test') {
   (async () => {
     try {
       await connectToDB();
+
+      // Initialize Background Jobs
+      initializeJobs();
+
       const server = app.listen(PORT, () => {
         console.log(`✅  Server running on: http://localhost:${PORT}`);
         console.log(
@@ -77,6 +83,9 @@ if (NODE_ENV !== 'test') {
         );
         console.log(`🌍  Environment:       ${NODE_ENV}`);
       });
+
+      // Initialize Socket.io
+      initSocket(server);
 
       server.on("error", (error) => {
         console.error("❌ Server Error: ", error);

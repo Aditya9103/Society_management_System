@@ -129,6 +129,25 @@ export const staffApi = createApi({
             query: (id) => ({ url: `/notices/${id}/publish`, method: 'PATCH' }),
             invalidatesTags: [{ type: 'StaffNotice', id: 'LIST' }],
         }),
+
+        // ── Guard Visitor Endpoints (SECURITY_GUARD) ──────────────────────────
+
+        guardWalkIn: builder.mutation({
+            query: (data) => ({ url: '/visitors/guard/walk-in', method: 'POST', data }),
+            invalidatesTags: ['ResidentList'], // Usually want to refetch some global active list, or add 'Visitor' tag if added to staffApi.
+        }),
+
+        guardScanQr: builder.mutation({
+            query: (data) => ({ url: '/visitors/guard/scan-qr', method: 'POST', data }),
+        }),
+
+        guardLogEntry: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/visitors/guard/${id}/entry`, method: 'PUT', data }),
+        }),
+
+        guardLogExit: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/visitors/guard/${id}/exit`, method: 'PUT', data }),
+        }),
     }),
 });
 
@@ -144,4 +163,8 @@ export const {
     useGetStaffNoticesQuery,
     useStaffCreateNoticeMutation,
     useStaffPublishNoticeMutation,
+    useGuardWalkInMutation,
+    useGuardScanQrMutation,
+    useGuardLogEntryMutation,
+    useGuardLogExitMutation,
 } = staffApi;

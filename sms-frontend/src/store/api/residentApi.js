@@ -96,6 +96,18 @@ export const residentApi = createApi({
             query: (id) => ({ url: `/invoices/${id}`, method: 'GET' }),
             providesTags: (r, e, id) => [{ type: 'Invoice', id }],
         }),
+
+        // ── Real-Time Walk-in Actions ─────────────────────────────────────────
+
+        approveWalkIn: builder.mutation({
+            query: (id) => ({ url: `/visitors/${id}/approve`, method: 'PUT' }),
+            invalidatesTags: [{ type: 'Visitor', id: 'LIST' }],
+        }),
+
+        denyWalkIn: builder.mutation({
+            query: (id) => ({ url: `/visitors/${id}/deny`, method: 'PUT' }),
+            invalidatesTags: [{ type: 'Visitor', id: 'LIST' }],
+        }),
     }),
 });
 
@@ -115,4 +127,6 @@ export const {
     useCancelVisitorPassMutation,
     useGetMyInvoicesQuery,
     useGetInvoiceByIdQuery,
+    useApproveWalkInMutation,
+    useDenyWalkInMutation,
 } = residentApi;

@@ -35,6 +35,12 @@ const envSchema = Joi.object({
     FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
     FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),
     FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
+    FIREBASE_API_KEY: Joi.string().optional().allow(''),
+    FIREBASE_AUTH_DOMAIN: Joi.string().optional().allow(''),
+    FIREBASE_STORAGE_BUCKET: Joi.string().optional().allow(''),
+    FIREBASE_MESSAGING_SENDER_ID: Joi.string().optional().allow(''),
+    FIREBASE_APP_ID: Joi.string().optional().allow(''),
+    FIREBASE_MEASUREMENT_ID: Joi.string().optional().allow(''),
 
     // Nodemailer (email)
     SMTP_HOST: Joi.string().optional().allow(''),
@@ -94,6 +100,12 @@ const env = Object.freeze({
         clientEmail: value.FIREBASE_CLIENT_EMAIL,
         // Newline escapes in env vars need to be restored
         privateKey: value.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        apiKey: value.FIREBASE_API_KEY,
+        authDomain: value.FIREBASE_AUTH_DOMAIN,
+        storageBucket: value.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: value.FIREBASE_MESSAGING_SENDER_ID,
+        appId: value.FIREBASE_APP_ID,
+        measurementId: value.FIREBASE_MEASUREMENT_ID,
     },
 
     // Email (Nodemailer)

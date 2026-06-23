@@ -6,8 +6,10 @@ import {
     useGetMyVisitorsQuery,
     useCreateVisitorPassMutation,
     useCancelVisitorPassMutation,
+    useApproveWalkInMutation,
+    useDenyWalkInMutation,
 } from '../../../store/api/residentApi';
-import { UserCheck, Plus, X, RefreshCw, AlertCircle, Car, Phone, Clock } from 'lucide-react';
+import { UserCheck, Plus, X, RefreshCw, AlertCircle, Car, Phone, Clock, Check } from 'lucide-react';
 
 const STATUS_STYLES = {
     PENDING:   { cls: 'bg-amber-100 text-amber-700',   label: 'Pending' },
@@ -25,7 +27,7 @@ const VISITOR_TYPES = ['GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR
 function AddVisitorModal({ onClose }) {
     const [createVisitorPass, { isLoading }] = useCreateVisitorPassMutation();
     const [form, setForm] = useState({
-        visitorName: '', visitorPhone: '', visitorType: 'GUEST',
+        visitorName: '', visitorPhone: '', visitorEmail: '', visitorType: 'GUEST',
         purpose: '', expectedArrival: '', vehicleNumber: '',
     });
     const [error, setError] = useState('');
@@ -61,10 +63,10 @@ function AddVisitorModal({ onClose }) {
                                 placeholder="Full name" />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Phone</label>
-                            <input value={form.visitorPhone} onChange={set('visitorPhone')}
+                            <label className="block text-xs font-semibold text-slate-500 mb-1">Visitor Email <span className="font-normal text-slate-400">(receives QR)</span></label>
+                            <input type="email" value={form.visitorEmail} onChange={set('visitorEmail')}
                                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                placeholder="+91 XXXXXXXXXX" />
+                                placeholder="visitor@example.com" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -108,9 +110,13 @@ function AddVisitorModal({ onClose }) {
 
 // ── Visitor card ──────────────────────────────────────────────────────────────
 function VisitorCard({ visitor }) {
-    const [cancelVisitorPass, { isLoading }] = useCancelVisitorPassMutation();
+    const [cancelVisitorPass, { isLoading: isCancelling }] = useCancelVisitorPassMutation();
+    const [approveWalkIn, { isLoading: isApproving }] = useApproveWalkInMutation();
+    const [denyWalkIn, { isLoading: isDenying }] = useDenyWalkInMutation();
+    
     const s = STATUS_STYLES[visitor.status] ?? STATUS_STYLES.PENDING;
-    const canCancel = ['PENDING', 'APPROVED'].includes(visitor.status);
+    const canCancel = ['PENDING', 'APPROVED'].includes(visitor.status) && visitor.approvalMethod !== 'REAL_TIME_APPROVAL';
+    const needsApproval = visitor.status === 'PENDING' && visitor.approvalMethod === 'REAL_TIME_APPROVAL';
 
     return (
         <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
@@ -131,12 +137,27 @@ function VisitorCard({ visitor }) {
                     </span>
                 )}
             </div>
-            {canCancel && (
-                <button onClick={() => cancelVisitorPass(visitor._id)} disabled={isLoading}
-                    className="text-xs font-semibold text-red-500 hover:text-red-600 disabled:opacity-60">
-                    {isLoading ? 'Cancelling…' : 'Cancel Pass'}
-                </button>
-            )}
+            
+            <div className="flex items-center gap-3">
+                {needsApproval && (
+                    <>
+                        <button onClick={() => approveWalkIn(visitor._id)} disabled={isApproving || isDenying}
+                            className="flex items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
+                            {isApproving ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />} Approve
+                        </button>
+                        <button onClick={() => denyWalkIn(visitor._id)} disabled={isApproving || isDenying}
+                            className="flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 disabled:opacity-50">
+                            {isDenying ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />} Deny
+                        </button>
+                    </>
+                )}
+                {canCancel && (
+                    <button onClick={() => cancelVisitorPass(visitor._id)} disabled={isCancelling}
+                        className="text-xs font-semibold text-red-500 hover:text-red-600 disabled:opacity-60">
+                        {isCancelling ? 'Cancelling…' : 'Cancel Pass'}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }

@@ -26,6 +26,12 @@ const visitorSchema = new mongoose.Schema(
             required: true,
             trim: true
         },
+        // Visitor email
+        visitorEmail: {
+            type: String,
+            trim: true,
+            default: null
+        },
         // Visitor phone
         visitorPhone: {
             type: String,

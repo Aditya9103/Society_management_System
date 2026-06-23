@@ -14,34 +14,43 @@ import { authenticate } from '../../middleware/auth.middleware.js';
 import { authorize } from '../../middleware/rbac.middleware.js';
 import { ROLES } from '../../config/constants.js';
 import validate from '../../middleware/validate.middleware.js';
-import { createVisitorSchema } from './visitor.validator.js';
+import { createVisitorSchema, guardWalkInSchema, scanQrSchema } from './visitor.validator.js';
 
 const router = Router();
 
 router.use(authenticate);
 
-/**
- * POST /api/v1/visitors
- * Create a visitor pass (resident only).
- */
+// ── Guard Routes (Flow B & C) ────────────────────────────────────────────────
+
+// Walk-in
+router.post('/guard/walk-in', authorize(ROLES.SECURITY_GUARD), validate(guardWalkInSchema), visitorController.processWalkIn);
+
+// Scan QR
+router.post('/guard/scan-qr', authorize(ROLES.SECURITY_GUARD), validate(scanQrSchema), visitorController.scanQrCode);
+
+// Log Entry
+router.put('/guard/:id/entry', authorize(ROLES.SECURITY_GUARD), visitorController.logEntry);
+
+// Log Exit
+router.put('/guard/:id/exit', authorize(ROLES.SECURITY_GUARD), visitorController.logExit);
+
+
+// ── Resident Routes ──────────────────────────────────────────────────────────
+
+// Create Pass
 router.post('/', authorize(ROLES.RESIDENT), validate(createVisitorSchema), visitorController.createVisitorPass);
 
-/**
- * GET /api/v1/visitors/my
- * List own visitor history (resident only).
- */
+// List own
 router.get('/my', authorize(ROLES.RESIDENT), visitorController.listMyVisitors);
 
-/**
- * GET /api/v1/visitors/:id
- * Get a single visitor record.
- */
+// Approve / Deny real-time walk-ins (Flow B)
+router.put('/:id/approve', authorize(ROLES.RESIDENT), visitorController.approveWalkIn);
+router.put('/:id/deny', authorize(ROLES.RESIDENT), visitorController.denyWalkIn);
+
+// Get single
 router.get('/:id', authorize(ROLES.RESIDENT, ROLES.SECURITY_GUARD, ROLES.SOCIETY_ADMIN), visitorController.getVisitorById);
 
-/**
- * PATCH /api/v1/visitors/:id/cancel
- * Cancel a visitor pass (resident only).
- */
+// Cancel pass
 router.patch('/:id/cancel', authorize(ROLES.RESIDENT), visitorController.cancelVisitorPass);
 
 export default router;

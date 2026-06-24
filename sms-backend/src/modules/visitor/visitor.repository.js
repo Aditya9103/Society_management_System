@@ -33,7 +33,13 @@ export const findByResident = async (hostResidentId, { page = 1, limit = 20, sta
 
 export const findBySociety = async (societyId, { page = 1, limit = 20, status } = {}) => {
     const filter = { societyId };
-    if (status) filter.status = status;
+    if (status) {
+        if (Array.isArray(status)) {
+            filter.status = { $in: status };
+        } else {
+            filter.status = status;
+        }
+    }
 
     const [data, total] = await Promise.all([
         Visitor.find(filter)

@@ -51,4 +51,44 @@ router.put('/family-members/:memberId', residentController.updateFamilyMember);
  */
 router.delete('/family-members/:memberId', residentController.removeFamilyMember);
 
+// ── Domestic Staff ────────────────────────────────────────────────────────────
+
+import * as dsController from './domesticStaff.controller.js';
+import { addDomesticStaffSchema, updateDomesticStaffSchema } from './resident.validator.js';
+import { uploadSingle } from '../../middleware/upload.middleware.js';
+
+router.post(
+    '/domestic-staff', 
+    uploadSingle('photo', 'domestic-staff', 'image'),
+    (req, res, next) => {
+        // Parse allowedDays if it's sent as a stringified array in form-data
+        if (typeof req.body.allowedDays === 'string') {
+            try { req.body.allowedDays = JSON.parse(req.body.allowedDays); } catch(e) {}
+        }
+        next();
+    },
+    validate(addDomesticStaffSchema), 
+    dsController.addDomesticStaff
+);
+
+router.get('/domestic-staff', dsController.getMyDomesticStaff);
+
+router.put(
+    '/domestic-staff/:id', 
+    uploadSingle('photo', 'domestic-staff', 'image'),
+    (req, res, next) => {
+        if (typeof req.body.allowedDays === 'string') {
+            try { req.body.allowedDays = JSON.parse(req.body.allowedDays); } catch(e) {}
+        }
+        // Also handle isActive if sent as string
+        if (req.body.isActive === 'true') req.body.isActive = true;
+        if (req.body.isActive === 'false') req.body.isActive = false;
+        next();
+    },
+    validate(updateDomesticStaffSchema), 
+    dsController.updateDomesticStaff
+);
+
+router.delete('/domestic-staff/:id', dsController.removeDomesticStaff);
+
 export default router;

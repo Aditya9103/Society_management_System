@@ -7,6 +7,7 @@
 
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { axiosBaseQuery } from './baseApi';
+import { getSocket } from '../../socket/socketClient';
 
 export const societyAdminApi = createApi({
     reducerPath: 'societyAdminApi',
@@ -200,15 +201,29 @@ export const societyAdminApi = createApi({
         getAllComplaints: builder.query({
             query: (params = {}) => ({ url: '/complaints', method: 'GET', params }),
             providesTags: [{ type: 'Complaint', id: 'LIST' }],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+                
+                const listener = () => {
+                    dispatch(societyAdminApi.util.invalidateTags([
+                        { type: 'Complaint', id: 'LIST' },
+                        'DashboardStats'
+                    ]));
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('complaint_updated', listener);
+                } catch {}
+
+                await cacheEntryRemoved;
+                socket.off('complaint_updated', listener);
+            }
         }),
 
-        assignComplaint: builder.mutation({
-            query: ({ id, assignedTo }) => ({ url: `/complaints/${id}/assign`, method: 'PATCH', data: { assignedTo } }),
-            invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
-        }),
-
-        closeComplaint: builder.mutation({
-            query: ({ id, resolutionNotes }) => ({ url: `/complaints/${id}/close`, method: 'PATCH', data: { resolutionNotes } }),
+        changeComplaintStatusAdmin: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/complaints/${id}/status`, method: 'PATCH', data }),
             invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
         }),
 
@@ -232,6 +247,16 @@ export const societyAdminApi = createApi({
         archiveNotice: builder.mutation({
             query: (id) => ({ url: `/notices/${id}/archive`, method: 'PATCH' }),
             invalidatesTags: [{ type: 'Notice', id: 'LIST' }],
+        }),
+
+        deleteNotice: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}`, method: 'DELETE' }),
+            invalidatesTags: [{ type: 'Notice', id: 'LIST' }],
+        }),
+
+        getNoticeAcknowledgements: builder.query({
+            query: (id) => ({ url: `/notices/${id}/acknowledgements`, method: 'GET' }),
+            providesTags: (r, e, id) => [{ type: 'Notice', id: `ACK_${id}` }],
         }),
 
         // ── Invoices (admin/accountant view) ──────────────────────────────────
@@ -268,13 +293,14 @@ export const {
     useDeleteUnitMutation,
     // Complaints
     useGetAllComplaintsQuery,
-    useAssignComplaintMutation,
-    useCloseComplaintMutation,
+    useChangeComplaintStatusAdminMutation,
     // Notices
     useGetAllNoticesQuery,
     useCreateNoticeMutation,
     usePublishNoticeMutation,
     useArchiveNoticeMutation,
+    useDeleteNoticeMutation,
+    useGetNoticeAcknowledgementsQuery,
     // Invoices
     useGetAllInvoicesQuery,
 } = societyAdminApi;

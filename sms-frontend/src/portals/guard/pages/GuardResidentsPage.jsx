@@ -1,20 +1,11 @@
-/**
- * GuardResidentsPage.jsx — Resident lookup for Security Guards.
- *
- * Guards can look up residents to verify identity at the gate.
- * Search by name to find unit and contact info.
- * Only fetches when ≥2 characters are typed (skip optimization).
- *
- * Uses global components: SearchInput, Alert, EmptyState, Card.
- */
 import React, { useState } from 'react';
-import { Users, Phone, Search } from 'lucide-react';
+import { Users, Search } from 'lucide-react';
 import { useGetStaffResidentsQuery } from '../../../store/api/staffApi';
 import SearchInput from '../../../components/ui/SearchInput';
 import Alert from '../../../components/ui/Alert';
 import EmptyState from '../../../components/ui/EmptyState';
-import StatusBadge from '../../../components/ui/StatusBadge';
 import PageHeader from '../../../components/ui/PageHeader';
+import GuardResidentCard from '../components/residents/GuardResidentCard';
 
 export default function GuardResidentsPage() {
     const [search, setSearch] = useState('');
@@ -66,27 +57,9 @@ export default function GuardResidentsPage() {
                 />
             ) : (
                 <div className="space-y-3">
-                    {residents.map((r) => {
-                        const initials = `${r.firstName?.[0] ?? ''}${r.lastName?.[0] ?? ''}`;
-                        return (
-                            <div key={r._id} className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-bold text-white">
-                                    {initials}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-semibold text-gray-900">{r.firstName} {r.lastName}</p>
-                                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
-                                        {r.phone && (
-                                            <span className="flex items-center gap-1">
-                                                <Phone className="h-3 w-3" /> {r.phone}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <StatusBadge status="RESIDENT" />
-                            </div>
-                        );
-                    })}
+                    {residents.map((r) => (
+                        <GuardResidentCard key={r._id} resident={r} />
+                    ))}
                 </div>
             )}
         </div>

@@ -17,11 +17,12 @@
  *   - No horizontal overflow
  *   - Sticky header prevents layout shift on scroll
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Menu } from 'lucide-react';
 import PortalSidebar from './PortalSidebar';
 import { cn } from '../ui/Button';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function PortalLayout({
   sidebarConfig,
@@ -67,9 +68,12 @@ export default function PortalLayout({
             <span className="text-sm font-bold text-slate-800">{brand?.title}</span>
           </div>
 
-          {/* User avatar */}
-          <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow', accentFrom, accentTo)}>
-            {initials}
+          {/* User avatar & Notifications */}
+          <div className="flex items-center gap-3">
+            <NotificationDropdown />
+            <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow', accentFrom, accentTo)}>
+              {initials}
+            </div>
           </div>
         </header>
 

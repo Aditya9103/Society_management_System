@@ -22,6 +22,9 @@ router.use(authenticate);
 
 // ── Guard Routes (Flow B & C) ────────────────────────────────────────────────
 
+// Active Visitors
+router.get('/guard/active', authorize(ROLES.SECURITY_GUARD), visitorController.getActiveVisitors);
+
 // Walk-in
 router.post('/guard/walk-in', authorize(ROLES.SECURITY_GUARD), validate(guardWalkInSchema), visitorController.processWalkIn);
 

@@ -42,7 +42,7 @@ const complaintCommentSchema = new mongoose.Schema(
         statusChangedTo: {
             type: String,
             enum: [
-                'OPEN', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED',
+                'DRAFT', 'OPEN', 'ASSIGNED', 'IN_PROGRESS', 'PENDING_RESIDENT', 'RESOLVED',
                 'CLOSED', 'ESCALATED', 'REJECTED', 'REOPENED', null,
             ],
             default: null,

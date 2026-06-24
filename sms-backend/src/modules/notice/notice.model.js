@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const targetAudienceSchema = new mongoose.Schema(
+export const targetAudienceSchema = new mongoose.Schema(
     {
         // Type
         type: {
@@ -135,3 +135,4 @@ noticeSchema.index({ publishedAt: -1 });
 noticeSchema.index({ scheduledAt: 1, status: 1 });
 
 export default mongoose.model('Notice', noticeSchema);
+

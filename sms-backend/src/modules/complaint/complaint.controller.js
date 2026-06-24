@@ -40,19 +40,13 @@ export const listAllComplaints = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, data, 'All complaints fetched', pagination));
 });
 
-// ── Admin/FM — assign complaint ───────────────────────────────────────────────
+// ── Change Complaint Status ───────────────────────────────────────────────────────────
 
-export const assignComplaint = asyncHandler(async (req, res) => {
+export const changeStatus = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    const role = req.user.role;
     const societyId = req.user.societyId;
-    const { assignedTo } = req.body;
-    const complaint = await complaintService.assignComplaint(req.params.id, societyId, assignedTo);
-    res.status(200).json(new ApiResponse(200, { complaint }, 'Complaint assigned'));
-});
-
-// ── Admin — close/resolve complaint ───────────────────────────────────────────
-
-export const closeComplaint = asyncHandler(async (req, res) => {
-    const societyId = req.user.societyId;
-    const complaint = await complaintService.closeComplaint(req.params.id, societyId, req.body);
-    res.status(200).json(new ApiResponse(200, { complaint }, 'Complaint resolved'));
+    
+    const complaint = await complaintService.changeStatus(req.params.id, userId, role, societyId, req.body);
+    res.status(200).json(new ApiResponse(200, { complaint }, 'Complaint status updated'));
 });

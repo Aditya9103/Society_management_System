@@ -31,20 +31,17 @@ const complaintSchema = new mongoose.Schema(
         category: {
             type: String,
             enum: [
-                'PLUMBING',
                 'ELECTRICAL',
-                'CIVIL',
+                'PLUMBING',
                 'SECURITY',
-                'CLEANING',
-                'LIFT',
+                'HOUSEKEEPING',
+                'LIFT_ELEVATOR',
                 'PARKING',
-                'NOISE',
-                'PEST_CONTROL',
-                'LANDSCAPING',
-                'INTERNET',
-                'GAS',
-                'ADMIN',
-                'OTHER',
+                'GARDEN_LANDSCAPE',
+                'STRUCTURAL',
+                'NOISE_NUISANCE',
+                'AMENITY',
+                'ADMINISTRATIVE'
             ],
             required: true,
         },
@@ -97,9 +94,11 @@ const complaintSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: [
+                'DRAFT',
                 'OPEN',
                 'ASSIGNED',
                 'IN_PROGRESS',
+                'PENDING_RESIDENT',
                 'RESOLVED',
                 'CLOSED',
                 'ESCALATED',
@@ -123,6 +122,11 @@ const complaintSchema = new mongoose.Schema(
             type: Date,
             default: null
         },
+        // Resolved at (for SLA tracking and auto-close)
+        resolvedAt: {
+            type: Date,
+            default: null
+        },
         // Actual resolution date
         actualResolutionDate: {
             type: Date,
@@ -130,6 +134,11 @@ const complaintSchema = new mongoose.Schema(
         },
         // Resolution notes
         resolutionNotes: {
+            type: String,
+            default: null
+        },
+        // Latest note/comment
+        latestNote: {
             type: String,
             default: null
         },

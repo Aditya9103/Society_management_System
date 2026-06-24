@@ -28,7 +28,7 @@ export const initSocket = (httpServer) => {
         try {
             // Check auth token (can be sent in handshake.auth or headers)
             const token = socket.handshake.auth.token || socket.handshake.headers['authorization']?.split(' ')[1];
-            
+
             if (!token) {
                 return next(new Error('Authentication Error: No token provided'));
             }
@@ -41,6 +41,7 @@ export const initSocket = (httpServer) => {
             next(new Error('Authentication Error: Invalid token'));
         }
     });
+
 
     // ── Connection Handling ──
     io.on('connection', (socket) => {

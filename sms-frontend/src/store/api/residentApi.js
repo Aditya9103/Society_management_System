@@ -3,11 +3,12 @@
  */
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { axiosBaseQuery } from './baseApi';
+import { getSocket } from '../../socket/socketClient';
 
 export const residentApi = createApi({
     reducerPath: 'residentApi',
     baseQuery: axiosBaseQuery(),
-    tagTypes: ['ResidentProfile', 'ResidentStatus', 'Complaint', 'Notice', 'Visitor', 'Invoice', 'FamilyMember'],
+    tagTypes: ['ResidentProfile', 'ResidentStatus', 'Complaint', 'Notice', 'Visitor', 'Invoice', 'FamilyMember', 'DomesticStaff'],
     endpoints: (builder) => ({
 
         // ── Profile ──────────────────────────────────────────────────────────
@@ -44,15 +45,58 @@ export const residentApi = createApi({
             invalidatesTags: ['ResidentProfile'],
         }),
 
+        // ── Domestic Staff ────────────────────────────────────────────────────
+
+        getMyDomesticStaff: builder.query({
+            query: () => ({ url: '/residents/domestic-staff', method: 'GET' }),
+            providesTags: ['DomesticStaff'],
+        }),
+
+        addDomesticStaff: builder.mutation({
+            query: (data) => ({ url: '/residents/domestic-staff', method: 'POST', data }),
+            invalidatesTags: ['DomesticStaff'],
+        }),
+
+        updateDomesticStaff: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/residents/domestic-staff/${id}`, method: 'PUT', data }),
+            invalidatesTags: ['DomesticStaff'],
+        }),
+
+        removeDomesticStaff: builder.mutation({
+            query: (id) => ({ url: `/residents/domestic-staff/${id}`, method: 'DELETE' }),
+            invalidatesTags: ['DomesticStaff'],
+        }),
+
         // ── Complaints ────────────────────────────────────────────────────────
 
         getMyComplaints: builder.query({
             query: (params = {}) => ({ url: '/complaints/my', method: 'GET', params }),
             providesTags: [{ type: 'Complaint', id: 'LIST' }],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+                
+                const listener = () => {
+                    dispatch(residentApi.util.invalidateTags([{ type: 'Complaint', id: 'LIST' }]));
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('complaint_updated', listener);
+                } catch {}
+
+                await cacheEntryRemoved;
+                socket.off('complaint_updated', listener);
+            }
         }),
 
         raiseComplaint: builder.mutation({
             query: (data) => ({ url: '/complaints', method: 'POST', data }),
+            invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
+        }),
+
+        changeComplaintStatus: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/complaints/${id}/status`, method: 'PATCH', data }),
             invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
         }),
 
@@ -66,6 +110,11 @@ export const residentApi = createApi({
         getNoticeById: builder.query({
             query: (id) => ({ url: `/notices/${id}`, method: 'GET' }),
             providesTags: (r, e, id) => [{ type: 'Notice', id }],
+        }),
+
+        acknowledgeNotice: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/acknowledge`, method: 'POST' }),
+            invalidatesTags: (r, e, id) => [{ type: 'Notice', id }, { type: 'Notice', id: 'LIST' }],
         }),
 
         // ── Visitors ──────────────────────────────────────────────────────────
@@ -118,10 +167,16 @@ export const {
     useAddFamilyMemberMutation,
     useUpdateFamilyMemberMutation,
     useDeleteFamilyMemberMutation,
+    useGetMyDomesticStaffQuery,
+    useAddDomesticStaffMutation,
+    useUpdateDomesticStaffMutation,
+    useRemoveDomesticStaffMutation,
     useGetMyComplaintsQuery,
     useRaiseComplaintMutation,
+    useChangeComplaintStatusMutation,
     useGetMyNoticesQuery,
     useGetNoticeByIdQuery,
+    useAcknowledgeNoticeMutation,
     useGetMyVisitorsQuery,
     useCreateVisitorPassMutation,
     useCancelVisitorPassMutation,

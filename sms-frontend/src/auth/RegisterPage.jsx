@@ -105,10 +105,10 @@ export default function RegisterPage() {
             }).unwrap();
 
             // Backend returns: { success, data: { accessToken, refreshToken, user }, message }
-            const { accessToken, user } = response.data;
+            const { accessToken, refreshToken, user } = response.data;
 
             // Persist token so subsequent authenticated calls (step 3) work
-            dispatch(setCredentials({ user, accessToken }));
+            dispatch(setCredentials({ user, accessToken, refreshToken }));
 
             setStep(3);
         } catch (err) {

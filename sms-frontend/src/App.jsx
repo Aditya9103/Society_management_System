@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
+import GlobalSocketListener from './components/layout/GlobalSocketListener';
 import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
@@ -48,6 +50,8 @@ function App() {
 
       {/* Main Content Area */}
       <div className="relative z-10 min-h-screen flex flex-col">
+        <Toaster position="top-right" />
+        <GlobalSocketListener />
         <Routes>
         {/* Default → login */}
         <Route path="/" element={<Navigate to="/auth/login" replace />} />

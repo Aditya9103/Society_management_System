@@ -65,7 +65,8 @@ export default function LoginPage() {
 
             dispatch(setCredentials({
                 user: authData.user,
-                accessToken: authData.accessToken
+                accessToken: authData.accessToken,
+                refreshToken: authData.refreshToken
             }));
 
             // Redirect based on user role

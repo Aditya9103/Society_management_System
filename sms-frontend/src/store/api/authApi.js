@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { axiosBaseQuery } from './baseApi';
 
-
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: axiosBaseQuery(),
@@ -45,8 +44,6 @@ export const authApi = createApi({
       query: (data) => ({
         url: '/residents/profile',
         method: 'POST',
-        // Token is injected automatically by the axiosInstance interceptor from localStorage.
-        // The token is stored after OTP verification in step 2.
         data: data.payload,
       }),
     }),

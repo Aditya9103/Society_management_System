@@ -18,3 +18,30 @@ export const completeProfileSchema = {
         agreementUrl: Joi.string().uri().optional().allow(null, ''),
     }),
 };
+
+export const addDomesticStaffSchema = {
+    body: Joi.object({
+        name: Joi.string().trim().required(),
+        role: Joi.string().valid('MAID', 'COOK', 'DRIVER', 'GARDENER', 'NANNY', 'OTHER').required(),
+        phone: Joi.string().allow(null, '').optional(),
+        aadhaarNumber: Joi.string().allow(null, '').optional(),
+        photoUrl: Joi.string().allow(null, '').optional(),
+        allowedDays: Joi.array().items(Joi.number().min(0).max(6)).optional(),
+        allowedStartTime: Joi.string().optional(),
+        allowedEndTime: Joi.string().optional(),
+    }),
+};
+
+export const updateDomesticStaffSchema = {
+    body: Joi.object({
+        name: Joi.string().trim().optional(),
+        role: Joi.string().valid('MAID', 'COOK', 'DRIVER', 'GARDENER', 'NANNY', 'OTHER').optional(),
+        phone: Joi.string().allow(null, '').optional(),
+        aadhaarNumber: Joi.string().allow(null, '').optional(),
+        photoUrl: Joi.string().allow(null, '').optional(),
+        allowedDays: Joi.array().items(Joi.number().min(0).max(6)).optional(),
+        allowedStartTime: Joi.string().optional(),
+        allowedEndTime: Joi.string().optional(),
+        isActive: Joi.boolean().optional(),
+    }),
+};

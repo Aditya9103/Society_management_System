@@ -26,6 +26,38 @@ const STATUS_MAP = {
   HELPDESK:           'bg-pink-100 text-pink-700 ring-pink-200/60',
   GUARD:              'bg-amber-100 text-amber-700 ring-amber-200/60',
   RESIDENT:           'bg-emerald-100 text-emerald-700 ring-emerald-200/60',
+  // Complaints
+  OPEN:               'bg-amber-100 text-amber-700 ring-amber-200/60',
+  IN_PROGRESS:        'bg-blue-100 text-blue-700 ring-blue-200/60',
+  RESOLVED:           'bg-emerald-100 text-emerald-700 ring-emerald-200/60',
+  CLOSED:             'bg-slate-100 text-slate-500 ring-slate-200/60',
+  // Visitors / Invoices (shared)
+  PENDING:            'bg-amber-100 text-amber-700 ring-amber-200/60',
+  INSIDE:             'bg-blue-100 text-blue-700 ring-blue-200/60',
+  EXITED:             'bg-slate-100 text-slate-500 ring-slate-200/60',
+  DENIED:             'bg-red-100 text-red-600 ring-red-200/60',
+  CANCELLED:          'bg-slate-100 text-slate-400 ring-slate-200/60',
+  EXPIRED:            'bg-slate-100 text-slate-400 ring-slate-200/60',
+  // Invoices
+  DRAFT:              'bg-slate-100 text-slate-500 ring-slate-200/60',
+  SENT:               'bg-amber-100 text-amber-700 ring-amber-200/60',
+  PAID:               'bg-emerald-100 text-emerald-700 ring-emerald-200/60',
+  PARTIAL:            'bg-blue-100 text-blue-700 ring-blue-200/60',
+  OVERDUE:            'bg-red-100 text-red-700 ring-red-200/60',
+  // Notices (Types)
+  GENERAL:            'bg-slate-100 text-slate-600 ring-slate-200/60',
+  MAINTENANCE:        'bg-amber-100 text-amber-700 ring-amber-200/60',
+  FINANCIAL:          'bg-emerald-100 text-emerald-700 ring-emerald-200/60',
+  EMERGENCY:          'bg-red-100 text-red-700 ring-red-200/60',
+  EVENT:              'bg-purple-100 text-purple-700 ring-purple-200/60',
+  LEGAL:              'bg-blue-100 text-blue-700 ring-blue-200/60',
+  PARKING:            'bg-indigo-100 text-indigo-700 ring-indigo-200/60',
+  MEETING:            'bg-cyan-100 text-cyan-700 ring-cyan-200/60',
+  // Priorities
+  LOW:                'bg-slate-100 text-slate-500 ring-slate-200/60',
+  NORMAL:             'bg-blue-100 text-blue-600 ring-blue-200/60',
+  HIGH:               'bg-orange-100 text-orange-700 ring-orange-200/60',
+  URGENT:             'bg-red-100 text-red-700 ring-red-200/60',
 };
 
 export default function StatusBadge({ status, className }) {

@@ -53,4 +53,22 @@ router.patch('/:id/publish', authorize(...CAN_PUBLISH), noticeController.publish
  */
 router.patch('/:id/archive', authorize(...CAN_PUBLISH), noticeController.archiveNotice);
 
+/**
+ * DELETE /api/v1/notices/:id
+ * Delete a notice.
+ */
+router.delete('/:id', authorize(...CAN_PUBLISH), noticeController.deleteNotice);
+
+/**
+ * POST /api/v1/notices/:id/acknowledge
+ * Acknowledge a notice (RESIDENT only).
+ */
+router.post('/:id/acknowledge', authorize(ROLES.RESIDENT), noticeController.acknowledgeNotice);
+
+/**
+ * GET /api/v1/notices/:id/acknowledgements
+ * Get acknowledgement stats for a notice (Admin/Committee).
+ */
+router.get('/:id/acknowledgements', authorize(...CAN_PUBLISH), noticeController.getNoticeAcknowledgements);
+
 export default router;

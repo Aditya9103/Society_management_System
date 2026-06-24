@@ -18,8 +18,7 @@ import { ROLES } from '../../config/constants.js';
 import validate from '../../middleware/validate.middleware.js';
 import {
     raiseComplaintSchema,
-    assignComplaintSchema,
-    closeComplaintSchema,
+    changeStatusSchema,
 } from './complaint.validator.js';
 
 const router = Router();
@@ -68,25 +67,15 @@ router.get('/', authorize(...CAN_READ_ALL), complaintController.listAllComplaint
 router.get('/:id', authorize(...CAN_CREATE), complaintController.getComplaintById);
 
 /**
- * PATCH /api/v1/complaints/:id/assign
- * Assign complaint to a staff member.
+ * PATCH /api/v1/complaints/:id/status
+ * Change complaint status (assignment, resolution, reopen, etc).
+ * Role checks and state transition validations happen in service.
  */
 router.patch(
-    '/:id/assign',
-    authorize(ROLES.SOCIETY_ADMIN, ROLES.FACILITY_MANAGER),
-    validate(assignComplaintSchema),
-    complaintController.assignComplaint,
-);
-
-/**
- * PATCH /api/v1/complaints/:id/close
- * Resolve/close a complaint.
- */
-router.patch(
-    '/:id/close',
-    authorize(ROLES.SOCIETY_ADMIN),
-    validate(closeComplaintSchema),
-    complaintController.closeComplaint,
+    '/:id/status',
+    authorize(...CAN_CREATE),
+    validate(changeStatusSchema),
+    complaintController.changeStatus,
 );
 
 export default router;

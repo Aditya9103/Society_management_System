@@ -1,4 +1,5 @@
 import Complaint from './complaint.model.js';
+import ComplaintComment from './complaint.comment.model.js';
 
 /**
  * complaint.repository.js — Data access layer for the Complaint module.
@@ -50,3 +51,13 @@ export const updateById = (id, update) =>
     Complaint.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean();
 
 export const countBySociety = (filter) => Complaint.countDocuments(filter);
+
+export const addComment = (complaintId, userId, { content, statusChangedFrom, statusChangedTo, isInternal = false }) =>
+    ComplaintComment.create({
+        complaintId,
+        authorId: userId,
+        commentText: content,
+        isInternal,
+        statusChangedFrom,
+        statusChangedTo,
+    });

@@ -49,6 +49,12 @@ export const denyWalkIn = asyncHandler(async (req, res) => {
 
 // ── Guard — Flows B & C ───────────────────────────────────────────────────────
 
+export const getActiveVisitors = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const { data, total } = await visitorService.getActiveVisitors(societyId, req.query);
+    res.status(200).json(new ApiResponse(200, { visitors: data, total }, 'Active visitors fetched'));
+});
+
 export const processWalkIn = asyncHandler(async (req, res) => {
     const guardId = req.user.sub;
     const societyId = req.user.societyId;

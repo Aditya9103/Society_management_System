@@ -53,3 +53,25 @@ export const archiveNotice = asyncHandler(async (req, res) => {
     const notice = await noticeService.archiveNotice(req.params.id, societyId);
     res.status(200).json(new ApiResponse(200, { notice }, 'Notice archived'));
 });
+
+// ── Acknowledgements ────────────────────────────────────────────────────────────
+
+export const acknowledgeNotice = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const ack = await noticeService.acknowledgeNotice(req.params.id, userId);
+    res.status(200).json(new ApiResponse(200, { acknowledgement: ack }, 'Notice acknowledged'));
+});
+
+export const getNoticeAcknowledgements = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const acknowledgements = await noticeService.getNoticeAcknowledgements(req.params.id, societyId);
+    res.status(200).json(new ApiResponse(200, { acknowledgements }, 'Acknowledgements fetched'));
+});
+
+// ── Admin/Committee — delete notice ──────────────────────────────────────────
+
+export const deleteNotice = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    await noticeService.deleteNotice(req.params.id, societyId);
+    res.status(200).json(new ApiResponse(200, null, 'Notice deleted'));
+});

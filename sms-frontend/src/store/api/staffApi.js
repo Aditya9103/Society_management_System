@@ -9,11 +9,12 @@
  */
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { axiosBaseQuery } from './baseApi';
+import { getSocket } from '../../socket/socketClient';
 
 export const staffApi = createApi({
     reducerPath: 'staffApi',
     baseQuery: axiosBaseQuery(),
-    tagTypes: ['StaffDashboard', 'SocietyInfo', 'ResidentList', 'UnitList', 'StaffProfile', 'StaffComplaint', 'StaffNotice'],
+    tagTypes: ['StaffDashboard', 'SocietyInfo', 'ResidentList', 'UnitList', 'StaffProfile', 'StaffComplaint', 'StaffNotice', 'ActiveVisitorList'],
 
     endpoints: (builder) => ({
 
@@ -81,6 +82,25 @@ export const staffApi = createApi({
         getStaffComplaints: builder.query({
             query: (params = {}) => ({ url: '/complaints', method: 'GET', params }),
             providesTags: [{ type: 'StaffComplaint', id: 'LIST' }],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+
+                const listener = () => {
+                    dispatch(staffApi.util.invalidateTags([
+                        { type: 'StaffComplaint', id: 'LIST' },
+                        'StaffDashboard'
+                    ]));
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('complaint_updated', listener);
+                } catch { }
+
+                await cacheEntryRemoved;
+                socket.off('complaint_updated', listener);
+            }
         }),
 
         /**
@@ -93,11 +113,11 @@ export const staffApi = createApi({
         }),
 
         /**
-         * PATCH /api/v1/complaints/:id/assign
-         * Assign complaint to a staff member (FACILITY_MANAGER only).
+         * PATCH /api/v1/complaints/:id/status
+         * Change complaint status (Staff/Admin)
          */
-        staffAssignComplaint: builder.mutation({
-            query: ({ id, assignedTo }) => ({ url: `/complaints/${id}/assign`, method: 'PATCH', data: { assignedTo } }),
+        staffChangeComplaintStatus: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/complaints/${id}/status`, method: 'PATCH', data }),
             invalidatesTags: [{ type: 'StaffComplaint', id: 'LIST' }],
         }),
 
@@ -132,9 +152,14 @@ export const staffApi = createApi({
 
         // ── Guard Visitor Endpoints (SECURITY_GUARD) ──────────────────────────
 
+        getGuardActiveVisitors: builder.query({
+            query: (params = {}) => ({ url: '/visitors/guard/active', method: 'GET', params }),
+            providesTags: ['ActiveVisitorList'],
+        }),
+
         guardWalkIn: builder.mutation({
             query: (data) => ({ url: '/visitors/guard/walk-in', method: 'POST', data }),
-            invalidatesTags: ['ResidentList'], // Usually want to refetch some global active list, or add 'Visitor' tag if added to staffApi.
+            invalidatesTags: ['ResidentList', 'ActiveVisitorList'], // Usually want to refetch some global active list, or add 'Visitor' tag if added to staffApi.
         }),
 
         guardScanQr: builder.mutation({
@@ -143,10 +168,12 @@ export const staffApi = createApi({
 
         guardLogEntry: builder.mutation({
             query: ({ id, ...data }) => ({ url: `/visitors/guard/${id}/entry`, method: 'PUT', data }),
+            invalidatesTags: ['ActiveVisitorList'],
         }),
 
         guardLogExit: builder.mutation({
             query: ({ id, ...data }) => ({ url: `/visitors/guard/${id}/exit`, method: 'PUT', data }),
+            invalidatesTags: ['ActiveVisitorList'],
         }),
     }),
 });
@@ -159,10 +186,11 @@ export const {
     useGetStaffUnitsQuery,
     useGetStaffComplaintsQuery,
     useStaffRaiseComplaintMutation,
-    useStaffAssignComplaintMutation,
+    useStaffChangeComplaintStatusMutation,
     useGetStaffNoticesQuery,
     useStaffCreateNoticeMutation,
     useStaffPublishNoticeMutation,
+    useGetGuardActiveVisitorsQuery,
     useGuardWalkInMutation,
     useGuardScanQrMutation,
     useGuardLogEntryMutation,

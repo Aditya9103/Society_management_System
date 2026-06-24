@@ -44,3 +44,4 @@ export const findBySociety = async (societyId, { page = 1, limit = 20, status, n
 
 export const updateById = (id, update) =>
     Notice.findByIdAndUpdate(id, update, { new: true, runValidators: true }).lean();
+export const deleteById = (id) => Notice.findByIdAndDelete(id);

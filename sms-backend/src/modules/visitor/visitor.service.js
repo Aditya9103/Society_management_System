@@ -49,23 +49,7 @@ export const createVisitorPass = async (userId, societyId, data) => {
         approvalMethod: 'QR_SCAN'
     });
 
-    try {
-        const qrBase64 = await generateQRCodeDataURI(qrCode);
-        
-        if (data.visitorEmail) {
-            await sendNotification({
-                userId: null, 
-                title: `You have an invite to ${societyId}`,
-                message: `Show this QR code at the gate. Expires at ${qrExpiresAt}`,
-                html: `<p>Hello ${data.visitorName},</p><p>You have been invited. Show this QR code at the gate.</p><img src="${qrBase64}" />`,
-                emailAddress: data.visitorEmail,
-                channels: ['email']
-            });
-        }
-    } catch (e) {
-        console.error("Failed to dispatch invite email", e);
-    }
-
+    // Skipping email dispatch as per user spec (only FCM/Sockets)
     return visitor;
 };
 
@@ -155,14 +139,19 @@ export const processWalkIn = async (guardId, societyId, data) => {
             });
 
             // Also push notification
-            await sendNotification({
-                userId: residentHost.userId,
-                societyId: societyId,
-                title: 'Visitor at Gate',
-                message: `${visitor.visitorName} is at the gate.`,
-                type: 'VISITOR_APPROVAL_REQUEST',
-                channels: ['in-app', 'push']
-            });
+            const resUser = await User.findById(residentHost.userId).select('_id fcmTokens').lean();
+            if (resUser) {
+                await sendNotification({
+                    users: [resUser],
+                    societyId: societyId,
+                    title: 'Visitor at Gate',
+                    message: `${visitor.visitorName} is at the gate.`,
+                    type: 'VISITOR_APPROVAL_REQUEST',
+                    priority: 'HIGH',
+                    referenceType: 'VISITOR',
+                    referenceId: visitor._id
+                });
+            }
         }
     }
 
@@ -172,8 +161,40 @@ export const processWalkIn = async (guardId, societyId, data) => {
 // ── Guard — Scan QR (Flow A & C) ──────────────────────────────────────────────
 
 export const scanQrCode = async (guardId, societyId, qrCode) => {
-    const visitor = await visitorRepo.findByQrCode(qrCode);
+    let visitor = await visitorRepo.findByQrCode(qrCode);
     
+    if (!visitor) {
+        // Look up static QR from Domestic Staff
+        const ds = await DomesticStaff.findOne({ qrCode, societyId }).populate('registeredBy', 'unitId residentCode');
+        
+        if (ds) {
+            if (!ds.isActive) throw ApiError.badRequest('Domestic Staff profile is inactive.');
+            
+            // Note: Timings are soft-enforced per user request, so we only strictly check allowedDays
+            const today = new Date().getDay();
+            if (ds.allowedDays && ds.allowedDays.length > 0 && !ds.allowedDays.includes(today)) {
+                throw ApiError.badRequest('Staff is not allowed on this day.');
+            }
+
+            // Create a temporary daily pass on the fly
+            visitor = await visitorRepo.create({
+                societyId,
+                hostUnitId: ds.registeredBy?.unitId,
+                hostResidentId: ds.registeredBy?._id,
+                visitorName: ds.name,
+                visitorPhone: ds.phone,
+                visitorType: 'DOMESTIC_STAFF',
+                visitorPhotoUrl: ds.photoUrl,
+                status: 'APPROVED',
+                approvalMethod: 'DOMESTIC_RECURRING',
+                domesticStaffId: ds._id,
+            });
+
+            await logRepo.createLog({ visitorId: visitor._id, societyId, guardId, eventType: 'QR_SCAN' });
+            return visitor;
+        }
+    }
+
     if (!visitor || visitor.societyId.toString() !== societyId.toString()) {
         throw ApiError.notFound('Invalid QR Code');
     }
@@ -189,15 +210,14 @@ export const scanQrCode = async (guardId, societyId, qrCode) => {
         throw ApiError.badRequest('QR Code has expired.');
     }
 
-    // If domestic staff, check timings
+    // If domestic staff from old flow, check timings
     if (visitor.visitorType === 'DOMESTIC_STAFF' && visitor.domesticStaffId) {
         const staff = await DomesticStaff.findById(visitor.domesticStaffId);
         if (staff) {
             const today = new Date().getDay();
-            if (!staff.allowedDays.includes(today)) {
+            if (staff.allowedDays && staff.allowedDays.length > 0 && !staff.allowedDays.includes(today)) {
                 throw ApiError.badRequest('Staff is not allowed on this day.');
             }
-            // Add time check logic here if needed
         }
     }
 
@@ -205,6 +225,12 @@ export const scanQrCode = async (guardId, societyId, qrCode) => {
 };
 
 // ── Guard — Log Physical Entry / Exit ─────────────────────────────────────────
+
+export const getActiveVisitors = async (societyId, query = {}) => {
+    const { page = 1, limit = 50 } = query;
+    const { data, total } = await visitorRepo.findBySociety(societyId, { page, limit, status: ['APPROVED', 'INSIDE'] });
+    return { data, total };
+};
 
 export const logEntry = async (guardId, societyId, visitorId, gateId) => {
     let visitor = await visitorRepo.findById(visitorId);
@@ -226,14 +252,18 @@ export const logEntry = async (guardId, societyId, visitorId, gateId) => {
     if (visitor.hostResidentId) {
         const residentHost = await residentRepo.findById(visitor.hostResidentId);
         if (residentHost && residentHost.userId) {
-            await sendNotification({
-                userId: residentHost.userId,
-                societyId: societyId,
-                title: 'Visitor Entered',
-                message: `${visitor.visitorName} has entered the premises.`,
-                type: 'VISITOR_ENTRY',
-                channels: ['in-app', 'push']
-            });
+            const resUser = await User.findById(residentHost.userId).select('_id fcmTokens').lean();
+            if (resUser) {
+                await sendNotification({
+                    users: [resUser],
+                    societyId: societyId,
+                    title: 'Visitor Entered',
+                    message: `${visitor.visitorName} has entered the premises.`,
+                    type: 'VISITOR_ENTRY',
+                    referenceType: 'VISITOR',
+                    referenceId: visitor._id
+                });
+            }
         }
     }
 
@@ -256,14 +286,18 @@ export const logExit = async (guardId, societyId, visitorId, gateId) => {
     if (visitor.hostResidentId) {
         const residentHost = await residentRepo.findById(visitor.hostResidentId);
         if (residentHost && residentHost.userId) {
-            await sendNotification({
-                userId: residentHost.userId,
-                societyId: societyId,
-                title: 'Visitor Exited',
-                message: `${visitor.visitorName} has left the premises.`,
-                type: 'VISITOR_EXIT',
-                channels: ['in-app', 'push']
-            });
+            const resUser = await User.findById(residentHost.userId).select('_id fcmTokens').lean();
+            if (resUser) {
+                await sendNotification({
+                    users: [resUser],
+                    societyId: societyId,
+                    title: 'Visitor Exited',
+                    message: `${visitor.visitorName} has left the premises.`,
+                    type: 'VISITOR_EXIT',
+                    referenceType: 'VISITOR',
+                    referenceId: visitor._id
+                });
+            }
         }
     }
 

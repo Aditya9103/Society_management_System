@@ -22,32 +22,11 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
 import Alert from '../../../components/ui/Alert';
-import Card from '../../../components/ui/Card';
 import PageHeader from '../../../components/ui/PageHeader';
+import Section from '../components/profile/Section';
+import Field from '../components/profile/Field';
 
 const EMERGENCY_TYPES = ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AGENCY', 'OTHER'];
-
-// ── Section wrapper — now uses global Card ────────────────────────────────────
-function Section({ title, description, children }) {
-    return (
-        <Card>
-            <Card.Header title={title} subtitle={description} />
-            <Card.Body className="space-y-4">{children}</Card.Body>
-        </Card>
-    );
-}
-
-// ── Simple label+children wrapper (no error — parent uses Input's built-in) ──
-function Field({ label, children }) {
-    return (
-        <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
-                {label}
-            </label>
-            {children}
-        </div>
-    );
-}
 
 
 export default function SocietyProfilePage() {

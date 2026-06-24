@@ -8,148 +8,44 @@ import {
     useUpdateMyProfileMutation,
     useAddFamilyMemberMutation,
     useDeleteFamilyMemberMutation,
+    useGetMyDomesticStaffQuery,
+    useAddDomesticStaffMutation,
+    useRemoveDomesticStaffMutation,
 } from '../../../store/api/residentApi';
 import { setCredentials } from '../../../store/slices/authSlice';
 import {
     User, Phone, Mail, Home, Building2, Edit2, Plus, Trash2,
-    CheckCircle2, X, Save, Users, RefreshCw, AlertCircle,
+    CheckCircle2, X, Save, Users, RefreshCw, AlertCircle, Briefcase, QrCode
 } from 'lucide-react';
 
-// ── Relation badge colors ─────────────────────────────────────────────────────
-const RELATION_COLORS = {
-    SPOUSE: 'bg-pink-100 text-pink-700',
-    CHILD: 'bg-blue-100 text-blue-700',
-    PARENT: 'bg-amber-100 text-amber-700',
-    SIBLING: 'bg-purple-100 text-purple-700',
-    GRANDPARENT: 'bg-emerald-100 text-emerald-700',
-    OTHER: 'bg-slate-100 text-slate-600',
-};
-
-// ── Family member card ────────────────────────────────────────────────────────
-function FamilyMemberCard({ member, onDelete }) {
-    const [deleting, setDeleting] = useState(false);
-
-    const handleDelete = async () => {
-        setDeleting(true);
-        await onDelete(member._id);
-        setDeleting(false);
-    };
-
-    return (
-        <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
-            <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
-                    {member.name?.[0]?.toUpperCase()}
-                </div>
-                <div>
-                    <p className="text-sm font-semibold text-slate-800">{member.name}</p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${RELATION_COLORS[member.relation] ?? RELATION_COLORS.OTHER}`}>
-                        {member.relation}
-                    </span>
-                </div>
-            </div>
-            <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 transition"
-            >
-                {deleting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-            </button>
-        </div>
-    );
-}
-
-// ── Add family member modal ────────────────────────────────────────────────────
-function AddMemberModal({ onClose, onAdd }) {
-    const [form, setForm] = useState({ name: '', relation: 'SPOUSE', phone: '', gender: '' });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!form.name.trim()) return setError('Name is required');
-        setLoading(true);
-        try {
-            await onAdd(form);
-            onClose();
-        } catch {
-            setError('Failed to add family member');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl p-6">
-                <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-bold text-slate-800 text-lg">Add Family Member</h3>
-                    <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-slate-100"><X className="h-5 w-5 text-slate-500" /></button>
-                </div>
-                {error && <p className="mb-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-1">Full Name *</label>
-                        <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            placeholder="Family member's name" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Relation *</label>
-                            <select value={form.relation} onChange={e => setForm(f => ({ ...f, relation: e.target.value }))}
-                                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                                {['SPOUSE', 'CHILD', 'PARENT', 'SIBLING', 'GRANDPARENT', 'OTHER'].map(r => (
-                                    <option key={r} value={r}>{r}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Gender</label>
-                            <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
-                                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                                <option value="">— Select —</option>
-                                {['MALE', 'FEMALE', 'OTHER'].map(g => <option key={g} value={g}>{g}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-1">Phone</label>
-                        <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            placeholder="+91 XXXXXXXXXX" />
-                    </div>
-                    <div className="flex gap-3 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
-                        <button type="submit" disabled={loading}
-                            className="flex-1 rounded-lg bg-indigo-600 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60 flex items-center justify-center gap-2">
-                            {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : null} Add Member
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-}
+import { FamilyMemberCard } from '../components/profile/FamilyMemberCard';
+import { AddMemberModal } from '../components/profile/AddMemberModal';
+import { DomesticStaffCard } from '../components/profile/DomesticStaffCard';
+import { AddDomesticStaffModal } from '../components/profile/AddDomesticStaffModal';
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ResidentProfilePage() {
     const { user } = useSelector(s => s.auth);
     const dispatch = useDispatch();
     const { data, isLoading } = useGetMyProfileQuery();
+    const { data: staffData } = useGetMyDomesticStaffQuery();
     const [updateMyProfile, { isLoading: isSaving }] = useUpdateMyProfileMutation();
     const [addFamilyMember] = useAddFamilyMemberMutation();
     const [deleteFamilyMember] = useDeleteFamilyMemberMutation();
+    const [addDomesticStaff] = useAddDomesticStaffMutation();
+    const [removeDomesticStaff] = useRemoveDomesticStaffMutation();
 
     const profile = data?.data?.profile;
     const unit = profile?.unitId;
     const society = profile?.societyId;
     const familyMembers = profile?.familyMembers ?? [];
+    const domesticStaffList = staffData?.data ?? [];
 
     const [editing, setEditing] = useState(false);
     const [form, setForm] = useState({ firstName: '', lastName: '', phone: '' });
     const [saveMsg, setSaveMsg] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
+    const [showAddStaff, setShowAddStaff] = useState(false);
 
     const startEdit = () => {
         setForm({ firstName: user?.firstName ?? '', lastName: user?.lastName ?? '', phone: user?.phone ?? '' });
@@ -176,6 +72,20 @@ export default function ResidentProfilePage() {
 
     const handleDeleteMember = async (memberId) => {
         await deleteFamilyMember(memberId).unwrap();
+    };
+
+    const handleAddStaff = async (staffInfo) => {
+        const formData = new FormData();
+        formData.append('name', staffInfo.name);
+        formData.append('role', staffInfo.role);
+        if (staffInfo.phone) formData.append('phone', staffInfo.phone);
+        if (staffInfo.photoFile) formData.append('photo', staffInfo.photoFile);
+        
+        await addDomesticStaff(formData).unwrap();
+    };
+
+    const handleDeleteStaff = async (staffId) => {
+        await removeDomesticStaff(staffId).unwrap();
     };
 
     if (isLoading) {
@@ -293,6 +203,31 @@ export default function ResidentProfilePage() {
 
             {showAddMember && (
                 <AddMemberModal onClose={() => setShowAddMember(false)} onAdd={handleAddMember} />
+            )}
+
+            {/* Domestic Staff */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="font-bold text-slate-800 flex items-center gap-2"><Briefcase className="h-5 w-5 text-emerald-500" /> Domestic Staff <span className="text-xs font-normal text-slate-400">({domesticStaffList.length})</span></h2>
+                    <button onClick={() => setShowAddStaff(true)}
+                        className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                        <Plus className="h-3.5 w-3.5" /> Add Staff
+                    </button>
+                </div>
+
+                {domesticStaffList.length === 0 ? (
+                    <p className="text-center text-sm text-slate-400 py-6">No domestic staff added yet.</p>
+                ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {domesticStaffList.map(s => (
+                            <DomesticStaffCard key={s._id} staff={s} onDelete={handleDeleteStaff} />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {showAddStaff && (
+                <AddDomesticStaffModal onClose={() => setShowAddStaff(false)} onAdd={handleAddStaff} />
             )}
         </div>
     );

@@ -9,14 +9,17 @@ export const raiseComplaintSchema = {
         title: Joi.string().max(150).required(),
         description: Joi.string().required(),
         category: Joi.string()
-            .valid('PLUMBING', 'ELECTRICAL', 'CIVIL', 'SECURITY', 'CLEANING', 'LIFT',
-                'PARKING', 'NOISE', 'PEST_CONTROL', 'LANDSCAPING', 'INTERNET', 'GAS', 'ADMIN', 'OTHER')
+            .valid(
+                'ELECTRICAL', 'PLUMBING', 'SECURITY', 'HOUSEKEEPING', 'LIFT_ELEVATOR',
+                'PARKING', 'GARDEN_LANDSCAPE', 'STRUCTURAL', 'NOISE_NUISANCE', 'AMENITY', 'ADMINISTRATIVE'
+            )
             .required(),
         subcategory: Joi.string().optional().allow(null, ''),
         priority: Joi.string().valid('LOW', 'MEDIUM', 'HIGH', 'URGENT').default('MEDIUM'),
         isCommonArea: Joi.boolean().default(false),
         commonAreaLocation: Joi.string().optional().allow(null, ''),
         images: Joi.array().items(Joi.string().uri()).optional(),
+        status: Joi.string().valid('DRAFT', 'OPEN').default('OPEN'),
     }),
 };
 
@@ -28,10 +31,15 @@ export const assignComplaintSchema = {
     }),
 };
 
-// ── Close Complaint ───────────────────────────────────────────────────────────
+// ── Change Status ───────────────────────────────────────────────────────────
 
-export const closeComplaintSchema = {
+export const changeStatusSchema = {
     body: Joi.object({
-        resolutionNotes: Joi.string().optional().allow(''),
+        status: Joi.string().valid(
+            'OPEN', 'ASSIGNED', 'IN_PROGRESS', 'PENDING_RESIDENT',
+            'RESOLVED', 'CLOSED', 'REOPENED', 'REJECTED'
+        ).required(),
+        notes: Joi.string().optional().allow(''),
+        assignedTo: objectId.optional(),
     }),
 };

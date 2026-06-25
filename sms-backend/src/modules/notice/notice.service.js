@@ -15,7 +15,8 @@ import Resident from '../resident/resident.model.js';
  */
 const dispatchNoticeNotifications = async (notice) => {
     try {
-        const users = await resolveTargetAudience(notice.societyId, notice.targetAudience);
+        let users = await resolveTargetAudience(notice.societyId, notice.targetAudience);
+
         if (users.length === 0) return;
 
         await sendNotification({
@@ -39,21 +40,28 @@ const dispatchNoticeNotifications = async (notice) => {
 // ── Admin / Committee — create notice ─────────────────────────────────────────
 
 export const createNotice = async (createdBy, societyId, data) => {
-    const { scheduledAt, ...rest } = data;
+    const { scheduledAt, status: requestedStatus, ...rest } = data;
 
-    const status = scheduledAt ? 'SCHEDULED' : 'PUBLISHED';
-    const publishedAt = scheduledAt ? null : new Date();
+    // Determine final status based on frontend request and scheduledAt
+    let finalStatus = requestedStatus || 'PUBLISHED';
+    let publishedAt = null;
+
+    if (scheduledAt) {
+        finalStatus = 'SCHEDULED';
+    } else if (finalStatus === 'PUBLISHED') {
+        publishedAt = new Date();
+    }
 
     const notice = await noticeRepo.create({
         ...rest,
         societyId,
         createdBy,
-        status,
+        status: finalStatus,
         publishedAt,
         scheduledAt: scheduledAt ?? null,
     });
 
-    if (status === 'PUBLISHED') {
+    if (finalStatus === 'PUBLISHED') {
         dispatchNoticeNotifications(notice);
     }
 

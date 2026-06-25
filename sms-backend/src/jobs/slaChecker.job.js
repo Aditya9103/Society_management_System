@@ -5,21 +5,29 @@ import { sendNotification } from '../services/notification.service.js';
 
 const BATCH_SIZE = 50;
 
-const processEscalation = async (complaint) => {
+// Optimized individual execution handler
+const processEscalation = async (complaint, reason) => {
     try {
         complaint.status = 'ESCALATED';
+        complaint.slaBreached = true;
+        complaint.slaBreachedAt = new Date();
+        complaint.escalationReason = reason;
         await complaint.save();
 
-        // Dispatch notification to society admins about the SLA breach
-        // await sendNotification({ ... })
+        // ✅ Now safely triggered with actual document data!
+        await sendNotification({
+            recipientGroup: 'SOCIETY_ADMIN',
+            title: `🚨 Complaint Escalated: #${complaint._id}`,
+            message: `Complaint regarding "${complaint.title || 'Property Issue'}" breached SLA. Reason: ${reason}`
+        });
     } catch (error) {
         logger.error(`Failed to escalate complaint ${complaint._id}: ${error.message}`);
     }
 };
 
 export const scheduleSlaChecker = () => {
-    // Run every hour to check SLAs and Auto-closure
-    cron.schedule('0 * * * *', async () => {
+    // Run every 2 hour to check SLAs and Auto-closure
+    cron.schedule('0 */2 * * *', async () => {
         logger.info('[JOB] Starting SLA Checker...');
         try {
             const now = new Date();
@@ -27,40 +35,59 @@ export const scheduleSlaChecker = () => {
             const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
             const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
 
-            // 1. Assignment SLA Breach (OPEN for > 24h)
-            const unassigned = await Complaint.find({ status: 'OPEN', createdAt: { $lte: oneDayAgo } });
             let escalatedCount = 0;
-            for (const c of unassigned) {
-                c.status = 'ESCALATED';
-                c.slaBreached = true;
-                c.slaBreachedAt = new Date();
-                c.escalationReason = 'SLA Breach: Not assigned within 24 hours';
-                await c.save();
+            let closedCount = 0;
+            let batch = [];
+
+            // ==========================================
+            // 1. Assignment SLA Breach (OPEN > 24h)
+            // ==========================================
+            const unassignedCursor = Complaint.find({ status: 'OPEN', createdAt: { $lte: oneDayAgo } }).cursor();
+            for await (const complaint of unassignedCursor) {
+                batch.push(processEscalation(complaint, 'SLA Breach: Not assigned within 24 hours'));
                 escalatedCount++;
+
+                if (batch.length >= BATCH_SIZE) {
+                    await Promise.allSettled(batch);
+                    batch = [];
+                }
+            }
+            if (batch.length > 0) {
+                await Promise.allSettled(batch);
+                batch = [];
             }
 
-            // 2. Resolution SLA Breach (ASSIGNED/IN_PROGRESS/PENDING_RESIDENT > 7 days)
-            const unresolved = await Complaint.find({
+            // ==========================================
+            // 2. Resolution SLA Breach (Stalled > 7 days)
+            // ==========================================
+            const unresolvedCursor = Complaint.find({
                 status: { $in: ['ASSIGNED', 'IN_PROGRESS', 'PENDING_RESIDENT'] },
                 createdAt: { $lte: sevenDaysAgo }
-            });
-            for (const c of unresolved) {
-                c.status = 'ESCALATED';
-                c.slaBreached = true;
-                c.slaBreachedAt = new Date();
-                c.escalationReason = 'SLA Breach: Not resolved within 7 days';
-                await c.save();
+            }).cursor();
+
+            for await (const complaint of unresolvedCursor) {
+                batch.push(processEscalation(complaint, 'SLA Breach: Not resolved within 7 days'));
                 escalatedCount++;
+
+                if (batch.length >= BATCH_SIZE) {
+                    await Promise.allSettled(batch);
+                    batch = [];
+                }
+            }
+            if (batch.length > 0) {
+                await Promise.allSettled(batch);
+                batch = [];
             }
 
-            // 3. Auto-closure (RESOLVED for > 48h)
-            const autoClose = await Complaint.find({ status: 'RESOLVED', resolvedAt: { $lte: fortyEightHoursAgo } });
-            let closedCount = 0;
-            for (const c of autoClose) {
-                c.status = 'CLOSED';
-                await c.save();
-                closedCount++;
-            }
+            // ==========================================
+            // 3. Auto-closure (RESOLVED > 48h)
+            // ==========================================
+            // (Notifications aren't needed for silent closure, so updateMany is perfectly optimized here)
+            const closureResult = await Complaint.updateMany(
+                { status: 'RESOLVED', resolvedAt: { $lte: fortyEightHoursAgo } },
+                { $set: { status: 'CLOSED' } }
+            );
+            closedCount = closureResult.modifiedCount;
 
             logger.info(`[JOB] SLA Checker completed. Escalated ${escalatedCount}, Auto-closed ${closedCount}.`);
         } catch (error) {

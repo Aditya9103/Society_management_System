@@ -155,6 +155,24 @@ export const staffApi = createApi({
         getGuardActiveVisitors: builder.query({
             query: (params = {}) => ({ url: '/visitors/guard/active', method: 'GET', params }),
             providesTags: ['ActiveVisitorList'],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+
+                const listener = () => {
+                    dispatch(staffApi.util.invalidateTags(['ActiveVisitorList']));
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('visitor:approved', listener);
+                    socket.on('visitor:denied', listener);
+                } catch { }
+
+                await cacheEntryRemoved;
+                socket.off('visitor:approved', listener);
+                socket.off('visitor:denied', listener);
+            }
         }),
 
         guardWalkIn: builder.mutation({

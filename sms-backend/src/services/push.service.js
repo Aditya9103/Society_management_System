@@ -3,7 +3,7 @@ import logger from '../utils/logger.js';
 
 /**
  * Send a push notification to a specific device token.
- *
+ * 
  * @param {Object} options
  * @param {string} options.token - The FCM device token
  * @param {string} options.title - Notification title

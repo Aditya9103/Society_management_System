@@ -11,6 +11,7 @@ export const createNoticeSchema = {
             .required(),
         priority: Joi.string().valid('LOW', 'NORMAL', 'HIGH', 'URGENT').default('NORMAL'),
         isPinned: Joi.boolean().default(false),
+        status: Joi.string().valid('DRAFT', 'PUBLISHED', 'SCHEDULED', 'ARCHIVED').optional(),
         scheduledAt: Joi.date().iso().optional().allow(null),
         expiresAt: Joi.date().iso().optional().allow(null),
         attachmentUrls: Joi.array().items(Joi.string().uri()).optional(),

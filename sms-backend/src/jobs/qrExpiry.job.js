@@ -14,20 +14,20 @@ const processVisitor = async (visitor) => {
 };
 
 export const scheduleQrExpiry = () => {
-    // Run every hour
-    cron.schedule('0 * * * *', async () => {
+    // Run every 12 hours
+    cron.schedule('0 */12 * * *', async () => {
         logger.info('[JOB] Starting QR Expiry checker...');
         try {
             const now = new Date();
             // Fetch records using cursor to prevent RAM overload on large queues
-            const cursor = Visitor.find({ 
-                status: { $in: ['PENDING', 'APPROVED'] }, 
-                validUntil: { $lte: now } 
+            const cursor = Visitor.find({
+                status: { $in: ['PENDING', 'APPROVED'] },
+                validUntil: { $lte: now }
             }).cursor();
-            
+
             let batch = [];
             let updatedCount = 0;
-            
+
             for await (const visitor of cursor) {
                 batch.push(visitor);
                 if (batch.length >= BATCH_SIZE) {
@@ -40,7 +40,7 @@ export const scheduleQrExpiry = () => {
                 await Promise.allSettled(batch.map(processVisitor));
                 updatedCount += batch.length;
             }
-            
+
             logger.info(`[JOB] QR Expiry checker completed. Expired ${updatedCount} passes.`);
         } catch (error) {
             logger.error(`[JOB] QR Expiry checker Error: ${error.message}`);

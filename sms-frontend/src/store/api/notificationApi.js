@@ -29,6 +29,7 @@ export const notificationApi = createApi({
                             if (list) {
                                 list.unshift({
                                     ...notification,
+                                    body: notification.body || notification.message,
                                     _id: Date.now().toString(), // temporary ID
                                     createdAt: notification.timestamp,
                                     readAt: null

@@ -10,18 +10,32 @@ import Alert from '../../../../components/ui/Alert';
 export default function CreateNoticeModal({ onClose }) {
     const [createNotice, { isLoading }] = useCreateNoticeMutation();
     const [form, setForm] = useState({
-        title: '', content: '', noticeType: 'GENERAL', priority: 'NORMAL', isPinned: false,
+        title: '', content: '', noticeType: 'GENERAL', priority: 'NORMAL', isPinned: false, status: 'PUBLISHED', scheduledAt: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e?.target?.type === 'checkbox' ? e.target.checked : (e?.target !== undefined ? e.target.value : e) }));
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e, status = 'PUBLISHED') => {
+        if (e) e.preventDefault();
         if (!form.title || !form.content) return setError('Title and content are required.');
         setError('');
+        
+        setForm(f => ({ ...f, status })); // Update state so the correct button spins
+
         try {
-            await createNotice(form).unwrap();
-            onClose();
+            const payload = { ...form, status };
+            if (!payload.scheduledAt) delete payload.scheduledAt;
+
+            await createNotice(payload).unwrap();
+            
+            let successMsg = `Notice successfully ${status === 'DRAFT' ? 'saved as draft' : 'published'}!`;
+            if (payload.scheduledAt && status !== 'DRAFT') successMsg = 'Notice successfully scheduled!';
+            
+            setSuccess(successMsg);
+            setTimeout(() => {
+                onClose();
+            }, 1500);
         } catch (err) {
             setError(err?.data?.message ?? 'Failed to create notice.');
         }
@@ -30,7 +44,8 @@ export default function CreateNoticeModal({ onClose }) {
     return (
         <Modal isOpen={true} onClose={onClose} title="Create Notice">
             {error && <Alert type="error" className="mb-4">{error}</Alert>}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {success && <Alert type="success" className="mb-4 bg-emerald-50 text-emerald-800 border-emerald-200">{success}</Alert>}
+            <form onSubmit={(e) => handleSubmit(e, 'PUBLISHED')} className="space-y-4">
                 <Input 
                     label="Title *" 
                     value={form.title} 
@@ -55,13 +70,23 @@ export default function CreateNoticeModal({ onClose }) {
                         {['LOW','NORMAL','HIGH','URGENT'].map(p => <option key={p} value={p}>{p}</option>)}
                     </Select>
                 </div>
+                <Input 
+                    type="datetime-local"
+                    label="Schedule for later (Optional)" 
+                    value={form.scheduledAt} 
+                    onChange={set('scheduledAt')}
+                    min={new Date().toISOString().slice(0, 16)}
+                />
                 <label className="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" checked={form.isPinned} onChange={set('isPinned')} className="h-4 w-4 rounded accent-indigo-600" />
                     <span className="text-sm text-slate-600">Pin this notice to the top</span>
                 </label>
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
-                    <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
-                    <Button type="submit" isLoading={isLoading} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white">
+                    <Button type="button" variant="secondary" onClick={onClose} className="w-1/4">Cancel</Button>
+                    <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, 'DRAFT')} isLoading={isLoading && form.status === 'DRAFT'} className="w-1/3">
+                        Save as Draft
+                    </Button>
+                    <Button type="submit" isLoading={isLoading && form.status === 'PUBLISHED'} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white">
                         Create & Publish
                     </Button>
                 </div>

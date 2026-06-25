@@ -58,6 +58,10 @@ export const initSocket = (httpServer) => {
             socket.join(ROOMS.ADMIN);
         } else if (role === 'SECURITY_GUARD') {
             socket.join(ROOMS.GUARD);
+        } else if (role === 'STAFF') {
+            socket.join(ROOMS.STAFF);
+        } else if (role === 'OWNER') {
+            socket.join(ROOMS.OWNER);
         }
 
         // Join Flat room if applicable

@@ -254,7 +254,7 @@ export const logEntry = async (guardId, societyId, visitorId, gateId) => {
         if (residentHost && residentHost.userId) {
             const resUser = await User.findById(residentHost.userId).select('_id fcmTokens').lean();
             if (resUser) {
-                await sendNotification({
+                sendNotification({
                     users: [resUser],
                     societyId: societyId,
                     title: 'Visitor Entered',
@@ -262,7 +262,7 @@ export const logEntry = async (guardId, societyId, visitorId, gateId) => {
                     type: 'VISITOR_ENTRY',
                     referenceType: 'VISITOR',
                     referenceId: visitor._id
-                });
+                }).catch(err => console.error('Failed to send ENTRY notification in background:', err));
             }
         }
     }
@@ -288,7 +288,7 @@ export const logExit = async (guardId, societyId, visitorId, gateId) => {
         if (residentHost && residentHost.userId) {
             const resUser = await User.findById(residentHost.userId).select('_id fcmTokens').lean();
             if (resUser) {
-                await sendNotification({
+                sendNotification({
                     users: [resUser],
                     societyId: societyId,
                     title: 'Visitor Exited',
@@ -296,7 +296,7 @@ export const logExit = async (guardId, societyId, visitorId, gateId) => {
                     type: 'VISITOR_EXIT',
                     referenceType: 'VISITOR',
                     referenceId: visitor._id
-                });
+                }).catch(err => console.error('Failed to send EXIT notification in background:', err));
             }
         }
     }

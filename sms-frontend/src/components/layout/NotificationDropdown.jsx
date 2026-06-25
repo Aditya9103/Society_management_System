@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Check, Trash2, CheckCircle2 } from 'lucide-react';
-import { 
-    useGetNotificationsQuery, 
-    useMarkAsReadMutation, 
+import {
+    useGetNotificationsQuery,
+    useMarkAsReadMutation,
     useMarkAllAsReadMutation,
-    useDeleteNotificationMutation 
+    useDeleteNotificationMutation
 } from '../../store/api/notificationApi';
 import { cn } from '../ui/Button';
 
@@ -101,7 +101,7 @@ export default function NotificationDropdown({ align = 'right' }) {
                         ) : (
                             <ul className="divide-y divide-slate-100">
                                 {notifications.map(notif => (
-                                    <li 
+                                    <li
                                         key={notif._id}
                                         onClick={() => handleNotificationClick(notif)}
                                         className={cn(
@@ -110,7 +110,7 @@ export default function NotificationDropdown({ align = 'right' }) {
                                         )}
                                     >
                                         <div className="flex-1 min-w-0">
-                                            <p className={cn("text-sm mb-0.5", !notif.readAt ? "font-semibold text-slate-900" : "font-medium text-slate-700")}>
+                                            <p className={cn("text-sm mb-1", !notif.readAt ? "font-semibold text-slate-900" : "font-medium text-slate-700")}>
                                                 {notif.title}
                                             </p>
                                             {notif.type === 'NOTICE_PUBLISHED' && (
@@ -118,7 +118,9 @@ export default function NotificationDropdown({ align = 'right' }) {
                                                     A new {notif.priority || 'NORMAL'} priority notice has been published.
                                                 </p>
                                             )}
-                                            <p className="text-xs text-slate-500 line-clamp-3">{notif.body}</p>
+                                            {(notif.body || notif.message) && (notif.body || notif.message) !== notif.title && (
+                                                <p className="text-xs text-slate-500 line-clamp-2">{notif.body || notif.message}</p>
+                                            )}
                                             <span className="text-[10px] text-slate-400 mt-1 block">
                                                 {new Date(notif.createdAt).toLocaleString()}
                                             </span>
@@ -146,10 +148,10 @@ export default function NotificationDropdown({ align = 'right' }) {
                             </ul>
                         )}
                     </div>
-                    
+
                     {/* Footer */}
                     <div className="border-t border-slate-100 px-4 py-2 text-center bg-slate-50">
-                        <button 
+                        <button
                             className="text-xs font-medium text-slate-500 hover:text-slate-700"
                             onClick={() => setIsOpen(false)}
                         >

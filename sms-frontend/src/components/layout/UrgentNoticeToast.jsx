@@ -4,10 +4,9 @@ import { AlertOctagon, X, BellRing } from 'lucide-react';
 
 export default function UrgentNoticeToast({ t, data }) {
     return (
-        <div 
-            className={`${
-                t.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-            } transition-all duration-300 ease-out transform pointer-events-auto w-full max-w-lg bg-white shadow-[0_20px_60px_-15px_rgba(220,38,38,0.3)] rounded-2xl ring-1 ring-slate-200 p-5`}
+        <div
+            className={`${t.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                } transition-all duration-300 ease-out transform pointer-events-auto w-full max-w-lg bg-white shadow-[0_20px_60px_-15px_rgba(220,38,38,0.3)] rounded-2xl ring-1 ring-slate-200 p-5`}
             style={{ marginTop: '40vh', transform: 'translateY(-50%)' }}
         >
             <div className="flex w-full gap-4 items-start">
@@ -16,7 +15,7 @@ export default function UrgentNoticeToast({ t, data }) {
                         <AlertOctagon className="h-6 w-6 text-red-600" />
                     </div>
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
                         <p className="text-base font-bold text-slate-900 leading-tight">
@@ -27,13 +26,13 @@ export default function UrgentNoticeToast({ t, data }) {
                             {data.priority || 'URGENT'}
                         </span>
                     </div>
-                    
+
                     <div className="mt-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-sm text-slate-700 leading-relaxed line-clamp-4">
                             {data.message}
                         </p>
                     </div>
-                    
+
                     <div className="mt-4 flex items-center justify-between">
                         <p className="text-xs font-medium text-slate-500 flex items-center gap-2">
                             <span className="relative flex h-2 w-2">
@@ -42,10 +41,10 @@ export default function UrgentNoticeToast({ t, data }) {
                             </span>
                             Live Update
                         </p>
-                        
-                        <button 
+
+                        <button
                             onClick={() => toast.dismiss(t.id)}
-                            className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-100"
+                            className="text-xs font-extrabold px-3 py-1.5 rounded-lg cursor-pointer text-white bg-blue-600 hover:bg-blue-700 transition-transform duration-100 ease-in-out transform hover:scale-105"
                         >
                             Acknowledge
                         </button>

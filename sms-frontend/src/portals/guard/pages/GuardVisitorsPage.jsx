@@ -16,6 +16,7 @@ const TABS = [
 
 export default function GuardVisitorsPage() {
     const [activeTab, setActiveTab] = useState('WALK_IN'); // WALK_IN, SCAN, ACTIVE
+    const [recentApprovalEvent, setRecentApprovalEvent] = useState(null);
     const token = useSelector(state => state.auth.accessToken);
 
     React.useEffect(() => {
@@ -25,9 +26,11 @@ export default function GuardVisitorsPage() {
 
         const handleApproved = (data) => {
             alert(`✅ Walk-In Approved by Resident!\nVisitor: ${data.visitorName}`);
+            setRecentApprovalEvent({ type: 'APPROVED', data });
         };
         const handleDenied = (data) => {
             alert(`❌ Walk-In Denied by Resident!\nVisitor: ${data.visitorName}`);
+            setRecentApprovalEvent({ type: 'DENIED', data });
         };
 
         socket.on('visitor:approved', handleApproved);
@@ -52,7 +55,7 @@ export default function GuardVisitorsPage() {
                 onChange={setActiveTab}
             />
 
-            {activeTab === 'WALK_IN' && <WalkInForm />}
+            {activeTab === 'WALK_IN' && <WalkInForm recentApprovalEvent={recentApprovalEvent} />}
             {activeTab === 'SCAN' && <ScanQrForm />}
             {activeTab === 'ACTIVE' && <ActiveVisitorsList />}
         </div>

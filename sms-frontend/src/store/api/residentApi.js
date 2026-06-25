@@ -105,6 +105,24 @@ export const residentApi = createApi({
         getMyNotices: builder.query({
             query: (params = {}) => ({ url: '/notices', method: 'GET', params }),
             providesTags: [{ type: 'Notice', id: 'LIST' }],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+                
+                const listener = () => {
+                    dispatch(residentApi.util.invalidateTags([{ type: 'Notice', id: 'LIST' }]));
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('NEW_NOTIFICATION', listener);
+                    socket.on('URGENT_NOTICE', listener);
+                } catch {}
+
+                await cacheEntryRemoved;
+                socket.off('NEW_NOTIFICATION', listener);
+                socket.off('URGENT_NOTICE', listener);
+            }
         }),
 
         getNoticeById: builder.query({

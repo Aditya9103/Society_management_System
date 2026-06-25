@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setCredentials, logout } from './slices/authSlice'; // Adjust paths as needed
+import { setCredentials, logout } from '../slices/authSlice';
 
 // Standard Axios instance
 export const axiosInstance = axios.create({

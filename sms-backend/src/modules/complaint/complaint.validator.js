@@ -11,7 +11,7 @@ export const raiseComplaintSchema = {
         category: Joi.string()
             .valid(
                 'ELECTRICAL', 'PLUMBING', 'SECURITY', 'HOUSEKEEPING', 'LIFT_ELEVATOR',
-                'PARKING', 'GARDEN_LANDSCAPE', 'STRUCTURAL', 'NOISE_NUISANCE', 'AMENITY', 'ADMINISTRATIVE'
+                'PARKING', 'GARDEN_LANDSCAPE', 'STRUCTURAL', 'NOISE_NUISANCE', 'AMENITY', 'ADMINISTRATIVE', 'OTHER'
             )
             .required(),
         subcategory: Joi.string().optional().allow(null, ''),

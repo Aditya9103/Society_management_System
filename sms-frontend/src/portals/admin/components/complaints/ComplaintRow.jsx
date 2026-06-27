@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { useChangeComplaintStatusAdminMutation } from '../../../../store/api/societyAdminApi';
+import { useChangeComplaintStatusAdminMutation, useDeleteComplaintAdminMutation } from '../../../../store/api/societyAdminApi';
 import Card from '../../../../components/ui/Card';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import { Button } from '../../../../components/ui/Button';
@@ -29,9 +29,16 @@ const PRIORITY_MAP = {
 
 export default function ComplaintRow({ complaint, staff }) {
     const [changeStatus, { isLoading: assigning }] = useChangeComplaintStatusAdminMutation();
+    const [deleteComplaint, { isLoading: deleting }] = useDeleteComplaintAdminMutation();
     const [closeModal, setCloseModal] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState('');
-    
+
+    const handleDelete = async () => {
+        if (window.confirm('Are you sure you want to completely delete this closed complaint? This cannot be undone.')) {
+            await deleteComplaint(complaint._id).unwrap();
+        }
+    };
+
     const handleAssign = async () => {
         if (!selectedStaff) return;
         await changeStatus({ id: complaint._id, status: 'ASSIGNED', assignedTo: selectedStaff }).unwrap();
@@ -67,8 +74,8 @@ export default function ComplaintRow({ complaint, staff }) {
                 <div className="flex items-center gap-2 flex-wrap">
                     {canClose && staff.length > 0 && (
                         <div className="flex items-center gap-2 flex-1">
-                            <select 
-                                value={selectedStaff} 
+                            <select
+                                value={selectedStaff}
                                 onChange={e => setSelectedStaff(e.target.value)}
                                 className="flex-1 min-w-0 rounded-lg border border-slate-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
                             >
@@ -77,8 +84,8 @@ export default function ComplaintRow({ complaint, staff }) {
                                     <option key={m._id} value={m._id}>{m.firstName} {m.lastName} ({m.role.replace('_', ' ')})</option>
                                 ))}
                             </select>
-                            <Button 
-                                onClick={handleAssign} 
+                            <Button
+                                onClick={handleAssign}
                                 disabled={!selectedStaff || assigning}
                                 isLoading={assigning}
                                 className="shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-1.5"
@@ -91,6 +98,17 @@ export default function ComplaintRow({ complaint, staff }) {
                         <button onClick={() => setCloseModal(true)} className="shrink-0 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
                             Resolve
                         </button>
+                    )}
+                    {complaint.status === 'CLOSED' && (
+                        <Button
+                            onClick={handleDelete}
+                            isLoading={deleting}
+                            disabled={deleting}
+                            variant="danger"
+                            className="shrink-0 text-xs py-1.5"
+                        >
+                            Delete
+                        </Button>
                     )}
                 </div>
                 {closeModal && <CloseModal complaint={complaint} onClose={() => setCloseModal(false)} />}

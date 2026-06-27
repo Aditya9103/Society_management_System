@@ -44,10 +44,13 @@ const notificationSchema = new mongoose.Schema(
                 'PAYMENT_RECEIVED',
                 'PAYMENT_FAILED',
                 'NOTICE_PUBLISHED',
+                'NOTICE_PUBLISHED_CONFIRMATION',
                 'BOOKING_CONFIRMED',
                 'BOOKING_CANCELLED',
                 'BOOKING_REMINDER',
                 'EMERGENCY_ALERT',
+                'EMERGENCY_SOS',
+                'EMERGENCY_BROADCAST',
                 'POLL_STARTED',
                 'RESIDENT_APPROVED',
                 'RESIDENT_REJECTED',
@@ -106,9 +109,11 @@ notificationSchema.index({ userId: 1, createdAt: -1 });
 notificationSchema.index({ societyId: 1 });
 notificationSchema.index(
     { userId: 1, readAt: 1 },
-    { partialFilterExpression: {
+    {
+        partialFilterExpression: {
             readAt: null
-        } }
+        }
+    }
 );
 
 export default mongoose.model('Notification', notificationSchema);

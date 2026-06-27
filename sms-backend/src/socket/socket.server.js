@@ -52,6 +52,11 @@ export const initSocket = (httpServer) => {
         socket.join(ROOMS.USER(userId));
         socket.join(ROOMS.GLOBAL);
 
+        // Join Society room
+        if (socket.user.societyId) {
+            socket.join(ROOMS.SOCIETY(socket.user.societyId));
+        }
+
         // Join Role-specific rooms
         const role = socket.user.role?.toUpperCase();
         if (role === 'ADMIN' || role === 'SOCIETY_ADMIN' || role === 'SUPER_ADMIN') {

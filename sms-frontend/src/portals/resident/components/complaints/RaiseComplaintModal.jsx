@@ -12,6 +12,7 @@ export function RaiseComplaintModal({ onClose }) {
     const [form, setForm] = useState({
         title: '', description: '', category: 'ELECTRICAL', subcategory: COMPLAINT_CATEGORIES['ELECTRICAL'][0], priority: 'MEDIUM', isCommonArea: false, commonAreaLocation: '',
     });
+    const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e, status = 'OPEN') => {
@@ -19,7 +20,16 @@ export function RaiseComplaintModal({ onClose }) {
         if (!form.title.trim() || !form.description.trim()) return setError('Title and description are required.');
         setError('');
         try {
-            await raiseComplaint({ ...form, status }).unwrap();
+            const formData = new FormData();
+            Object.keys(form).forEach(key => {
+                formData.append(key, form[key]);
+            });
+            formData.append('status', status);
+            if (imageFile) {
+                formData.append('images', imageFile);
+            }
+
+            await raiseComplaint(formData).unwrap();
             onClose();
         } catch (err) {
             setError(err?.data?.message ?? 'Failed to raise complaint.');
@@ -90,6 +100,20 @@ export function RaiseComplaintModal({ onClose }) {
                         placeholder="e.g. Building entrance, Lift lobby..." 
                     />
                 )}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Upload Image (Optional)</label>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={e => setImageFile(e.target.files[0])}
+                        className="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-indigo-50 file:text-indigo-700
+                            hover:file:bg-indigo-100"
+                    />
+                </div>
                 <div className="flex justify-end gap-3 pt-4">
                     <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
                     <Button type="button" variant="secondary" onClick={() => handleSubmit(null, 'DRAFT')} isLoading={isLoading}>Save as Draft</Button>

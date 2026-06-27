@@ -71,6 +71,11 @@ const emergencyContactSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        // Email
+        email: {
+            type: String,
+            default: null
+        },
         // Relation
         relation: {
             type: String,

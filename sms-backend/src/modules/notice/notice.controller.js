@@ -46,6 +46,15 @@ export const publishNotice = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { notice }, 'Notice published'));
 });
 
+// ── Admin/Committee — update notice schedule ─────────────────────────────────
+
+export const updateNoticeSchedule = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const { scheduledAt } = req.body;
+    const notice = await noticeService.updateNoticeSchedule(req.params.id, societyId, scheduledAt);
+    res.status(200).json(new ApiResponse(200, { notice }, 'Notice schedule updated'));
+});
+
 // ── Admin/Committee — archive notice ─────────────────────────────────────────
 
 export const archiveNotice = asyncHandler(async (req, res) => {

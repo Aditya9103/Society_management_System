@@ -22,16 +22,12 @@ export const notificationApi = createApi({
                     const handleNewNotification = (notification) => {
                         updateCachedData((draft) => {
                             // Append new notification to the top of the list
-                            let list = null;
-                            if (Array.isArray(draft.data?.data)) list = draft.data.data;
-                            else if (Array.isArray(draft.data)) list = draft.data;
-
-                            if (list) {
-                                list.unshift({
+                            if (draft.data && Array.isArray(draft.data.data)) {
+                                draft.data.data.unshift({
                                     ...notification,
+                                    _id: notification._id || Date.now().toString(),
                                     body: notification.body || notification.message,
-                                    _id: Date.now().toString(), // temporary ID
-                                    createdAt: notification.timestamp,
+                                    createdAt: notification.timestamp || new Date().toISOString(),
                                     readAt: null
                                 });
                             }

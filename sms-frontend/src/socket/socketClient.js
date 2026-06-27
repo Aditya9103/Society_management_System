@@ -1,5 +1,4 @@
 import { io } from 'socket.io-client';
-import { store } from '../store';
 
 const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
 
@@ -8,12 +7,12 @@ let socket = null;
 export const initSocket = () => {
     if (socket) return socket;
 
-    const token = store.getState().auth.accessToken;
+    const token = localStorage.getItem('accessToken');
     if (!token) return null;
 
     socket = io(SOCKET_URL, {
         auth: { token },
-        transports: ['websocket']
+        transports: ['websocket'],
     });
 
     socket.on('connect', () => console.log('Socket connected:', socket.id));
@@ -32,5 +31,13 @@ export const disconnectSocket = () => {
     if (socket) {
         socket.disconnect();
         socket = null;
+    }
+};
+
+export const updateSocketToken = (newToken) => {
+    if (socket) {
+        socket.auth = { token: newToken };
+        socket.disconnect();
+        socket.connect();
     }
 };

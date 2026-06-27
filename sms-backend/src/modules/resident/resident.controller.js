@@ -74,3 +74,23 @@ export const removeFamilyMember = asyncHandler(async (req, res) => {
     const resident = await residentService.removeFamilyMember(userId, req.params.memberId);
     res.status(200).json(new ApiResponse(200, { resident }, 'Family member removed'));
 });
+
+// ── Emergency Contacts ────────────────────────────────────────────────────────
+
+export const addEmergencyContact = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    const resident = await residentService.addEmergencyContact(userId, req.body);
+    res.status(201).json(new ApiResponse(201, { resident }, 'Emergency contact added'));
+});
+
+export const updateEmergencyContact = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    const resident = await residentService.updateEmergencyContact(userId, req.params.contactId, req.body);
+    res.status(200).json(new ApiResponse(200, { resident }, 'Emergency contact updated'));
+});
+
+export const removeEmergencyContact = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    const resident = await residentService.removeEmergencyContact(userId, req.params.contactId);
+    res.status(200).json(new ApiResponse(200, { resident }, 'Emergency contact removed'));
+});

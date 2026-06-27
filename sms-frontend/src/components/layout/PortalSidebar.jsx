@@ -22,6 +22,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
+import { disconnectSocket } from '../../socket/socketClient';
 import { LogOut, ChevronRight, X } from 'lucide-react';
 import { cn } from '../ui/Button';
 import NotificationDropdown from './NotificationDropdown';
@@ -37,6 +38,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
 
   const handleLogout = () => {
     dispatch(logout());
+    disconnectSocket();
     navigate('/auth/login', { replace: true });
   };
 

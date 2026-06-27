@@ -10,6 +10,9 @@ export const ROOMS = {
     // Flat/Apartment room (for all residents/members belonging to a flat)
     FLAT: (flatId) => `flat_${flatId}`,
 
+    // Society room (for all members of a society)
+    SOCIETY: (societyId) => `society_${societyId}`,
+
     // Broadcast room for all Society Administrators
     ADMIN: 'role_admin',
 

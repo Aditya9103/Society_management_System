@@ -62,7 +62,7 @@ export const getMyResidentProfile = async (userId) => {
     
     // Populate references
     await profile.populate('unitId', 'unitNumber bhkType unitType ownershipStatus');
-    await profile.populate('societyId', 'name address city state');
+    await profile.populate('societyId', 'name address city state emergencyContacts');
     await profile.populate('userId', 'firstName lastName email phone registrationStatus');
     
     return profile;
@@ -104,3 +104,27 @@ export const removeFamilyMember = async (userId, memberId) => {
     return residentRepo.removeFamilyMember(resident._id, memberId);
 };
 
+// ── Emergency Contacts ────────────────────────────────────────────────────────
+
+export const addEmergencyContact = async (userId, contactData) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    if (resident.emergencyContacts && resident.emergencyContacts.length >= 10) {
+        throw ApiError.badRequest('Maximum limit of 10 emergency contacts reached.');
+    }
+    return residentRepo.addEmergencyContact(resident._id, contactData);
+};
+
+export const updateEmergencyContact = async (userId, contactId, contactData) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    const updated = await residentRepo.updateEmergencyContact(resident._id, contactId, contactData);
+    if (!updated) throw ApiError.notFound('Emergency contact not found.');
+    return updated;
+};
+
+export const removeEmergencyContact = async (userId, contactId) => {
+    const resident = await residentRepo.findByUserId(userId);
+    if (!resident) throw ApiError.notFound('Resident profile not found.');
+    return residentRepo.removeEmergencyContact(resident._id, contactId);
+};

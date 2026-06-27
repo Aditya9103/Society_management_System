@@ -51,6 +51,26 @@ router.put('/family-members/:memberId', residentController.updateFamilyMember);
  */
 router.delete('/family-members/:memberId', residentController.removeFamilyMember);
 
+// ── Emergency Contacts ────────────────────────────────────────────────────────
+import { addEmergencyContactSchema, updateEmergencyContactSchema } from './resident.validator.js';
+
+router.post(
+    '/emergency-contacts',
+    validate(addEmergencyContactSchema),
+    residentController.addEmergencyContact
+);
+
+router.put(
+    '/emergency-contacts/:contactId',
+    validate(updateEmergencyContactSchema),
+    residentController.updateEmergencyContact
+);
+
+router.delete(
+    '/emergency-contacts/:contactId',
+    residentController.removeEmergencyContact
+);
+
 // ── Domestic Staff ────────────────────────────────────────────────────────────
 
 import * as dsController from './domesticStaff.controller.js';

@@ -9,7 +9,7 @@ export default function UrgentNoticeToast({ t, data }) {
                 } transition-all duration-300 ease-out transform pointer-events-auto w-full max-w-lg bg-white shadow-[0_20px_60px_-15px_rgba(220,38,38,0.3)] rounded-2xl ring-1 ring-slate-200 p-5`}
             style={{ marginTop: '40vh', transform: 'translateY(-50%)' }}
         >
-            <div className="flex w-full gap-4 items-start">
+            <div className="flex w-full gap-4 items-start relative">
                 <div className="flex-shrink-0 mt-0.5">
                     <div className="h-12 w-12 rounded-full bg-red-50 flex items-center justify-center ring-4 ring-red-50/50">
                         <AlertOctagon className="h-6 w-6 text-red-600" />
@@ -17,14 +17,22 @@ export default function UrgentNoticeToast({ t, data }) {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-start justify-between gap-2 mb-1">
                         <p className="text-base font-bold text-slate-900 leading-tight">
                             {data.title || 'Urgent Notice'}
                         </p>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 tracking-wide uppercase">
-                            <BellRing className="h-3 w-3" />
-                            {data.priority || 'URGENT'}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 tracking-wide uppercase">
+                                <BellRing className="h-3 w-3" />
+                                {data.priority || 'URGENT'}
+                            </span>
+                            <button
+                                onClick={() => toast.dismiss(t.id)}
+                                className="p-1 text-slate-400 hover:text-red-500 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="mt-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">

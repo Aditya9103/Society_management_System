@@ -31,3 +31,15 @@ export const updateFamilyMember = (id, memberId, updates) =>
         { new: true }
     ).lean();
 
+export const addEmergencyContact = (id, contact) =>
+    Resident.findByIdAndUpdate(id, { $push: { emergencyContacts: contact } }, { new: true }).lean();
+
+export const removeEmergencyContact = (id, contactId) =>
+    Resident.findByIdAndUpdate(id, { $pull: { emergencyContacts: { _id: contactId } } }, { new: true }).lean();
+
+export const updateEmergencyContact = (id, contactId, updates) =>
+    Resident.findOneAndUpdate(
+        { _id: id, 'emergencyContacts._id': contactId },
+        { $set: Object.fromEntries(Object.entries(updates).map(([k, v]) => [`emergencyContacts.$.${k}`, v])) },
+        { new: true }
+    ).lean();

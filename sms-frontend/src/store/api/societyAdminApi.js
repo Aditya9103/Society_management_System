@@ -204,7 +204,7 @@ export const societyAdminApi = createApi({
             async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
                 const socket = getSocket();
                 if (!socket) return;
-                
+
                 const listener = () => {
                     dispatch(societyAdminApi.util.invalidateTags([
                         { type: 'Complaint', id: 'LIST' },
@@ -215,7 +215,7 @@ export const societyAdminApi = createApi({
                 try {
                     await cacheDataLoaded;
                     socket.on('complaint_updated', listener);
-                } catch {}
+                } catch { }
 
                 await cacheEntryRemoved;
                 socket.off('complaint_updated', listener);
@@ -227,11 +227,37 @@ export const societyAdminApi = createApi({
             invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
         }),
 
+        deleteComplaintAdmin: builder.mutation({
+            query: (id) => ({ url: `/complaints/${id}`, method: 'DELETE' }),
+            invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
+        }),
+
         // ── Notices (admin view) ──────────────────────────────────────────────
 
         getAllNotices: builder.query({
             query: (params = {}) => ({ url: '/notices', method: 'GET', params }),
             providesTags: [{ type: 'Notice', id: 'LIST' }],
+            async onCacheEntryAdded(arg, { dispatch, cacheDataLoaded, cacheEntryRemoved }) {
+                const socket = getSocket();
+                if (!socket) return;
+
+                const listener = (data) => {
+                    // Invalidate when notices are published (either normal or confirmation)
+                    if (data?.type === 'NOTICE_PUBLISHED' || data?.type === 'NOTICE_PUBLISHED_CONFIRMATION') {
+                        dispatch(societyAdminApi.util.invalidateTags([{ type: 'Notice', id: 'LIST' }]));
+                    }
+                };
+
+                try {
+                    await cacheDataLoaded;
+                    socket.on('NEW_NOTIFICATION', listener);
+                    socket.on('URGENT_NOTICE', listener);
+                } catch { }
+
+                await cacheEntryRemoved;
+                socket.off('NEW_NOTIFICATION', listener);
+                socket.off('URGENT_NOTICE', listener);
+            }
         }),
 
         createNotice: builder.mutation({
@@ -241,6 +267,15 @@ export const societyAdminApi = createApi({
 
         publishNotice: builder.mutation({
             query: (id) => ({ url: `/notices/${id}/publish`, method: 'PATCH' }),
+            invalidatesTags: [{ type: 'Notice', id: 'LIST' }],
+        }),
+
+        updateNoticeSchedule: builder.mutation({
+            query: ({ id, scheduledAt }) => ({
+                url: `/notices/${id}/schedule`,
+                method: 'PATCH',
+                data: { scheduledAt }
+            }),
             invalidatesTags: [{ type: 'Notice', id: 'LIST' }],
         }),
 
@@ -294,10 +329,12 @@ export const {
     // Complaints
     useGetAllComplaintsQuery,
     useChangeComplaintStatusAdminMutation,
+    useDeleteComplaintAdminMutation,
     // Notices
     useGetAllNoticesQuery,
     useCreateNoticeMutation,
     usePublishNoticeMutation,
+    useUpdateNoticeScheduleMutation,
     useArchiveNoticeMutation,
     useDeleteNoticeMutation,
     useGetNoticeAcknowledgementsQuery,

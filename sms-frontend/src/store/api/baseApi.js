@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { setCredentials, logout } from '../slices/authSlice';
+import { updateSocketToken } from '../../socket/socketClient';
 
 // Standard Axios instance
 export const axiosInstance = axios.create({
@@ -114,6 +115,9 @@ export const setupResponseInterceptor = (dispatch) => {
               'Bearer ' + newAccessToken;
             originalRequest.headers['Authorization'] =
               'Bearer ' + newAccessToken;
+            
+            // Re-authenticate Socket with the new token
+            updateSocketToken(newAccessToken);
 
             processQueue(null, newAccessToken);
             return axiosInstance(originalRequest);

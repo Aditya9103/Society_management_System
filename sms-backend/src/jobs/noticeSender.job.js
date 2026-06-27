@@ -1,48 +1,85 @@
 import cron from 'node-cron';
 import logger from '../utils/logger.js';
 import Notice from '../modules/notice/notice.model.js';
+import * as noticeService from '../modules/notice/notice.service.js';
 
-const BATCH_SIZE = 50;
+// In-memory map to store active timeouts
+// Key: notice ID (string)
+// Value: NodeJS Timeout object
+const activeTimeouts = new Map();
 
-const processNotice = async (notice) => {
+/**
+ * Dynamically schedules a timeout for a notice if it's due within the next 2 hours.
+ */
+export const scheduleNoticePublish = (noticeId, scheduledAt) => {
+    // Clear existing if any
+    cancelScheduledNotice(noticeId);
+
+    if (!scheduledAt) return;
+
+    const now = Date.now();
+    const scheduledTime = new Date(scheduledAt).getTime();
+    const delay = Math.max(0, scheduledTime - now);
+
+    // Only schedule in memory if it's within the next 2 hours (7200000 ms)
+    if (delay <= 7200000) {
+        const timeoutId = setTimeout(async () => {
+            try {
+                await noticeService.publishScheduledNotice(noticeId);
+                activeTimeouts.delete(noticeId.toString());
+            } catch (error) {
+                logger.error(`Failed to execute scheduled publish for notice ${noticeId}: ${error.message}`);
+            }
+        }, delay);
+        
+        activeTimeouts.set(noticeId.toString(), timeoutId);
+        logger.info(`Notice ${noticeId} scheduled in memory to publish in ${Math.round(delay / 1000)}s.`);
+    }
+};
+
+/**
+ * Cancels an active timeout if the notice is rescheduled, published manually, or deleted.
+ */
+export const cancelScheduledNotice = (noticeId) => {
+    const idStr = noticeId.toString();
+    if (activeTimeouts.has(idStr)) {
+        clearTimeout(activeTimeouts.get(idStr));
+        activeTimeouts.delete(idStr);
+        logger.info(`Cancelled in-memory schedule for notice ${noticeId}`);
+    }
+};
+
+/**
+ * Loads notices scheduled in the next 2 hours from DB into memory.
+ */
+export const loadNextTwoHours = async () => {
     try {
-        notice.status = 'PUBLISHED';
-        await notice.save();
-        // Integration point: dispatch broadcast notification to all residents
-        logger.info(`Notice ${notice._id} published successfully.`);
+        const twoHoursFromNow = new Date(Date.now() + 7200000);
+        
+        const notices = await Notice.find({ 
+            status: 'SCHEDULED', 
+            scheduledAt: { $lte: twoHoursFromNow } 
+        }).select('_id scheduledAt').lean();
+
+        for (const notice of notices) {
+            scheduleNoticePublish(notice._id, notice.scheduledAt);
+        }
+        
+        if (notices.length > 0) {
+            logger.info(`[JOB] Sweeper loaded ${notices.length} notices into precision memory scheduler.`);
+        }
     } catch (error) {
-        logger.error(`Failed to process notice ${notice._id}: ${error.message}`);
+        logger.error(`[JOB] Sweeper error: ${error.message}`);
     }
 };
 
 export const scheduleNoticeSender = () => {
-    // Run every  hours to check for scheduled notices
-    cron.schedule('*/60 * * * *', async () => {
-        logger.info('[JOB] Starting Scheduled Notice Sender...');
-        try {
-            const now = new Date();
-            // Use Mongoose cursor for memory efficiency over large datasets
-            const cursor = Notice.find({ status: 'SCHEDULED', scheduledAt: { $lte: now } }).cursor();
+    // Run immediately on boot to hydrate the next 2 hours
+    loadNextTwoHours();
 
-            let batch = [];
-            let processedCount = 0;
-
-            for await (const notice of cursor) {
-                batch.push(notice);
-                if (batch.length >= BATCH_SIZE) {
-                    await Promise.allSettled(batch.map(processNotice));
-                    processedCount += batch.length;
-                    batch = [];
-                }
-            }
-            if (batch.length > 0) {
-                await Promise.allSettled(batch.map(processNotice));
-                processedCount += batch.length;
-            }
-
-            logger.info(`[JOB] Scheduled Notice Sender completed. Processed ${processedCount} notices.`);
-        } catch (error) {
-            logger.error(`[JOB] Scheduled Notice Sender Error: ${error.message}`);
-        }
+    // Run every hour at the top of the hour
+    cron.schedule('0 * * * *', () => {
+        logger.info('[JOB] Starting Hourly Sweeper for Scheduled Notices...');
+        loadNextTwoHours();
     });
 };

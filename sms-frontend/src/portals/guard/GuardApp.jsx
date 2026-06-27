@@ -12,7 +12,8 @@ import GuardResidentsPage from './pages/GuardResidentsPage';
 import GuardSocietyPage from './pages/GuardSocietyPage';
 import GuardVisitorsPage from './pages/GuardVisitorsPage';
 import StaffProfilePage from '../staff/pages/StaffProfilePage';
-import { QrCode } from 'lucide-react';
+import AdminEmergencyPage from '../admin/pages/AdminEmergencyPage';
+import { QrCode, ShieldAlert } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Guard Portal', subtitle: 'Security Guard', Icon: ShieldCheck },
@@ -21,6 +22,7 @@ const SIDEBAR_CONFIG = {
     navItems: [
         { to: '/guard', label: 'Dashboard', Icon: ShieldCheck, end: true },
         { to: '/guard/visitors', label: 'Visitor Gates', Icon: QrCode },
+        { to: '/guard/emergencies', label: 'Emergencies', Icon: ShieldAlert },
         { to: '/guard/residents', label: 'Resident Lookup', Icon: Users },
         { to: '/guard/society', label: 'Emergency Contacts', Icon: Building2 },
         { to: '/guard/profile', label: 'My Profile', Icon: User },
@@ -33,6 +35,7 @@ export default function GuardApp() {
       <Routes>
         <Route index element={<GuardDashboardPage />} />
         <Route path="visitors" element={<GuardVisitorsPage />} />
+        <Route path="emergencies" element={<AdminEmergencyPage />} />
         <Route path="residents" element={<GuardResidentsPage />} />
         <Route path="society" element={<GuardSocietyPage />} />
         <Route path="profile" element={<StaffProfilePage />} />

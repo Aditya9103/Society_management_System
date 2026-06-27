@@ -5,6 +5,7 @@ import { societyAdminApi } from './api/societyAdminApi';
 import { residentApi } from './api/residentApi';
 import { staffApi } from './api/staffApi';
 import { notificationApi } from './api/notificationApi';
+import { emergencyApi } from './api/emergencyApi';
 import authReducer from './slices/authSlice';
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     [residentApi.reducerPath]: residentApi.reducer,
     [staffApi.reducerPath]: staffApi.reducer,
     [notificationApi.reducerPath]: notificationApi.reducer,
+    [emergencyApi.reducerPath]: emergencyApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -24,5 +26,6 @@ export const store = configureStore({
       .concat(societyAdminApi.middleware)
       .concat(residentApi.middleware)
       .concat(staffApi.middleware)
-      .concat(notificationApi.middleware),
+      .concat(notificationApi.middleware)
+      .concat(emergencyApi.middleware),
 });

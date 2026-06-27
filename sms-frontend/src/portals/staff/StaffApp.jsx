@@ -8,7 +8,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   LayoutDashboard, Users, Grid3X3, Building2, User, Briefcase,
-  MessageSquareWarning, Bell,
+  MessageSquareWarning, Bell, ShieldAlert
 } from 'lucide-react';
 import PortalLayout from '../../components/layout/PortalLayout';
 import StaffDashboardPage from './pages/StaffDashboardPage';
@@ -18,6 +18,7 @@ import StaffSocietyPage from './pages/StaffSocietyPage';
 import StaffProfilePage from './pages/StaffProfilePage';
 import StaffComplaintsPage from './pages/StaffComplaintsPage';
 import StaffNoticesPage from './pages/StaffNoticesPage';
+import AdminEmergencyPage from '../admin/pages/AdminEmergencyPage';
 
 // ── Role → nav items (aligned to permission matrix) ──────────────────────────
 const ROLE_NAV = {
@@ -26,6 +27,7 @@ const ROLE_NAV = {
     { to: '/staff/residents',  label: 'Residents',  Icon: Users },
     { to: '/staff/units',      label: 'Units',      Icon: Grid3X3 },
     { to: '/staff/complaints', label: 'Complaints', Icon: MessageSquareWarning },
+    { to: '/staff/emergencies', label: 'Emergencies', Icon: ShieldAlert },
     { to: '/staff/notices',    label: 'Notices',    Icon: Bell },
     { to: '/staff/society',    label: 'Society Info', Icon: Building2 },
     { to: '/staff/profile',    label: 'My Profile', Icon: User },
@@ -40,6 +42,7 @@ const ROLE_NAV = {
   FACILITY_MANAGER: [
     { to: '/staff',            label: 'Dashboard',  Icon: LayoutDashboard, end: true },
     { to: '/staff/units',      label: 'Units',      Icon: Grid3X3 },
+    { to: '/staff/emergencies', label: 'Emergencies', Icon: ShieldAlert },
     { to: '/staff/complaints', label: 'Complaints', Icon: MessageSquareWarning },
     { to: '/staff/society',    label: 'Society Info', Icon: Building2 },
     { to: '/staff/profile',    label: 'My Profile', Icon: User },
@@ -54,6 +57,7 @@ const ROLE_NAV = {
   ],
   SECURITY_GUARD: [
     { to: '/staff',           label: 'Dashboard',   Icon: LayoutDashboard, end: true },
+    { to: '/staff/emergencies', label: 'Emergencies', Icon: ShieldAlert },
     { to: '/staff/residents', label: 'Residents',   Icon: Users },
     { to: '/staff/society',   label: 'Society Info', Icon: Building2 },
     { to: '/staff/profile',   label: 'My Profile',  Icon: User },
@@ -87,6 +91,7 @@ export default function StaffApp() {
   };
 
   const canSeeComplaints = ['COMMITTEE_MEMBER', 'ACCOUNTANT', 'FACILITY_MANAGER', 'HELP_DESK'].includes(role);
+  const canSeeEmergencies = ['COMMITTEE_MEMBER', 'FACILITY_MANAGER', 'SECURITY_GUARD'].includes(role);
   const canSeeNotices    = ['COMMITTEE_MEMBER', 'HELP_DESK'].includes(role);
 
   return (
@@ -98,6 +103,7 @@ export default function StaffApp() {
         <Route path="society"    element={<StaffSocietyPage />} />
         <Route path="profile"    element={<StaffProfilePage />} />
         {canSeeComplaints && <Route path="complaints" element={<StaffComplaintsPage />} />}
+        {canSeeEmergencies && <Route path="emergencies" element={<AdminEmergencyPage />} />}
         {canSeeNotices    && <Route path="notices"    element={<StaffNoticesPage />} />}
         <Route path="dashboard"  element={<Navigate to="/staff" replace />} />
         <Route path="*"          element={<Navigate to="/staff" replace />} />

@@ -14,7 +14,7 @@ import { authenticate } from '../../middleware/auth.middleware.js';
 import { authorize } from '../../middleware/rbac.middleware.js';
 import { ROLES } from '../../config/constants.js';
 import validate from '../../middleware/validate.middleware.js';
-import { createNoticeSchema } from './notice.validator.js';
+import { createNoticeSchema, updateNoticeScheduleSchema } from './notice.validator.js';
 
 const router = Router();
 
@@ -46,6 +46,12 @@ router.get('/:id', authorize(...CAN_READ), noticeController.getNoticeById);
  * Publish a DRAFT notice.
  */
 router.patch('/:id/publish', authorize(...CAN_PUBLISH), noticeController.publishNotice);
+
+/**
+ * PATCH /api/v1/notices/:id/schedule
+ * Update schedule for a DRAFT or SCHEDULED notice.
+ */
+router.patch('/:id/schedule', authorize(...CAN_PUBLISH), validate(updateNoticeScheduleSchema), noticeController.updateNoticeSchedule);
 
 /**
  * PATCH /api/v1/notices/:id/archive

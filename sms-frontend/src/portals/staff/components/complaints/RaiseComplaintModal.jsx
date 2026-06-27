@@ -7,11 +7,12 @@ import { Button } from '../../../../components/ui/Button';
 import Modal from '../../../../components/ui/Modal';
 import Alert from '../../../../components/ui/Alert';
 
-const CATEGORIES = ['PLUMBING','ELECTRICAL','CIVIL','SECURITY','CLEANING','LIFT','PARKING','NOISE','PEST_CONTROL','LANDSCAPING','INTERNET','GAS','ADMIN','OTHER'];
+const CATEGORIES = ['ELECTRICAL', 'PLUMBING', 'SECURITY', 'HOUSEKEEPING', 'LIFT_ELEVATOR', 'PARKING', 'GARDEN_LANDSCAPE', 'STRUCTURAL', 'NOISE_NUISANCE', 'AMENITY', 'ADMINISTRATIVE', 'OTHER'];
 
 export default function RaiseComplaintModal({ isOpen, onClose }) {
     const [raiseComplaint, { isLoading }] = useStaffRaiseComplaintMutation();
     const [form, setForm] = useState({ title: '', description: '', category: 'GENERAL', priority: 'MEDIUM', isCommonArea: true, commonAreaLocation: '' });
+    const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
 
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target?.type === 'checkbox' ? e.target.checked : e.target?.value || e }));
@@ -20,8 +21,13 @@ export default function RaiseComplaintModal({ isOpen, onClose }) {
         e.preventDefault();
         if (!form.title || !form.description) return setError('Title and description required.');
         try { 
-            await raiseComplaint(form).unwrap(); 
+            const formData = new FormData();
+            Object.keys(form).forEach(key => formData.append(key, form[key]));
+            if (imageFile) formData.append('images', imageFile);
+
+            await raiseComplaint(formData).unwrap(); 
             setForm({ title: '', description: '', category: 'GENERAL', priority: 'MEDIUM', isCommonArea: true, commonAreaLocation: '' });
+            setImageFile(null);
             setError('');
             onClose(); 
         } catch (err) { 
@@ -46,6 +52,32 @@ export default function RaiseComplaintModal({ isOpen, onClose }) {
                     required 
                     rows={3} 
                 />
+                <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={form.isCommonArea} onChange={set('isCommonArea')} id="isCommonArea" />
+                    <label htmlFor="isCommonArea" className="text-sm">Is this a common area?</label>
+                </div>
+                {form.isCommonArea && (
+                    <Input 
+                        label="Common Area Location" 
+                        value={form.commonAreaLocation} 
+                        onChange={set('commonAreaLocation')}
+                        placeholder="e.g. Building entrance, Lift lobby..." 
+                    />
+                )}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Upload Image (Optional)</label>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={e => setImageFile(e.target.files[0])}
+                        className="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-indigo-50 file:text-indigo-700
+                            hover:file:bg-indigo-100"
+                    />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                     <Select label="Category" value={form.category} onChange={set('category')}>
                         {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}

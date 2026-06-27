@@ -45,3 +45,21 @@ export const updateDomesticStaffSchema = {
         isActive: Joi.boolean().optional(),
     }),
 };
+
+export const addEmergencyContactSchema = {
+    body: Joi.object({
+        name: Joi.string().trim().required(),
+        relation: Joi.string().required(),
+        phone: Joi.string().required(),
+        email: Joi.string().email().allow(null, '').optional()
+    }),
+};
+
+export const updateEmergencyContactSchema = {
+    body: Joi.object({
+        name: Joi.string().trim().optional(),
+        relation: Joi.string().optional(),
+        phone: Joi.string().optional(),
+        email: Joi.string().email().allow(null, '').optional()
+    }),
+};

@@ -13,6 +13,7 @@ import {
     useRemoveDomesticStaffMutation,
 } from '../../../store/api/residentApi';
 import { setCredentials } from '../../../store/slices/authSlice';
+import { residentApi } from '../../../store/api/residentApi';
 import {
     User, Phone, Mail, Home, Building2, Edit2, Plus, Trash2,
     CheckCircle2, X, Save, Users, RefreshCw, AlertCircle, Briefcase, QrCode
@@ -22,6 +23,8 @@ import { FamilyMemberCard } from '../components/profile/FamilyMemberCard';
 import { AddMemberModal } from '../components/profile/AddMemberModal';
 import { DomesticStaffCard } from '../components/profile/DomesticStaffCard';
 import { AddDomesticStaffModal } from '../components/profile/AddDomesticStaffModal';
+import { AddEmergencyContactModal } from '../components/profile/AddEmergencyContactModal';
+import { EmergencyContactCard } from '../components/profile/EmergencyContactCard';
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ResidentProfilePage() {
@@ -34,17 +37,21 @@ export default function ResidentProfilePage() {
     const [deleteFamilyMember] = useDeleteFamilyMemberMutation();
     const [addDomesticStaff] = useAddDomesticStaffMutation();
     const [removeDomesticStaff] = useRemoveDomesticStaffMutation();
+    const [addEmergencyContact] = residentApi.endpoints.addEmergencyContact.useMutation();
+    const [deleteEmergencyContact] = residentApi.endpoints.deleteEmergencyContact.useMutation();
 
     const profile = data?.data?.profile;
     const unit = profile?.unitId;
     const society = profile?.societyId;
     const familyMembers = profile?.familyMembers ?? [];
+    const emergencyContacts = profile?.emergencyContacts ?? [];
     const domesticStaffList = staffData?.data ?? [];
 
     const [editing, setEditing] = useState(false);
     const [form, setForm] = useState({ firstName: '', lastName: '', phone: '' });
     const [saveMsg, setSaveMsg] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
+    const [showAddContact, setShowAddContact] = useState(false);
     const [showAddStaff, setShowAddStaff] = useState(false);
 
     const startEdit = () => {
@@ -72,6 +79,14 @@ export default function ResidentProfilePage() {
 
     const handleDeleteMember = async (memberId) => {
         await deleteFamilyMember(memberId).unwrap();
+    };
+
+    const handleAddContact = async (contactData) => {
+        await addEmergencyContact(contactData).unwrap();
+    };
+
+    const handleDeleteContact = async (contactId) => {
+        await deleteEmergencyContact(contactId).unwrap();
     };
 
     const handleAddStaff = async (staffInfo) => {
@@ -203,6 +218,40 @@ export default function ResidentProfilePage() {
 
             {showAddMember && (
                 <AddMemberModal onClose={() => setShowAddMember(false)} onAdd={handleAddMember} />
+            )}
+
+            {/* Emergency Contacts */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="font-bold text-slate-800 flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-red-500" /> Emergency Contacts 
+                        <span className="text-xs font-normal text-slate-400">({emergencyContacts.length}/10)</span>
+                    </h2>
+                    {emergencyContacts.length < 10 && (
+                        <button onClick={() => setShowAddContact(true)}
+                            className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 transition">
+                            <Plus className="h-3.5 w-3.5" /> Add Contact
+                        </button>
+                    )}
+                </div>
+
+                {emergencyContacts.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center">
+                        <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+                        <p className="text-sm font-semibold text-slate-600">No emergency contacts</p>
+                        <p className="mt-1 text-xs text-slate-400">Add family members to receive SOS alerts via email & phone.</p>
+                    </div>
+                ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        {emergencyContacts.map(c => (
+                            <EmergencyContactCard key={c._id} contact={c} onDelete={handleDeleteContact} />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {showAddContact && (
+                <AddEmergencyContactModal onClose={() => setShowAddContact(false)} onAdd={handleAddContact} />
             )}
 
             {/* Domestic Staff */}

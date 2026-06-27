@@ -9,6 +9,8 @@ import { sendNotification } from '../../services/notification.service.js';
 import logger from '../../utils/logger.js';
 import NoticeAcknowledgement from './noticeAcknowledgement.model.js';
 import Resident from '../resident/resident.model.js';
+import User from '../auth/user.model.js';
+import { scheduleNoticePublish, cancelScheduledNotice } from '../../jobs/noticeSender.job.js';
 
 /**
  * Dispatches notifications to the resolved target audience for a published notice.
@@ -19,19 +21,45 @@ const dispatchNoticeNotifications = async (notice) => {
 
         if (users.length === 0) return;
 
-        await sendNotification({
-            users,
-            societyId: notice.societyId,
-            type: 'NOTICE_PUBLISHED',
-            title: notice.title,
-            message: notice.content.length > 200 ? notice.content.substring(0, 197) + '...' : notice.content,
-            priority: notice.priority,
-            referenceType: 'NOTICE',
-            referenceId: notice._id
-        });
+        const creatorId = notice.createdBy ? notice.createdBy.toString() : null;
+        const targetUsers = users.filter(u => u._id.toString() !== creatorId);
+        let creatorUser = users.find(u => u._id.toString() === creatorId);
+
+        // If the admin wasn't part of the target audience, fetch them manually
+        if (!creatorUser && creatorId) {
+            creatorUser = await User.findById(creatorId).select('_id fcmTokens').lean();
+        }
+
+        // 1. Send the actual notice notification to the targeted audience
+        if (targetUsers.length > 0) {
+            await sendNotification({
+                users: targetUsers,
+                societyId: notice.societyId,
+                type: 'NOTICE_PUBLISHED',
+                title: notice.title,
+                message: notice.content.length > 200 ? notice.content.substring(0, 197) + '...' : notice.content,
+                priority: notice.priority,
+                referenceType: 'NOTICE',
+                referenceId: notice._id
+            });
+        }
+
+        // 2. Send a quiet confirmation to the admin who created it (no urgent popups)
+        if (creatorUser) {
+            await sendNotification({
+                users: [creatorUser],
+                societyId: notice.societyId,
+                type: 'NOTICE_PUBLISHED_CONFIRMATION',
+                title: 'Notice Published Successfully',
+                message: `Your notice "${notice.title}" has been dispatched.`,
+                priority: 'NORMAL', // Always normal so the admin doesn't get an urgent popup for their own action
+                referenceType: 'NOTICE',
+                referenceId: notice._id
+            });
+        }
 
         // Update the sentToCount
-        await noticeRepo.updateById(notice._id, { sentToCount: users.length });
+        await noticeRepo.updateById(notice._id, { sentToCount: targetUsers.length });
     } catch (error) {
         logger.error(`Failed to dispatch notice notifications: ${error.message}`);
     }
@@ -63,6 +91,8 @@ export const createNotice = async (createdBy, societyId, data) => {
 
     if (finalStatus === 'PUBLISHED') {
         dispatchNoticeNotifications(notice);
+    } else if (finalStatus === 'SCHEDULED' && scheduledAt) {
+        scheduleNoticePublish(notice._id, scheduledAt);
     }
 
     return notice;
@@ -124,7 +154,58 @@ export const publishNotice = async (id, societyId) => {
     if (notice.status === 'PUBLISHED') throw ApiError.badRequest('Notice is already published.');
 
     const updatedNotice = await noticeRepo.updateById(id, { status: 'PUBLISHED', publishedAt: new Date() });
+
+    // Clear scheduled timeout if manually published
+    cancelScheduledNotice(id);
+
     dispatchNoticeNotifications(updatedNotice);
+    return updatedNotice;
+};
+
+/**
+ * Called automatically by the background cron job to publish a scheduled notice.
+ * No societyId authorization is needed since it's a system action.
+ */
+export const publishScheduledNotice = async (id) => {
+    const notice = await noticeRepo.findById(id);
+    if (!notice) return;
+    if (notice.status === 'PUBLISHED') return;
+
+    const updatedNotice = await noticeRepo.updateById(id, { status: 'PUBLISHED', publishedAt: new Date() });
+    dispatchNoticeNotifications(updatedNotice);
+    logger.info(`System automatically published scheduled notice ${id}`);
+    return updatedNotice;
+};
+
+/**
+ * Updates the scheduled time for a DRAFT or SCHEDULED notice.
+ */
+export const updateNoticeSchedule = async (id, societyId, scheduledAt) => {
+    const notice = await noticeRepo.findById(id);
+    if (!notice) throw ApiError.notFound('Notice not found.');
+    if (notice.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Not authorized.');
+    }
+    if (notice.status === 'PUBLISHED' || notice.status === 'ARCHIVED') {
+        throw ApiError.badRequest('Cannot reschedule a published or archived notice.');
+    }
+
+    let status = notice.status;
+
+    if (scheduledAt) {
+        status = 'SCHEDULED';
+    } else if (notice.status === 'SCHEDULED') {
+        status = 'DRAFT'; // If schedule is removed, fallback to DRAFT
+    }
+
+    const updatedNotice = await noticeRepo.updateById(id, { status, scheduledAt: scheduledAt || null });
+
+    if (status === 'SCHEDULED' && scheduledAt) {
+        scheduleNoticePublish(id, scheduledAt);
+    } else {
+        cancelScheduledNotice(id);
+    }
+
     return updatedNotice;
 };
 
@@ -134,7 +215,10 @@ export const archiveNotice = async (id, societyId) => {
     if (notice.societyId?.toString() !== societyId.toString()) {
         throw ApiError.forbidden('Not authorized.');
     }
-    return noticeRepo.updateById(id, { status: 'ARCHIVED' });
+
+    cancelScheduledNotice(id);
+
+    return await noticeRepo.updateById(id, { status: 'ARCHIVED' });
 };
 
 // ── Acknowledgements ────────────────────────────────────────────────────────────
@@ -167,7 +251,7 @@ export const getNoticeAcknowledgements = async (noticeId, societyId) => {
     }
 
     const acknowledgements = await NoticeAcknowledgement.find({ noticeId })
-        .populate({ path: 'residentId', select: 'userId residentCode unitId', populate: { path: 'userId', select: 'firstName lastName email phone' }})
+        .populate({ path: 'residentId', select: 'userId residentCode unitId', populate: { path: 'userId', select: 'firstName lastName email phone' } })
         .lean();
 
     return acknowledgements;
@@ -179,5 +263,9 @@ export const deleteNotice = async (id, societyId) => {
     if (notice.societyId?.toString() !== societyId.toString()) {
         throw ApiError.forbidden('Not authorized.');
     }
-    return noticeRepo.deleteById(id);
+
+    cancelScheduledNotice(id);
+
+    await noticeRepo.deleteById(id);
+    return true;
 };

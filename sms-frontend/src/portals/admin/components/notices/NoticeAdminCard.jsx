@@ -5,6 +5,8 @@ import Card from '../../../../components/ui/Card';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import { Button } from '../../../../components/ui/Button';
 import NoticeAcknowledgementsModal from './NoticeAcknowledgementsModal';
+import RescheduleNoticeModal from './RescheduleNoticeModal';
+import { Clock } from 'lucide-react';
 
 const STATUS_MAP = {
     DRAFT: 'NEUTRAL',
@@ -25,6 +27,7 @@ export default function NoticeAdminCard({ notice }) {
     const [archiveNotice, { isLoading: archiving }] = useArchiveNoticeMutation();
     const [deleteNotice, { isLoading: deleting }] = useDeleteNoticeMutation();
     const [showAcksModal, setShowAcksModal] = React.useState(false);
+    const [showRescheduleModal, setShowRescheduleModal] = React.useState(false);
     
     const statusType = STATUS_MAP[notice.status] || 'NEUTRAL';
     const t = TYPE_STYLES[notice.noticeType] ?? TYPE_STYLES.GENERAL;
@@ -61,6 +64,14 @@ export default function NoticeAdminCard({ notice }) {
                                 {!publishing && <CheckCircle2 className="h-3.5 w-3.5 mr-1" />} Publish
                             </Button>
                         )}
+                        {(notice.status === 'SCHEDULED' || notice.status === 'DRAFT') && (
+                            <Button 
+                                onClick={() => setShowRescheduleModal(true)} 
+                                className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs py-1.5 px-3"
+                            >
+                                <Clock className="h-3.5 w-3.5 mr-1" /> Reschedule
+                            </Button>
+                        )}
                         {notice.status !== 'ARCHIVED' && (
                             <Button 
                                 onClick={() => archiveNotice(notice._id)} 
@@ -91,6 +102,13 @@ export default function NoticeAdminCard({ notice }) {
                 <NoticeAcknowledgementsModal 
                     notice={notice} 
                     onClose={() => setShowAcksModal(false)} 
+                />
+            )}
+            
+            {showRescheduleModal && (
+                <RescheduleNoticeModal
+                    notice={notice}
+                    onClose={() => setShowRescheduleModal(false)}
                 />
             )}
         </Card>

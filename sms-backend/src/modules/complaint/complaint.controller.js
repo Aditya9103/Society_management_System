@@ -11,6 +11,12 @@ import asyncHandler from '../../utils/asyncHandler.js';
 export const raiseComplaint = asyncHandler(async (req, res) => {
     const userId = req.user.sub;
     const societyId = req.user.societyId;
+    
+    // Extract uploaded image URLs if any
+    if (req.files && req.files.length > 0) {
+        req.body.images = req.files.map(file => file.cloudinaryUrl);
+    }
+    
     const complaint = await complaintService.raiseComplaint(userId, societyId, req.body);
     res.status(201).json(new ApiResponse(201, { complaint }, 'Complaint raised successfully'));
 });
@@ -49,4 +55,14 @@ export const changeStatus = asyncHandler(async (req, res) => {
     
     const complaint = await complaintService.changeStatus(req.params.id, userId, role, societyId, req.body);
     res.status(200).json(new ApiResponse(200, { complaint }, 'Complaint status updated'));
+});
+
+// ── Admin — delete complaint ──────────────────────────────────────────────────
+
+export const deleteComplaint = asyncHandler(async (req, res) => {
+    const role = req.user.role;
+    const societyId = req.user.societyId;
+    
+    await complaintService.deleteComplaint(req.params.id, societyId, role);
+    res.status(200).json(new ApiResponse(200, null, 'Complaint deleted successfully'));
 });

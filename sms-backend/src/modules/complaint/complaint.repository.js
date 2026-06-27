@@ -61,3 +61,7 @@ export const addComment = (complaintId, userId, { content, statusChangedFrom, st
         statusChangedFrom,
         statusChangedTo,
     });
+
+export const deleteById = (id) => Complaint.findByIdAndDelete(id).lean();
+
+export const deleteCommentsByComplaintId = (complaintId) => ComplaintComment.deleteMany({ complaintId });

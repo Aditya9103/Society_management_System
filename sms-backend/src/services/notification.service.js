@@ -55,11 +55,12 @@ export const sendNotification = async ({
             }
         });
 
+        let savedNotifications = [];
         // 1. In-App Notification (Save to DB in bulk)
         if (notificationsToInsert.length > 0) {
-            await Notification.insertMany(notificationsToInsert);
-            results.inApp = notificationsToInsert.length;
-            logger.info(`[IN-APP] Saved ${notificationsToInsert.length} notifications: ${title}`);
+            savedNotifications = await Notification.insertMany(notificationsToInsert);
+            results.inApp = savedNotifications.length;
+            logger.info(`[IN-APP] Saved ${savedNotifications.length} notifications: ${title}`);
         }
 
         // 2. Push Notification via FCM
@@ -80,7 +81,11 @@ export const sendNotification = async ({
             const eventName = isPopup ? 'URGENT_NOTICE' : 'NEW_NOTIFICATION';
 
             users.forEach(user => {
-                io.to(ROOMS.USER(user._id.toString())).emit(eventName, {
+                const room = ROOMS.USER(user._id.toString());
+                const savedNotif = savedNotifications.find(n => n.userId.toString() === user._id.toString());
+                
+                io.to(room).emit(eventName, {
+                    _id: savedNotif ? savedNotif._id.toString() : null,
                     title,
                     message,
                     type,
@@ -88,9 +93,10 @@ export const sendNotification = async ({
                     referenceId,
                     timestamp: new Date().toISOString()
                 });
+                logger.info(`[SOCKET] Emitted ${eventName} to room: ${room} for user: ${user._id}`);
             });
             results.socket = users.length;
-            logger.info(`[SOCKET] Emitted ${eventName} to ${users.length} users`);
+            logger.info(`[SOCKET] Total emitted ${eventName} to ${users.length} users`);
         } catch (socketErr) {
             logger.warn(`Failed to emit socket notification: ${socketErr.message}`);
         }

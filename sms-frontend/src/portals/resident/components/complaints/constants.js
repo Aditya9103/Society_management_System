@@ -19,15 +19,16 @@ export const PRIORITY_STYLES = {
 };
 
 export const COMPLAINT_CATEGORIES = {
-    ELECTRICAL: ['Power outage', 'Short circuit', 'Streetlight', 'Common area lighting'],
-    PLUMBING: ['Water leakage', 'Drain blockage', 'Water supply issue', 'Tank cleaning'],
-    SECURITY: ['Unauthorized person', 'Suspicious activity', 'CCTV issue', 'Gate malfunction'],
-    HOUSEKEEPING: ['Common area cleanliness', 'Garbage disposal', 'Pest control'],
-    LIFT_ELEVATOR: ['Not working', 'Slow', 'Noise', 'Safety concern'],
-    PARKING: ['Unauthorized parking', 'Parking damage', 'Parking light'],
-    GARDEN_LANDSCAPE: ['Tree cutting', 'Garden maintenance', 'Sprinkler issue'],
-    STRUCTURAL: ['Wall crack', 'Seepage', 'Terrace issue', 'Staircase'],
-    NOISE_NUISANCE: ['Loud noise', 'Pet issues', 'Smoke', 'Anti-social behavior'],
-    AMENITY: ['Club house', 'Gym equipment', 'Pool', 'Sports court'],
-    ADMINISTRATIVE: ['NOC request', 'Documents', 'General query'],
+    ELECTRICAL: ['Power outage', 'Short circuit', 'Streetlight', 'Common area lighting', 'Other'],
+    PLUMBING: ['Water leakage', 'Drain blockage', 'Water supply issue', 'Tank cleaning', 'Other'],
+    SECURITY: ['Unauthorized person', 'Suspicious activity', 'CCTV issue', 'Gate malfunction', 'Other'],
+    HOUSEKEEPING: ['Common area cleanliness', 'Garbage disposal', 'Pest control', 'Other'],
+    LIFT_ELEVATOR: ['Not working', 'Slow', 'Noise', 'Safety concern', 'Other'],
+    PARKING: ['Unauthorized parking', 'Parking damage', 'Parking light', 'Other'],
+    GARDEN_LANDSCAPE: ['Tree cutting', 'Garden maintenance', 'Sprinkler issue', 'Other'],
+    STRUCTURAL: ['Wall crack', 'Seepage', 'Terrace issue', 'Staircase', 'Other'],
+    NOISE_NUISANCE: ['Loud noise', 'Pet issues', 'Smoke', 'Anti-social behavior', 'Other'],
+    AMENITY: ['Club house', 'Gym equipment', 'Pool', 'Sports court', 'Other'],
+    ADMINISTRATIVE: ['NOC request', 'Documents', 'General query', 'Other'],
+    OTHER: ['Other'],
 };

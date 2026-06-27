@@ -45,6 +45,23 @@ export const residentApi = createApi({
             invalidatesTags: ['ResidentProfile'],
         }),
 
+        // ── Emergency Contacts ────────────────────────────────────────────────
+
+        addEmergencyContact: builder.mutation({
+            query: (data) => ({ url: '/residents/emergency-contacts', method: 'POST', data }),
+            invalidatesTags: ['ResidentProfile'],
+        }),
+
+        updateEmergencyContact: builder.mutation({
+            query: ({ contactId, ...data }) => ({ url: `/residents/emergency-contacts/${contactId}`, method: 'PUT', data }),
+            invalidatesTags: ['ResidentProfile'],
+        }),
+
+        deleteEmergencyContact: builder.mutation({
+            query: (contactId) => ({ url: `/residents/emergency-contacts/${contactId}`, method: 'DELETE' }),
+            invalidatesTags: ['ResidentProfile'],
+        }),
+
         // ── Domestic Staff ────────────────────────────────────────────────────
 
         getMyDomesticStaff: builder.query({
@@ -185,6 +202,9 @@ export const {
     useAddFamilyMemberMutation,
     useUpdateFamilyMemberMutation,
     useDeleteFamilyMemberMutation,
+    useAddEmergencyContactMutation,
+    useUpdateEmergencyContactMutation,
+    useDeleteEmergencyContactMutation,
     useGetMyDomesticStaffQuery,
     useAddDomesticStaffMutation,
     useUpdateDomesticStaffMutation,

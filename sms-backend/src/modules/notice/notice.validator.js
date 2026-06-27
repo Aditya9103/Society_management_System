@@ -18,3 +18,11 @@ export const createNoticeSchema = {
         requiresAcknowledgement: Joi.boolean().default(false),
     }),
 };
+
+// ── Update Schedule ──────────────────────────────────────────────────────────
+
+export const updateNoticeScheduleSchema = {
+    body: Joi.object({
+        scheduledAt: Joi.date().iso().optional().allow(null),
+    }),
+};

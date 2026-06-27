@@ -20,6 +20,7 @@ import {
     raiseComplaintSchema,
     changeStatusSchema,
 } from './complaint.validator.js';
+import { uploadMultiple } from '../../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -46,7 +47,13 @@ const CAN_READ_ALL = [
  * POST /api/v1/complaints
  * Raise a complaint (resident or staff).
  */
-router.post('/', authorize(...CAN_CREATE), validate(raiseComplaintSchema), complaintController.raiseComplaint);
+router.post(
+    '/',
+    authorize(...CAN_CREATE),
+    uploadMultiple('images', 3, 'complaints', 'image'),
+    validate(raiseComplaintSchema),
+    complaintController.raiseComplaint
+);
 
 /**
  * GET /api/v1/complaints/my
@@ -77,5 +84,11 @@ router.patch(
     validate(changeStatusSchema),
     complaintController.changeStatus,
 );
+
+/**
+ * DELETE /api/v1/complaints/:id
+ * Delete a closed complaint (admin only).
+ */
+router.delete('/:id', authorize(ROLES.SOCIETY_ADMIN), complaintController.deleteComplaint);
 
 export default router;

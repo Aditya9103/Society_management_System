@@ -42,6 +42,7 @@ const emergencySchema = new mongoose.Schema(
                 'WATER_CRISIS',
                 'ACCIDENT',
                 'THEFT',
+                'PANIC',
                 'OTHER',
             ],
             required: true,
@@ -97,17 +98,17 @@ const emergencySchema = new mongoose.Schema(
         // Notifications sent
         notificationsSent: {
             push: {
-            type: Boolean,
-            default: false
-        },
+                type: Boolean,
+                default: false
+            },
             sms: {
-            type: Boolean,
-            default: false
-        },
+                type: Boolean,
+                default: false
+            },
             whatsapp: {
-            type: Boolean,
-            default: false
-        },
+                type: Boolean,
+                default: false
+            },
         },
         // Notified count
         notifiedCount: {

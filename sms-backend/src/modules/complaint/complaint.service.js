@@ -47,6 +47,27 @@ export const raiseComplaint = async (userId, societyId, data) => {
 
     getIO().to(ROOMS.GLOBAL).emit('complaint_updated', { id: complaint._id });
 
+    // Send notification to society admins
+    try {
+        if (status !== 'DRAFT') {
+            const admins = await User.find({ societyId, role: ROLES.SOCIETY_ADMIN, isActive: true }).select('_id fcmTokens').lean();
+            if (admins.length > 0) {
+                await sendNotification({
+                    users: admins,
+                    societyId,
+                    type: 'COMPLAINT_CREATED',
+                    title: 'New Complaint Raised',
+                    message: `Complaint ${complaint.complaintNumber} has been raised.`,
+                    priority: complaint.priority || 'MEDIUM',
+                    referenceType: 'COMPLAINT',
+                    referenceId: complaint._id
+                });
+            }
+        }
+    } catch (err) {
+        logger.error(`Failed to send complaint creation notification: ${err.message}`);
+    }
+
     return complaint;
 };
 
@@ -183,7 +204,7 @@ export const changeStatus = async (id, userId, role, societyId, data) => {
     // Sync Notification Logic
     try {
         if (status === 'ASSIGNED' && updatedComplaint.assignedTo) {
-            const staffUser = await User.findById(updatedComplaint.assignedTo).select('_id fcmTokens').lean();
+            const staffUser = await User.findById(updatedComplaint.assignedTo).select('_id fcmTokens firstName lastName').lean();
             if (staffUser) {
                 await sendNotification({
                     users: [staffUser],
@@ -195,17 +216,44 @@ export const changeStatus = async (id, userId, role, societyId, data) => {
                     referenceId: updatedComplaint._id
                 });
             }
-        } else if (status === 'RESOLVED' || status === 'PENDING_RESIDENT' || status === 'CLOSED' || status === 'REJECTED') {
+        }
+
+        // Notify resident on ANY status change (except DRAFT->OPEN which they do themselves)
+        if (['ASSIGNED', 'IN_PROGRESS', 'PENDING_RESIDENT', 'RESOLVED', 'CLOSED', 'REJECTED', 'REOPENED'].includes(status)) {
             const residentObj = await residentRepo.findById(updatedComplaint.raisedBy);
             if (residentObj) {
                 const resUser = await User.findById(residentObj.userId).select('_id fcmTokens').lean();
                 if (resUser) {
+                    let title = `Complaint Update`;
+                    let message = `Your complaint ${updatedComplaint.complaintNumber} is now ${status.replace('_', ' ')}.`;
+                    let notifType = 'COMPLAINT_UPDATED';
+
+                    if (status === 'ASSIGNED' && updatedComplaint.assignedTo) {
+                        const staff = await User.findById(updatedComplaint.assignedTo).select('firstName lastName').lean();
+                        if (staff) {
+                            message = `Your complaint ${updatedComplaint.complaintNumber} has been assigned to ${staff.firstName} ${staff.lastName}.`;
+                        }
+                    } else if (status === 'IN_PROGRESS') {
+                        message = `Work has started on your complaint ${updatedComplaint.complaintNumber}.`;
+                    } else if (status === 'PENDING_RESIDENT') {
+                        title = 'Information Required';
+                        const changer = await User.findById(userId).select('firstName lastName').lean();
+                        if (changer) {
+                            message = `${changer.firstName} ${changer.lastName} has requested more information regarding complaint ${updatedComplaint.complaintNumber}. Please respond.`;
+                        } else {
+                            message = `More information is requested for complaint ${updatedComplaint.complaintNumber}. Please respond.`;
+                        }
+                    } else if (status === 'RESOLVED') {
+                        title = `Complaint Resolved`;
+                        notifType = 'COMPLAINT_RESOLVED';
+                    }
+
                     await sendNotification({
                         users: [resUser],
                         societyId,
-                        type: status === 'RESOLVED' ? 'COMPLAINT_RESOLVED' : 'COMPLAINT_UPDATED',
-                        title: `Complaint ${status}`,
-                        message: `Your complaint ${updatedComplaint.complaintNumber} is now ${status}.`,
+                        type: notifType,
+                        title,
+                        message,
                         referenceType: 'COMPLAINT',
                         referenceId: updatedComplaint._id
                     });
@@ -251,8 +299,34 @@ export const updateComplaint = async (id, societyId, data) => {
     if (data.status === 'RESOLVED') {
         data.actualResolutionDate = new Date();
     }
-    
+
     const updatedComplaint = await complaintRepo.updateById(id, data);
     getIO().to(ROOMS.GLOBAL).emit('complaint_updated', { id });
     return updatedComplaint;
 }
+
+// ── Admin — delete complaint ───────────────────────────────────────────────
+
+export const deleteComplaint = async (id, societyId, role) => {
+    if (role !== ROLES.SOCIETY_ADMIN) {
+        throw ApiError.forbidden('Only society admin can delete complaints');
+    }
+
+    const complaint = await complaintRepo.findById(id);
+    if (!complaint) throw ApiError.notFound('Complaint not found');
+    
+    if (complaint.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Complaint does not belong to your society');
+    }
+
+    if (complaint.status !== 'CLOSED') {
+        throw ApiError.badRequest('Only fully resolved and CLOSED complaints can be deleted');
+    }
+
+    await complaintRepo.deleteCommentsByComplaintId(id);
+    await complaintRepo.deleteById(id);
+
+    getIO().to(ROOMS.GLOBAL).emit('complaint_deleted', { id });
+    
+    return true;
+};

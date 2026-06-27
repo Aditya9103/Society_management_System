@@ -41,7 +41,8 @@ const complaintSchema = new mongoose.Schema(
                 'STRUCTURAL',
                 'NOISE_NUISANCE',
                 'AMENITY',
-                'ADMINISTRATIVE'
+                'ADMINISTRATIVE',
+                'OTHER'
             ],
             required: true,
         },

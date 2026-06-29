@@ -28,7 +28,7 @@ export function FamilyMemberCard({ member, onDelete }) {
                 <div>
                     <p className="text-sm font-semibold text-slate-800">{member.name}</p>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${RELATION_COLORS[member.relation] ?? RELATION_COLORS.OTHER}`}>
-                        {member.relation}
+                        {member.relation === 'OTHER' ? member.customRelation || 'OTHER' : member.relation}
                     </span>
                 </div>
             </div>

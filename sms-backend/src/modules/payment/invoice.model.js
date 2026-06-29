@@ -24,6 +24,11 @@ const lineItemSchema = new mongoose.Schema(
             ],
             default: 'OTHER',
         },
+        // Custom Invoice Type
+        customInvoiceType: {
+            type: String,
+            default: null
+        },
         // Quantity
         quantity: {
             type: Number,

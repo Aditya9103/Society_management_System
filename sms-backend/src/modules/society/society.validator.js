@@ -59,6 +59,7 @@ const emergencyContactSchema = Joi.object({
     type: Joi.string()
         .valid('POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AGENCY', 'OTHER')
         .required(),
+    customContactType: Joi.string().optional().allow(null, ''),
 });
 
 export const updateSocietySchema = {

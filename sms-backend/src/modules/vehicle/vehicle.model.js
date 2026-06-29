@@ -30,8 +30,13 @@ const vehicleSchema = new mongoose.Schema(
         // Vehicle type
         vehicleType: {
             type: String,
-            enum: ['TWO_WHEELER', 'FOUR_WHEELER', 'HEAVY_VEHICLE'],
+            enum: ['BICYCLE', 'TWO_WHEELER', 'THREE_WHEELER', 'FOUR_WHEELER', 'HEAVY_VEHICLE', 'ELECTRIC_VEHICLE', 'OTHER'],
             required: true,
+        },
+        // Custom vehicle type if OTHER
+        customVehicleType: {
+            type: String,
+            default: null
         },
         // Vehicle category
         vehicleCategory: {
@@ -67,8 +72,13 @@ const vehicleSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        // Rc photo url
+        // Rc photo url (Document)
         rcPhotoUrl: {
+            type: String,
+            default: null
+        },
+        // Vehicle photo url
+        vehiclePhotoUrl: {
             type: String,
             default: null
         },
@@ -87,6 +97,27 @@ const vehicleSchema = new mongoose.Schema(
         isPrimary: {
             type: Boolean,
             default: false
+        },
+        // Status of the vehicle
+        status: {
+            type: String,
+            enum: ['PENDING_APPROVAL', 'ACTIVE', 'REJECTED', 'BLOCKED'],
+            default: 'PENDING_APPROVAL'
+        },
+        // QR Code Token (used instead of actual image)
+        qrToken: {
+            type: String,
+            unique: true,
+            sparse: true
+        },
+        // Reasons for admin actions
+        rejectionReason: {
+            type: String,
+            default: null
+        },
+        blockReason: {
+            type: String,
+            default: null
         },
         // Rfid tag
         rfidTag: {

@@ -21,6 +21,7 @@ export const triggerSOSSchema = {
                 'OTHER'
             )
             .default('PANIC'),
+        customEmergencyType: Joi.string().optional().allow(null, ''),
         locationDescription: Joi.string().trim().max(500).optional(),
         latitude: Joi.number().min(-90).max(90).optional(),
         longitude: Joi.number().min(-180).max(180).optional(),

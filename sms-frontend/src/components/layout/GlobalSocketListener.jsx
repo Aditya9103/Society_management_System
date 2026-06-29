@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { getSocket } from '../../socket/socketClient';
+import { vehicleApi } from '../../store/api/vehicleApi';
+import { pollApi } from '../../store/api/pollApi';
 
 import UrgentNoticeToast from './UrgentNoticeToast';
 
@@ -50,6 +52,7 @@ const playShortSiren = async () => {
 
 export default function GlobalSocketListener() {
     const { isAuthenticated } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -75,6 +78,15 @@ export default function GlobalSocketListener() {
 
         const handleNewNotification = (data) => {
             console.log('🔔 Received NEW_NOTIFICATION:', data);
+
+            // Invalidate relevant RTK Query caches to trigger automatic UI refreshes
+            if (data.type?.startsWith('VEHICLE_')) {
+                dispatch(vehicleApi.util.invalidateTags(['Vehicle', 'Parking']));
+            }
+            if (data.type?.startsWith('POLL_')) {
+                dispatch(pollApi.util.invalidateTags(['Poll']));
+            }
+
             toast(
                 (t) => (
                     <div className="relative pr-6">
@@ -153,14 +165,25 @@ export default function GlobalSocketListener() {
             );
         };
 
+        const handlePollEvent = (data) => {
+            console.log('📊 Poll event received:', data);
+            dispatch(pollApi.util.invalidateTags(['Poll']));
+        };
+
         socket.on('EMERGENCY_ALARM', handleEmergencyAlarm);
         socket.on('EMERGENCY_UPDATED', handleEmergencyUpdated);
+        socket.on('POLL_CREATED', handlePollEvent);
+        socket.on('POLL_UPDATED', handlePollEvent);
+        socket.on('POLL_CLOSED', handlePollEvent);
 
         return () => {
             socket.off('URGENT_NOTICE', handleUrgentNotice);
             socket.off('NEW_NOTIFICATION', handleNewNotification);
             socket.off('EMERGENCY_ALARM', handleEmergencyAlarm);
             socket.off('EMERGENCY_UPDATED', handleEmergencyUpdated);
+            socket.off('POLL_CREATED', handlePollEvent);
+            socket.off('POLL_UPDATED', handlePollEvent);
+            socket.off('POLL_CLOSED', handlePollEvent);
         };
     }, [isAuthenticated]);
 

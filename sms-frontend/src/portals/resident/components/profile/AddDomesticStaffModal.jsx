@@ -5,16 +5,23 @@ import Select from '../../../../components/ui/Select';
 import { Button } from '../../../../components/ui/Button';
 
 export function AddDomesticStaffModal({ onClose, onAdd }) {
-    const [form, setForm] = useState({ name: '', role: 'MAID', phone: '', photoFile: null });
+    const [form, setForm] = useState({ name: '', role: 'MAID', customRole: '', phone: '', photoFile: null });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.name.trim()) return setError('Name is required');
+        let processedData = { ...form };
+        if (processedData.role !== 'OTHER') {
+            delete processedData.customRole;
+        } else if (!processedData.customRole?.trim()) {
+            return setError('Please specify the custom role');
+        }
+        
         setLoading(true);
         try {
-            await onAdd(form);
+            await onAdd(processedData);
             onClose();
         } catch {
             setError('Failed to add domestic staff');
@@ -43,6 +50,14 @@ export function AddDomesticStaffModal({ onClose, onAdd }) {
                             <option key={r} value={r}>{r}</option>
                         ))}
                     </Select>
+                    {form.role === 'OTHER' && (
+                        <Input
+                            label="Specify Role *"
+                            value={form.customRole}
+                            onChange={e => setForm(f => ({ ...f, customRole: e.target.value }))}
+                            placeholder="e.g. Electrician"
+                        />
+                    )}
                     <Input 
                         label="Phone" 
                         value={form.phone} 

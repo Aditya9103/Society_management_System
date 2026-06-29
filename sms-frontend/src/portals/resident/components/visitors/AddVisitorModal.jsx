@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../../../../components/ui/Modal';
 import { Input } from '../../../../components/ui/Input';
 import Select from '../../../../components/ui/Select';
+import DatePicker from '../../../../components/ui/DatePicker';
 import { Button } from '../../../../components/ui/Button';
 import { useCreateVisitorPassMutation } from '../../../../store/api/residentApi';
 import { VISITOR_TYPES } from './constants';
@@ -9,8 +10,8 @@ import { VISITOR_TYPES } from './constants';
 export function AddVisitorModal({ onClose }) {
     const [createVisitorPass, { isLoading }] = useCreateVisitorPassMutation();
     const [form, setForm] = useState({
-        visitorName: '', visitorPhone: '', visitorEmail: '', visitorType: 'GUEST',
-        purpose: '', expectedArrival: '', vehicleNumber: '',
+        visitorName: '', visitorPhone: '', visitorEmail: '', visitorType: 'GUEST', customVisitorType: '',
+        purpose: '', expectedArrival: null, vehicleNumber: '',
     });
     const [error, setError] = useState('');
 
@@ -18,8 +19,20 @@ export function AddVisitorModal({ onClose }) {
         e.preventDefault();
         if (!form.visitorName.trim()) return setError('Visitor name is required.');
         setError('');
+        const payload = { ...form };
+        if (payload.visitorType !== 'OTHER') {
+            delete payload.customVisitorType;
+        } else if (!payload.customVisitorType?.trim()) {
+            return setError('Please specify the custom visitor type.');
+        }
+
         try {
-            await createVisitorPass(form).unwrap();
+            if (payload.expectedArrival) {
+                payload.expectedArrival = payload.expectedArrival.toISOString();
+            } else {
+                delete payload.expectedArrival;
+            }
+            await createVisitorPass(payload).unwrap();
             onClose();
         } catch (err) {
             setError(err?.data?.message ?? 'Failed to create visitor pass.');
@@ -59,11 +72,21 @@ export function AddVisitorModal({ onClose }) {
                     >
                         {VISITOR_TYPES.map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
                     </Select>
-                    <Input 
-                        type="datetime-local"
+                    
+                    {form.visitorType === 'OTHER' && (
+                        <Input
+                            label="Specify Visitor Type *"
+                            value={form.customVisitorType}
+                            onChange={set('customVisitorType')}
+                            placeholder="e.g. Inspector"
+                        />
+                    )}
+                    
+                    <DatePicker 
                         label="Expected Arrival" 
-                        value={form.expectedArrival} 
-                        onChange={set('expectedArrival')}
+                        selected={form.expectedArrival} 
+                        onChange={(date) => setForm(f => ({ ...f, expectedArrival: date }))}
+                        minDate={new Date()}
                     />
                 </div>
                 <Input 

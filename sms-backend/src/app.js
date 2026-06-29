@@ -38,8 +38,8 @@ app.use(
 app.use('/api', globalLimiter);
 
 // ── Body Parsing ─────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10kb' })); // prevent large payload attacks
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '5mb' })); // Increased limit to allow base64 image uploads for polls
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // ── NoSQL Injection Sanitisation ─────────────────────────────────────────────
 app.use(mongoSanitize());

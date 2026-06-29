@@ -26,6 +26,11 @@ const expenseSchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Expense Category
+        customExpenseCategory: {
+            type: String,
+            default: null
+        },
         // Amount
         amount: {
             type: Number,

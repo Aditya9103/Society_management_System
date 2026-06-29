@@ -36,6 +36,11 @@ const documentSchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Document Type
+        customDocumentType: {
+            type: String,
+            default: null
+        },
         // File url
         fileUrl: {
             type: String,

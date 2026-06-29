@@ -14,6 +14,7 @@ export const raiseComplaintSchema = {
                 'PARKING', 'GARDEN_LANDSCAPE', 'STRUCTURAL', 'NOISE_NUISANCE', 'AMENITY', 'ADMINISTRATIVE', 'OTHER'
             )
             .required(),
+        customCategory: Joi.string().optional().allow(null, ''),
         subcategory: Joi.string().optional().allow(null, ''),
         priority: Joi.string().valid('LOW', 'MEDIUM', 'HIGH', 'URGENT').default('MEDIUM'),
         isCommonArea: Joi.boolean().default(false),

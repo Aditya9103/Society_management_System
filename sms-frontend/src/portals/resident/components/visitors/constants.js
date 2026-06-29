@@ -8,4 +8,4 @@ export const STATUS_STYLES = {
     EXPIRED:   { cls: 'bg-slate-100 text-slate-400',   label: 'Expired' },
 };
 
-export const VISITOR_TYPES = ['GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR'];
+export const VISITOR_TYPES = ['GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR', 'OTHER'];

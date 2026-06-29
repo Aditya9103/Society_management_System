@@ -5,16 +5,29 @@ import Select from '../../../../components/ui/Select';
 import { Button } from '../../../../components/ui/Button';
 
 export function AddMemberModal({ onClose, onAdd }) {
-    const [form, setForm] = useState({ name: '', relation: 'SPOUSE', phone: '', gender: '' });
+    const [form, setForm] = useState({ name: '', relation: 'SPOUSE', customRelation: '', phone: '', gender: '', customGender: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.name.trim()) return setError('Name is required');
+        let processedData = { ...form };
+        if (processedData.relation !== 'OTHER') {
+            delete processedData.customRelation;
+        } else if (!processedData.customRelation?.trim()) {
+            return setError('Please specify the relation');
+        }
+        
+        if (processedData.gender !== 'OTHER') {
+            delete processedData.customGender;
+        } else if (!processedData.customGender?.trim()) {
+            return setError('Please specify the custom gender');
+        }
+
         setLoading(true);
         try {
-            await onAdd(form);
+            await onAdd(processedData);
             onClose();
         } catch {
             setError('Failed to add family member');
@@ -51,6 +64,24 @@ export function AddMemberModal({ onClose, onAdd }) {
                         <option value="">— Select —</option>
                         {['MALE', 'FEMALE', 'OTHER'].map(g => <option key={g} value={g}>{g}</option>)}
                     </Select>
+                    
+                    {form.relation === 'OTHER' && (
+                        <Input
+                            label="Specify Relation *"
+                            value={form.customRelation}
+                            onChange={e => setForm(f => ({ ...f, customRelation: e.target.value }))}
+                            placeholder="e.g. Uncle"
+                        />
+                    )}
+                    
+                    {form.gender === 'OTHER' && (
+                        <Input
+                            label="Specify Gender *"
+                            value={form.customGender}
+                            onChange={e => setForm(f => ({ ...f, customGender: e.target.value }))}
+                            placeholder="e.g. Non-Binary"
+                        />
+                    )}
                 </div>
                 <Input 
                     label="Phone" 

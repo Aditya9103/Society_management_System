@@ -4,13 +4,14 @@ import Modal from '../../../../components/ui/Modal';
 import { Input } from '../../../../components/ui/Input';
 import { Textarea } from '../../../../components/ui/Textarea';
 import Select from '../../../../components/ui/Select';
+import DatePicker from '../../../../components/ui/DatePicker';
 import { Button } from '../../../../components/ui/Button';
 import Alert from '../../../../components/ui/Alert';
 
 export default function CreateNoticeModal({ onClose }) {
     const [createNotice, { isLoading }] = useCreateNoticeMutation();
     const [form, setForm] = useState({
-        title: '', content: '', noticeType: 'GENERAL', priority: 'NORMAL', isPinned: false, status: 'PUBLISHED', scheduledAt: ''
+        title: '', content: '', noticeType: 'GENERAL', priority: 'NORMAL', isPinned: false, status: 'PUBLISHED', scheduledAt: null
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -25,7 +26,11 @@ export default function CreateNoticeModal({ onClose }) {
 
         try {
             const payload = { ...form, status };
-            if (!payload.scheduledAt) delete payload.scheduledAt;
+            if (payload.scheduledAt) {
+                payload.scheduledAt = payload.scheduledAt.toISOString();
+            } else {
+                delete payload.scheduledAt;
+            }
 
             await createNotice(payload).unwrap();
             
@@ -70,12 +75,11 @@ export default function CreateNoticeModal({ onClose }) {
                         {['LOW','NORMAL','HIGH','URGENT'].map(p => <option key={p} value={p}>{p}</option>)}
                     </Select>
                 </div>
-                <Input 
-                    type="datetime-local"
+                <DatePicker 
                     label="Schedule for later (Optional)" 
-                    value={form.scheduledAt} 
-                    onChange={set('scheduledAt')}
-                    min={new Date().toISOString().slice(0, 16)}
+                    selected={form.scheduledAt} 
+                    onChange={(date) => setForm(f => ({ ...f, scheduledAt: date }))}
+                    minDate={new Date()}
                 />
                 <label className="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" checked={form.isPinned} onChange={set('isPinned')} className="h-4 w-4 rounded accent-indigo-600" />

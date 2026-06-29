@@ -10,7 +10,7 @@ import { COMPLAINT_CATEGORIES } from './constants';
 export function RaiseComplaintModal({ onClose }) {
     const [raiseComplaint, { isLoading }] = useRaiseComplaintMutation();
     const [form, setForm] = useState({
-        title: '', description: '', category: 'ELECTRICAL', subcategory: COMPLAINT_CATEGORIES['ELECTRICAL'][0], priority: 'MEDIUM', isCommonArea: false, commonAreaLocation: '',
+        title: '', description: '', category: 'ELECTRICAL', customCategory: '', subcategory: COMPLAINT_CATEGORIES['ELECTRICAL'][0], priority: 'MEDIUM', isCommonArea: false, commonAreaLocation: '',
     });
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
@@ -18,10 +18,13 @@ export function RaiseComplaintModal({ onClose }) {
     const handleSubmit = async (e, status = 'OPEN') => {
         if (e) e.preventDefault();
         if (!form.title.trim() || !form.description.trim()) return setError('Title and description are required.');
+        if (form.category === 'OTHER' && !form.customCategory?.trim()) return setError('Please specify the custom category.');
+        
         setError('');
         try {
             const formData = new FormData();
             Object.keys(form).forEach(key => {
+                if (key === 'customCategory' && form.category !== 'OTHER') return;
                 formData.append(key, form[key]);
             });
             formData.append('status', status);
@@ -71,6 +74,16 @@ export function RaiseComplaintModal({ onClose }) {
                     >
                         {Object.keys(COMPLAINT_CATEGORIES).map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
                     </Select>
+                    
+                    {form.category === 'OTHER' && (
+                        <Input
+                            label="Specify Category *"
+                            value={form.customCategory}
+                            onChange={set('customCategory')}
+                            placeholder="e.g. Internet Provider"
+                        />
+                    )}
+
                     <Select 
                         label="Subcategory *" 
                         value={form.subcategory} 

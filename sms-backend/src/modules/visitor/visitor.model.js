@@ -45,8 +45,13 @@ const visitorSchema = new mongoose.Schema(
         // Visitor type
         visitorType: {
             type: String,
-            enum: ['GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR'],
+            enum: ['GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR', 'OTHER'],
             required: true,
+        },
+        // Custom visitor type
+        customVisitorType: {
+            type: String,
+            default: null
         },
         // Purpose
         purpose: {

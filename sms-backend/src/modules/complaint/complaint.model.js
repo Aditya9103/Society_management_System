@@ -46,6 +46,11 @@ const complaintSchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Category
+        customCategory: {
+            type: String,
+            default: null
+        },
         // Subcategory
         subcategory: {
             type: String,

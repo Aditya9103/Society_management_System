@@ -47,6 +47,11 @@ const emergencySchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Emergency Type
+        customEmergencyType: {
+            type: String,
+            default: null
+        },
         // Triggered by
         triggeredBy: {
             type: mongoose.Schema.Types.ObjectId,

@@ -14,6 +14,11 @@ const familyMemberSchema = new mongoose.Schema(
             enum: ['SPOUSE', 'CHILD', 'PARENT', 'SIBLING', 'GRANDPARENT', 'OTHER'],
             required: true,
         },
+        // Custom relation
+        customRelation: {
+            type: String,
+            default: null
+        },
         // Date of birth
         dateOfBirth: {
             type: Date,
@@ -24,6 +29,11 @@ const familyMemberSchema = new mongoose.Schema(
             type: String,
             enum: ['MALE', 'FEMALE', 'OTHER', null],
             default: null,
+        },
+        // Custom Gender
+        customGender: {
+            type: String,
+            default: null
         },
         // Phone
         phone: {

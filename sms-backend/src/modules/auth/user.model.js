@@ -71,6 +71,11 @@ const userSchema = new mongoose.Schema(
             enum: ['MALE', 'FEMALE', 'OTHER', null],
             default: null,
         },
+        // Custom Gender
+        customGender: {
+            type: String,
+            default: null
+        },
         // Nationality
         nationality: {
             type: String,

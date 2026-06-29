@@ -5,7 +5,7 @@ import Select from '../../../../components/ui/Select';
 import { Button } from '../../../../components/ui/Button';
 
 export function AddEmergencyContactModal({ onClose, onAdd }) {
-    const [form, setForm] = useState({ name: '', relation: 'SPOUSE', phone: '', email: '' });
+    const [form, setForm] = useState({ name: '', relation: 'SPOUSE', customRelation: '', phone: '', email: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -14,9 +14,16 @@ export function AddEmergencyContactModal({ onClose, onAdd }) {
         if (!form.name.trim()) return setError('Name is required');
         if (!form.phone.trim()) return setError('Phone is required');
         
+        let processedData = { ...form };
+        if (processedData.relation !== 'OTHER') {
+            delete processedData.customRelation;
+        } else if (!processedData.customRelation?.trim()) {
+            return setError('Please specify the relation');
+        }
+        
         setLoading(true);
         try {
-            await onAdd(form);
+            await onAdd(processedData);
             onClose();
         } catch (err) {
             setError(err?.data?.message || 'Failed to add emergency contact');
@@ -45,6 +52,15 @@ export function AddEmergencyContactModal({ onClose, onAdd }) {
                         <option key={r} value={r}>{r}</option>
                     ))}
                 </Select>
+
+                {form.relation === 'OTHER' && (
+                    <Input
+                        label="Specify Relation *"
+                        value={form.customRelation}
+                        onChange={e => setForm(f => ({ ...f, customRelation: e.target.value }))}
+                        placeholder="e.g. Colleague"
+                    />
+                )}
 
                 <Input 
                     label="Phone *" 

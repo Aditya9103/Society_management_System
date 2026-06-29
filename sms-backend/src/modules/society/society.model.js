@@ -18,6 +18,11 @@ const emergencyContactSchema = new mongoose.Schema(
             enum: ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AGENCY', 'OTHER'],
             required: true,
         },
+        // Custom Contact Type
+        customContactType: {
+            type: String,
+            default: null
+        },
     },
     { _id: false }
 );
@@ -102,6 +107,11 @@ const societySettingsSchema = new mongoose.Schema(
         maxVehiclesPerUnit: {
             type: Number,
             default: 2
+        },
+        // Vehicle auto approval
+        vehicleAutoApproval: {
+            type: Boolean,
+            default: false
         },
         // Maintenance tax percentage
         maintenanceTaxPercentage: {

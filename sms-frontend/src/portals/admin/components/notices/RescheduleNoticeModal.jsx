@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useUpdateNoticeScheduleMutation } from '../../../../store/api/societyAdminApi';
 import Modal from '../../../../components/ui/Modal';
 import { Input } from '../../../../components/ui/Input';
+import DatePicker from '../../../../components/ui/DatePicker';
 import { Button } from '../../../../components/ui/Button';
 import Alert from '../../../../components/ui/Alert';
 
 export default function RescheduleNoticeModal({ notice, onClose }) {
     const [updateSchedule, { isLoading }] = useUpdateNoticeScheduleMutation();
     const [scheduledAt, setScheduledAt] = useState(
-        notice?.scheduledAt ? new Date(new Date(notice.scheduledAt).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''
+        notice?.scheduledAt ? new Date(notice.scheduledAt) : null
     );
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -20,7 +21,7 @@ export default function RescheduleNoticeModal({ notice, onClose }) {
         try {
             await updateSchedule({ 
                 id: notice._id, 
-                scheduledAt: clear ? null : scheduledAt 
+                scheduledAt: clear ? null : (scheduledAt ? scheduledAt.toISOString() : null)
             }).unwrap();
             
             setSuccess(clear ? 'Schedule removed. Notice is now a draft.' : 'Notice schedule updated successfully!');
@@ -44,12 +45,11 @@ export default function RescheduleNoticeModal({ notice, onClose }) {
                     </p>
                 </div>
 
-                <Input 
-                    type="datetime-local"
+                <DatePicker 
                     label="New Scheduled Time *" 
-                    value={scheduledAt} 
-                    onChange={(e) => setScheduledAt(e.target.value)}
-                    min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
+                    selected={scheduledAt} 
+                    onChange={(date) => setScheduledAt(date)}
+                    minDate={new Date()}
                     required
                 />
                 

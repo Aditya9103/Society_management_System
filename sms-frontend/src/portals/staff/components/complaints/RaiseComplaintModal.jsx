@@ -11,7 +11,7 @@ const CATEGORIES = ['ELECTRICAL', 'PLUMBING', 'SECURITY', 'HOUSEKEEPING', 'LIFT_
 
 export default function RaiseComplaintModal({ isOpen, onClose }) {
     const [raiseComplaint, { isLoading }] = useStaffRaiseComplaintMutation();
-    const [form, setForm] = useState({ title: '', description: '', category: 'GENERAL', priority: 'MEDIUM', isCommonArea: true, commonAreaLocation: '' });
+    const [form, setForm] = useState({ title: '', description: '', category: 'GENERAL', customCategory: '', priority: 'MEDIUM', isCommonArea: true, commonAreaLocation: '' });
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
 
@@ -20,9 +20,13 @@ export default function RaiseComplaintModal({ isOpen, onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.title || !form.description) return setError('Title and description required.');
+        if (form.category === 'OTHER' && !form.customCategory?.trim()) return setError('Please specify the custom category.');
         try { 
             const formData = new FormData();
-            Object.keys(form).forEach(key => formData.append(key, form[key]));
+            Object.keys(form).forEach(key => {
+                if (key === 'customCategory' && form.category !== 'OTHER') return;
+                formData.append(key, form[key]);
+            });
             if (imageFile) formData.append('images', imageFile);
 
             await raiseComplaint(formData).unwrap(); 
@@ -82,6 +86,16 @@ export default function RaiseComplaintModal({ isOpen, onClose }) {
                     <Select label="Category" value={form.category} onChange={set('category')}>
                         {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ')}</option>)}
                     </Select>
+                    
+                    {form.category === 'OTHER' && (
+                        <Input
+                            label="Specify Category *"
+                            value={form.customCategory}
+                            onChange={set('customCategory')}
+                            placeholder="e.g. Internet Provider"
+                        />
+                    )}
+
                     <Select label="Priority" value={form.priority} onChange={set('priority')}>
                         {['LOW','MEDIUM','HIGH','URGENT'].map(p => <option key={p} value={p}>{p}</option>)}
                     </Select>

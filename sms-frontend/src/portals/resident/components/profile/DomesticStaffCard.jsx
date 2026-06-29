@@ -26,7 +26,7 @@ export function DomesticStaffCard({ staff, onDelete }) {
                         <p className="text-sm font-semibold text-slate-800">{staff.name}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
-                                {staff.role}
+                                {staff.role === 'OTHER' ? staff.customRole || 'OTHER' : staff.role}
                             </span>
                             {staff.phone && <span className="text-xs text-slate-500">{staff.phone}</span>}
                         </div>
@@ -54,7 +54,7 @@ export function DomesticStaffCard({ staff, onDelete }) {
                         <h3 className="font-bold text-slate-800 mb-4">Staff QR Code</h3>
                         <img src={staff.qrCodeUri} alt="QR Code" className="mx-auto w-48 h-48 mb-4 border-4 border-slate-100 rounded-xl" />
                         <p className="text-sm font-semibold text-slate-800">{staff.name}</p>
-                        <p className="text-xs text-slate-500 mb-2">{staff.role}</p>
+                        <p className="text-xs text-slate-500 mb-2">{staff.role === 'OTHER' ? staff.customRole || 'OTHER' : staff.role}</p>
                         <p className="text-xs text-indigo-600 font-medium">Scan this code at the gate for daily entry.</p>
                     </div>
                 </div>

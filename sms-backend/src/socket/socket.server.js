@@ -61,6 +61,9 @@ export const initSocket = (httpServer) => {
         const role = socket.user.role?.toUpperCase();
         if (role === 'ADMIN' || role === 'SOCIETY_ADMIN' || role === 'SUPER_ADMIN') {
             socket.join(ROOMS.ADMIN);
+            if (socket.user.societyId) {
+                socket.join(ROOMS.SOCIETY_ADMIN(socket.user.societyId));
+            }
         } else if (role === 'SECURITY_GUARD') {
             socket.join(ROOMS.GUARD);
         } else if (role === 'STAFF') {

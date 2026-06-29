@@ -47,7 +47,7 @@ export function ComplaintCard({ complaint }) {
                     <p className="text-sm text-slate-500 line-clamp-2 mb-3">{c.description}</p>
                     <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-medium text-slate-500 bg-slate-100 rounded-full px-2.5 py-0.5">
-                            {c.category} {c.subcategory && `› ${c.subcategory}`}
+                            {(c.category === 'OTHER' ? c.customCategory || 'OTHER' : c.category)} {c.subcategory && `› ${c.subcategory}`}
                         </span>
                         <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${PRIORITY_STYLES[c.priority] ?? ''}`}>{c.priority}</span>
                         <span className="text-xs text-slate-400 ml-auto">{new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>

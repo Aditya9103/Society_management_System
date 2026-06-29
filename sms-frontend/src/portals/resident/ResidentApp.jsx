@@ -5,7 +5,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import {
     LayoutDashboard, User, MessageSquareWarning,
-    Bell, UserCheck, Receipt, Home, ShieldAlert
+    Bell, UserCheck, Receipt, Home, ShieldAlert, Car, Users, BarChart2
 } from 'lucide-react';
 import PortalLayout from '../../components/layout/PortalLayout';
 import ResidentDashboardPage from './pages/ResidentDashboardPage';
@@ -15,6 +15,8 @@ import ResidentNoticesPage from './pages/ResidentNoticesPage';
 import ResidentEmergencyPage from './pages/ResidentEmergencyPage';
 import ResidentVisitorPage from './pages/ResidentVisitorPage';
 import ResidentInvoicesPage from './pages/ResidentInvoicesPage';
+import ResidentVehiclePage from './pages/ResidentVehiclePage';
+import ResidentPollsPage from './pages/ResidentPollsPage';
 import ResidentWalkInListener from './components/ResidentWalkInListener';
 
 const SIDEBAR_CONFIG = {
@@ -22,13 +24,15 @@ const SIDEBAR_CONFIG = {
     accentFrom: 'from-indigo-600',
     accentTo: 'to-violet-600',
     navItems: [
-        { to: '/resident',            label: 'My Home',          Icon: LayoutDashboard, end: true },
-        { to: '/resident/profile',    label: 'My Profile',       Icon: User },
-        { to: '/resident/complaints', label: 'Complaints',       Icon: MessageSquareWarning },
-        { to: '/resident/emergency',  label: 'Emergency (SOS)',  Icon: ShieldAlert },
-        { to: '/resident/notices',    label: 'Notices',          Icon: Bell },
-        { to: '/resident/visitors',   label: 'Visitor Passes',   Icon: UserCheck },
-        { to: '/resident/invoices',   label: 'Invoices & Bills', Icon: Receipt },
+        { to: '/resident', label: 'My Home', Icon: LayoutDashboard, end: true },
+        { to: '/resident/notices', label: 'Notices', Icon: Bell },
+        { to: '/resident/profile', label: 'My Profile', Icon: User },
+        { to: '/resident/complaints', label: 'Complaints', Icon: MessageSquareWarning },
+        { to: '/resident/emergency', label: 'Emergency (SOS)', Icon: ShieldAlert },
+        { to: '/resident/vehicles', label: 'Vehicles & Parking', Icon: Car },
+        { to: '/resident/visitors', label: 'Visitor Passes', Icon: UserCheck },
+        { to: '/resident/polls', label: 'Polls & Voting', Icon: BarChart2 },
+        { to: '/resident/invoices', label: 'Invoices & Bills', Icon: Receipt },
     ],
 };
 
@@ -38,13 +42,15 @@ export default function ResidentApp() {
             <ResidentWalkInListener />
             <Routes>
                 <Route index element={<ResidentDashboardPage />} />
-                <Route path="profile"    element={<ResidentProfilePage />} />
+                <Route path="notices" element={<ResidentNoticesPage />} />
+                <Route path="profile" element={<ResidentProfilePage />} />
                 <Route path="complaints" element={<ResidentComplaintsPage />} />
-                <Route path="emergency"  element={<ResidentEmergencyPage />} />
-                <Route path="notices"    element={<ResidentNoticesPage />} />
-                <Route path="visitors"   element={<ResidentVisitorPage />} />
-                <Route path="invoices"   element={<ResidentInvoicesPage />} />
-                <Route path="*"          element={<Navigate to="/resident" replace />} />
+                <Route path="emergency" element={<ResidentEmergencyPage />} />
+                <Route path="vehicles" element={<ResidentVehiclePage />} />
+                <Route path="visitors" element={<ResidentVisitorPage />} />
+                <Route path="polls" element={<ResidentPollsPage />} />
+                <Route path="invoices" element={<ResidentInvoicesPage />} />
+                <Route path="*" element={<Navigate to="/resident" replace />} />
             </Routes>
         </PortalLayout>
     );

@@ -13,6 +13,9 @@ export const ROOMS = {
     // Society room (for all members of a society)
     SOCIETY: (societyId) => `society_${societyId}`,
 
+    // Broadcast room for all Society Administrators of a specific society
+    SOCIETY_ADMIN: (societyId) => `society_admin_${societyId}`,
+
     // Broadcast room for all Society Administrators
     ADMIN: 'role_admin',
 

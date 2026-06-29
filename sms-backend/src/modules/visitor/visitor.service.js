@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import ApiError from '../../utils/ApiError.js';
 import { generateQRCodeDataURI } from '../../services/qr.service.js';
 import { sendNotification } from '../../services/notification.service.js';
+import { sendEmail } from '../../services/email.service.js';
 import { getIO } from '../../socket/socket.server.js';
 import { ROOMS } from '../../socket/rooms.js';
 import Unit from '../../shared/models/Unit.js';
@@ -35,7 +36,7 @@ export const createVisitorPass = async (userId, societyId, data) => {
     const resident = await residentRepo.findByUserId(userId);
     if (!resident) throw ApiError.notFound('Resident profile not found.');
 
-    const qrCode = `INV-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+    const qrCode = `INV-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const qrExpiresAt = getQrExpiry(data.visitorType);
 
     const visitor = await visitorRepo.create({
@@ -49,7 +50,42 @@ export const createVisitorPass = async (userId, societyId, data) => {
         approvalMethod: 'QR_SCAN'
     });
 
-    // Skipping email dispatch as per user spec (only FCM/Sockets)
+    if (visitor.visitorEmail) {
+        try {
+            const qrDataUri = await generateQRCodeDataURI(qrCode);
+            const html = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                    <div style="background-color: #4f46e5; padding: 20px; text-align: center; color: white;">
+                        <h1 style="margin: 0; font-size: 24px;">Visitor Pass</h1>
+                        <p style="margin: 5px 0 0 0; color:#fff;">You have been invited!</p>
+                    </div>
+                    <div style="padding: 30px; text-align: center;">
+                        <p style="font-size: 16px; color: #475569;">Hello <strong>${visitor.visitorName}</strong>,</p>
+                        <p style="font-size: 16px; color: #475569;">You have a visitor pass scheduled for <strong>${new Date(visitor.expectedArrival).toLocaleString()}</strong>.</p>
+                        
+                        <div style="margin: 30px 0;">
+                            <p style="font-size: 14px; color: #64748b; margin-bottom: 10px;">Please show this QR code at the security gate:</p>
+                            <img src="${qrDataUri}" alt="Visitor QR Code" style="width: 200px; height: 200px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;" />
+                        </div>
+                        
+                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; text-align: left; margin-top: 20px;">
+                            <p style="margin: 5px 0; color: #475569;"><strong>Pass ID:</strong> ${visitor.qrCode}</p>
+                            <p style="margin: 5px 0; color: #475569;"><strong>Valid Until:</strong> ${new Date(visitor.qrExpiresAt).toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            await sendEmail({
+                to: visitor.visitorEmail,
+                subject: 'Your Visitor Pass',
+                html
+            });
+        } catch (error) {
+            console.error('Failed to send visitor email:', error);
+            // Proceed without breaking if email fails
+        }
+    }
+
     return visitor;
 };
 
@@ -129,7 +165,7 @@ export const processWalkIn = async (guardId, societyId, data) => {
     // Notify Resident
     if (visitor.hostResidentId) {
         const residentHost = await residentRepo.findById(visitor.hostResidentId);
-        
+
         if (residentHost && residentHost.userId) {
             getIO().to(ROOMS.USER(residentHost.userId)).emit('visitor:approval_request', {
                 visitorId: visitor._id,
@@ -162,14 +198,14 @@ export const processWalkIn = async (guardId, societyId, data) => {
 
 export const scanQrCode = async (guardId, societyId, qrCode) => {
     let visitor = await visitorRepo.findByQrCode(qrCode);
-    
+
     if (!visitor) {
         // Look up static QR from Domestic Staff
         const ds = await DomesticStaff.findOne({ qrCode, societyId }).populate('registeredBy', 'unitId residentCode');
-        
+
         if (ds) {
             if (!ds.isActive) throw ApiError.badRequest('Domestic Staff profile is inactive.');
-            
+
             // Note: Timings are soft-enforced per user request, so we only strictly check allowedDays
             const today = new Date().getDay();
             if (ds.allowedDays && ds.allowedDays.length > 0 && !ds.allowedDays.includes(today)) {
@@ -235,13 +271,13 @@ export const getActiveVisitors = async (societyId, query = {}) => {
 export const logEntry = async (guardId, societyId, visitorId, gateId) => {
     let visitor = await visitorRepo.findById(visitorId);
     if (!visitor) throw ApiError.notFound('Visitor not found');
-    
+
     if (visitor.status !== 'APPROVED' && visitor.status !== 'PENDING') {
         throw ApiError.badRequest(`Cannot grant entry. Status is ${visitor.status}`);
     }
 
-    visitor = await visitorRepo.updateById(visitorId, { 
-        status: 'INSIDE', 
+    visitor = await visitorRepo.updateById(visitorId, {
+        status: 'INSIDE',
         entryTime: new Date(),
         entryGuardId: guardId,
         entryGateId: gateId
@@ -275,8 +311,8 @@ export const logExit = async (guardId, societyId, visitorId, gateId) => {
     if (!visitor) throw ApiError.notFound('Visitor not found');
     if (visitor.status !== 'INSIDE') throw ApiError.badRequest('Visitor is not inside.');
 
-    visitor = await visitorRepo.updateById(visitorId, { 
-        status: 'EXITED', 
+    visitor = await visitorRepo.updateById(visitorId, {
+        status: 'EXITED',
         exitTime: new Date(),
         exitGuardId: guardId
     });

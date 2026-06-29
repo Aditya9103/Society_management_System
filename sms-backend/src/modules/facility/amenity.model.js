@@ -56,6 +56,11 @@ const amenitySchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Amenity Type
+        customAmenityType: {
+            type: String,
+            default: null
+        },
         // Description
         description: {
             type: String,

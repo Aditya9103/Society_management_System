@@ -61,7 +61,7 @@ export default function ComplaintRow({ complaint, staff }) {
                 </div>
                 <p className="text-sm text-slate-500 line-clamp-1 mb-3">{complaint.description}</p>
                 <div className="flex items-center gap-2 flex-wrap mb-3">
-                    <StatusBadge status={complaint.category} type="NEUTRAL" />
+                    <StatusBadge status={complaint.category === 'OTHER' ? complaint.customCategory || 'OTHER' : complaint.category} type="NEUTRAL" />
                     <StatusBadge status={complaint.priority} type={priorityType} />
                     <span className="text-xs text-slate-400 ml-auto">{new Date(complaint.createdAt).toLocaleDateString('en-IN')}</span>
                 </div>

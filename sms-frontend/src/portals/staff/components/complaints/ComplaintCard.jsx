@@ -81,7 +81,7 @@ export default function ComplaintCard({ complaint }) {
                     </div>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-3">{c.description}</p>
                     <div className="flex items-center gap-2 flex-wrap">
-                        <StatusBadge status={c.category} type="NEUTRAL" />
+                        <StatusBadge status={c.category === 'OTHER' ? c.customCategory || 'OTHER' : c.category} type="NEUTRAL" />
                         {c.subcategory && <span className="text-xs text-slate-500">› {c.subcategory}</span>}
                         <StatusBadge status={c.priority} type={priorityType} />
                         <span className="text-xs text-slate-400 ml-auto">

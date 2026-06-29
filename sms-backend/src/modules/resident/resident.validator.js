@@ -23,6 +23,7 @@ export const addDomesticStaffSchema = {
     body: Joi.object({
         name: Joi.string().trim().required(),
         role: Joi.string().valid('MAID', 'COOK', 'DRIVER', 'GARDENER', 'NANNY', 'OTHER').required(),
+        customRole: Joi.string().optional().allow(null, ''),
         phone: Joi.string().allow(null, '').optional(),
         aadhaarNumber: Joi.string().allow(null, '').optional(),
         photoUrl: Joi.string().allow(null, '').optional(),
@@ -36,6 +37,7 @@ export const updateDomesticStaffSchema = {
     body: Joi.object({
         name: Joi.string().trim().optional(),
         role: Joi.string().valid('MAID', 'COOK', 'DRIVER', 'GARDENER', 'NANNY', 'OTHER').optional(),
+        customRole: Joi.string().optional().allow(null, ''),
         phone: Joi.string().allow(null, '').optional(),
         aadhaarNumber: Joi.string().allow(null, '').optional(),
         photoUrl: Joi.string().allow(null, '').optional(),

@@ -107,7 +107,7 @@ export default function ScanQrForm() {
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="font-bold text-emerald-900 text-lg">{data.data.visitor.visitorName}</p>
-                            <p className="text-emerald-700 text-sm font-medium">{data.data.visitor.visitorType}</p>
+                            <p className="text-emerald-700 text-sm font-medium">{data.data.visitor.visitorType === 'OTHER' ? data.data.visitor.customVisitorType || 'OTHER' : data.data.visitor.visitorType}</p>
                         </div>
                         <span className="px-2.5 py-1 bg-emerald-200 text-emerald-800 text-xs font-bold rounded-lg uppercase">
                             {data.data.visitor.status}

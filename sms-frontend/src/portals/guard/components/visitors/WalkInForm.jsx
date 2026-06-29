@@ -11,7 +11,7 @@ export default function WalkInForm({ recentApprovalEvent }) {
 
     const [guardWalkIn, { isLoading, data, isError, error, isSuccess }] = useGuardWalkInMutation();
     const [form, setForm] = useState({
-        hostUnitId: '', visitorName: '', visitorPhone: '', visitorType: 'GUEST', purpose: ''
+        hostUnitId: '', visitorName: '', visitorPhone: '', visitorType: 'GUEST', customVisitorType: '', purpose: ''
     });
     const [recentVisitor, setRecentVisitor] = useState(null);
 
@@ -26,9 +26,15 @@ export default function WalkInForm({ recentApprovalEvent }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await guardWalkIn(form).unwrap();
+            const payload = { ...form };
+            if (payload.visitorType !== 'OTHER') {
+                delete payload.customVisitorType;
+            } else if (!payload.customVisitorType?.trim()) {
+                return alert('Please specify the custom visitor type');
+            }
+            await guardWalkIn(payload).unwrap();
             setRecentVisitor({ name: form.visitorName, status: 'WAITING' });
-            setForm({ hostUnitId: '', visitorName: '', visitorPhone: '', visitorType: 'GUEST', purpose: '' });
+            setForm({ hostUnitId: '', visitorName: '', visitorPhone: '', visitorType: 'GUEST', customVisitorType: '', purpose: '' });
         } catch (err) { }
     };
 
@@ -112,8 +118,16 @@ export default function WalkInForm({ recentApprovalEvent }) {
                         value={form.visitorType}
                         onChange={e => setForm({ ...form, visitorType: e.target.value })}
                     >
-                        {['GUEST', 'DELIVERY', 'SERVICE', 'VENDOR', 'CONTRACTOR'].map(t => <option key={t} value={t}>{t}</option>)}
+                        {['GUEST', 'DELIVERY', 'SERVICE', 'VENDOR', 'CONTRACTOR', 'OTHER'].map(t => <option key={t} value={t}>{t}</option>)}
                     </Select>
+                    {form.visitorType === 'OTHER' && (
+                        <Input
+                            label="Specify Visitor Type *"
+                            value={form.customVisitorType}
+                            onChange={e => setForm({ ...form, customVisitorType: e.target.value })}
+                            placeholder="e.g. Relatives"
+                        />
+                    )}
                     <Input
                         label="Purpose"
                         value={form.purpose}

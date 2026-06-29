@@ -42,6 +42,17 @@ const vehicleLogSchema = new mongoose.Schema(
             ref: 'Gate',
             default: null,
         },
+        // Status of log
+        status: {
+            type: String,
+            enum: ['ENTRY', 'EXIT'],
+            default: 'ENTRY',
+        },
+        // Duration spent inside (in minutes)
+        durationMinutes: {
+            type: Number,
+            default: null
+        },
         // Reference to the associated Guard
         guardId: {
             type: mongoose.Schema.Types.ObjectId,

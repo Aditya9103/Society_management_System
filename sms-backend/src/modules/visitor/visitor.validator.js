@@ -8,8 +8,9 @@ export const createVisitorSchema = {
         visitorEmail: Joi.string().email().optional().allow(null, ''),
         visitorPhone: Joi.string().optional().allow(null, ''),
         visitorType: Joi.string()
-            .valid('GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR')
+            .valid('GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR', 'OTHER')
             .required(),
+        customVisitorType: Joi.string().optional().allow(null, ''),
         purpose: Joi.string().optional().allow(null, ''),
         expectedArrival: Joi.date().iso().optional().allow(null),
         vehicleNumber: Joi.string().optional().allow(null, ''),
@@ -28,8 +29,9 @@ export const guardWalkInSchema = {
         visitorName: Joi.string().trim().required(),
         visitorPhone: Joi.string().optional().allow(null, ''),
         visitorType: Joi.string()
-            .valid('GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR')
+            .valid('GUEST', 'DELIVERY', 'SERVICE', 'DOMESTIC_STAFF', 'VENDOR', 'OFFICIAL', 'CONTRACTOR', 'OTHER')
             .required(),
+        customVisitorType: Joi.string().optional().allow(null, ''),
         purpose: Joi.string().optional().allow(null, ''),
         vehicleNumber: Joi.string().optional().allow(null, ''),
     }),

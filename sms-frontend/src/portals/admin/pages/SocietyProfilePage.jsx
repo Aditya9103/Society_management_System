@@ -51,6 +51,16 @@ export default function SocietyProfilePage() {
         setSaveError('');
         setSaveSuccess(false);
         try {
+            const processedEmergencyContacts = emergencyContacts.map(c => {
+                const copy = { ...c };
+                if (copy.type !== 'OTHER') {
+                    delete copy.customContactType;
+                } else if (!copy.customContactType?.trim()) {
+                    throw new Error('Please specify the custom contact type for all OTHER emergency contacts.');
+                }
+                return copy;
+            });
+
             const payload = {
                 name: formData.name || undefined,
                 addressLine1: formData.addressLine1 || undefined,
@@ -74,18 +84,18 @@ export default function SocietyProfilePage() {
                     allowResidentDirectoryView: formData.allowResidentDirectoryView === 'true',
                     currency: formData.currency || undefined,
                 },
-                emergencyContacts,
+                emergencyContacts: processedEmergencyContacts,
             };
             await updateProfile(payload).unwrap();
             setSaveSuccess(true);
             setTimeout(() => setSaveSuccess(false), 3000);
         } catch (err) {
-            setSaveError(err?.data?.message ?? 'Failed to save. Please try again.');
+            setSaveError(err?.message || err?.data?.message || 'Failed to save. Please try again.');
         }
     };
 
     const addEmergencyContact = () =>
-        setEmergencyContacts((prev) => [...prev, { name: '', phone: '', type: 'POLICE' }]);
+        setEmergencyContacts((prev) => [...prev, { name: '', phone: '', type: 'POLICE', customContactType: '' }]);
 
     const removeEmergencyContact = (i) =>
         setEmergencyContacts((prev) => prev.filter((_, idx) => idx !== i));
@@ -251,6 +261,13 @@ export default function SocietyProfilePage() {
                                         <option key={t} value={t}>{t}</option>
                                     ))}
                                 </Select>
+                                {contact.type === 'OTHER' && (
+                                    <Input
+                                        value={contact.customContactType || ''}
+                                        onChange={(e) => updateContact(i, 'customContactType', e.target.value)}
+                                        placeholder="e.g. Plumber"
+                                    />
+                                )}
                             </div>
                             <button
                                 type="button"

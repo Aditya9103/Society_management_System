@@ -13,11 +13,11 @@ export const initializeJobs = () => {
     console.log('⚙️   Initializing background jobs...');
 
     // Mount schedules
-    scheduleInvoiceGenerator();
+    // scheduleInvoiceGenerator();
     scheduleNoticeSender();
     scheduleQrExpiry();
     scheduleReminderSender();
-    scheduleReportGenerator();
+    //scheduleReportGenerator();
     scheduleSlaChecker();
 
     console.log('✅  Background jobs initialized:       6 active schedules running');

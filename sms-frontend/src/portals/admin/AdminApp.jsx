@@ -6,7 +6,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Grid3X3, Users, UserCheck,
-  ClipboardList, Settings, ShieldCheck, MessageSquareWarning, Bell, Receipt, ShieldAlert
+  Settings, ShieldCheck, MessageSquareWarning, Bell, Receipt, ShieldAlert, Car, MapPin, ClipboardList, BarChart2
 } from 'lucide-react';
 import PortalLayout from '../../components/layout/PortalLayout';
 import DashboardPage from './pages/DashboardPage';
@@ -20,6 +20,9 @@ import AdminComplaintsPage from './pages/AdminComplaintsPage';
 import AdminNoticesPage from './pages/AdminNoticesPage';
 import AdminInvoicesPage from './pages/AdminInvoicesPage';
 import AdminEmergencyPage from './pages/AdminEmergencyPage';
+import AdminVehiclePage from './pages/AdminVehiclePage';
+import AdminParkingPage from './pages/AdminParkingPage';
+import AdminPollsPage from './pages/AdminPollsPage';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Society Admin', subtitle: 'Management Portal', Icon: ShieldCheck },
@@ -37,6 +40,9 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/emergencies', label: 'Emergencies', Icon: ShieldAlert },
     { to: '/admin/notices', label: 'Notices', Icon: Bell },
     { to: '/admin/invoices', label: 'Invoices', Icon: Receipt },
+    { to: '/admin/vehicles', label: 'Vehicles', Icon: Car },
+    { to: '/admin/parking', label: 'Parking', Icon: MapPin },
+    { to: '/admin/polls', label: 'Polls & Voting', Icon: BarChart2 },
   ],
 };
 
@@ -55,6 +61,9 @@ export default function AdminApp() {
         <Route path="emergencies" element={<AdminEmergencyPage />} />
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="invoices" element={<AdminInvoicesPage />} />
+        <Route path="vehicles" element={<AdminVehiclePage />} />
+        <Route path="parking" element={<AdminParkingPage />} />
+        <Route path="polls" element={<AdminPollsPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </PortalLayout>

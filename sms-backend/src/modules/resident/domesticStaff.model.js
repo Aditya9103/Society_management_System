@@ -26,6 +26,11 @@ const domesticStaffSchema = new mongoose.Schema(
             enum: ['MAID', 'COOK', 'DRIVER', 'GARDENER', 'NANNY', 'OTHER'],
             required: true,
         },
+        // Custom Role
+        customRole: {
+            type: String,
+            default: null
+        },
         // Phone
         phone: {
             type: String,

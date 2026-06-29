@@ -17,7 +17,7 @@ export function VisitorCard({ visitor }) {
             <div className="flex items-start justify-between gap-3 mb-2">
                 <div>
                     <p className="font-semibold text-slate-900">{visitor.visitorName}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{visitor.visitorType.replace('_', ' ')} {visitor.purpose ? `· ${visitor.purpose}` : ''}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{(visitor.visitorType === 'OTHER' ? (visitor.customVisitorType || 'OTHER') : visitor.visitorType).replace('_', ' ')} {visitor.purpose ? `· ${visitor.purpose}` : ''}</p>
                 </div>
                 <StatusBadge status={visitor.status} />
             </div>

@@ -89,7 +89,7 @@ export default function ActiveVisitorsList() {
                                     <div className="min-w-0 flex flex-col items-start">
                                         <h3 className="text-[15px] font-bold text-slate-900 truncate w-full" title={visitor.visitorName}>{visitor.visitorName}</h3>
                                         <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full mt-0.5">
-                                            {visitor.visitorType}
+                                            {visitor.visitorType === 'OTHER' ? visitor.customVisitorType || 'OTHER' : visitor.visitorType}
                                         </span>
                                     </div>
                                 </div>

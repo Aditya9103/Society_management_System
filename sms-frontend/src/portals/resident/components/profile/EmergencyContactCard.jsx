@@ -25,7 +25,7 @@ export function EmergencyContactCard({ contact, onDelete }) {
                     <h4 className="font-semibold text-slate-800 flex items-center gap-2">
                         {contact.name}
                         <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 tracking-wider">
-                            {contact.relation}
+                            {contact.relation === 'OTHER' ? contact.customRelation || 'OTHER' : contact.relation}
                         </span>
                     </h4>
                     <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">

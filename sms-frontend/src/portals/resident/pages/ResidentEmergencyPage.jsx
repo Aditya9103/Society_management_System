@@ -161,7 +161,7 @@ export default function ResidentEmergencyPage() {
                                         {contact.name}
                                         {contact.type && (
                                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 uppercase tracking-wider">
-                                                {contact.type.replace('_', ' ')}
+                                                {(contact.type === 'OTHER' ? contact.customContactType || 'OTHER' : contact.type).replace('_', ' ')}
                                             </span>
                                         )}
                                     </p>

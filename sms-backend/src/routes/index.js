@@ -11,6 +11,8 @@ import visitorRoutes     from '../modules/visitor/visitor.routes.js';
 import paymentRoutes     from '../modules/payment/payment.routes.js';
 import notificationRoutes from '../modules/notification/notification.routes.js';
 import emergencyRoutes   from '../modules/emergency/emergency.routes.js';
+import vehicleRoutes     from '../modules/vehicle/vehicle.routes.js';
+import pollRoutes        from '../modules/poll/poll.routes.js';
 
 /**
  * routes/index.js — Central API router (v1).
@@ -46,5 +48,7 @@ router.use('/visitors',   visitorRoutes);      // Visitor module
 router.use('/invoices',   paymentRoutes);      // Invoice & Payment module
 router.use('/notifications', notificationRoutes); // Notification module
 router.use('/emergencies', emergencyRoutes);   // Emergency module
+router.use('/vehicles',    vehicleRoutes);     // Vehicle module
+router.use('/polls',       pollRoutes);        // Polls & Voting module
 
 export default router;

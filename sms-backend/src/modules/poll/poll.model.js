@@ -70,6 +70,11 @@ const pollSchema = new mongoose.Schema(
             ],
             required: true,
         },
+        // Custom Poll type if OTHER
+        customPollType: {
+            type: String,
+            default: null
+        },
         // Voting method
         votingMethod: {
             type: String,

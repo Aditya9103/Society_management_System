@@ -4,6 +4,10 @@ export const findByUserId = (userId) => {
     return Resident.findOne({ userId });
 };
 
+export const findResidentsBySocietyId = (societyId) => {
+    return Resident.find({ societyId });
+};
+
 export const findByUnitId = (unitId) => {
     return Resident.findOne({ unitId });
 };

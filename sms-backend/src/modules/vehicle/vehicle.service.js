@@ -7,6 +7,7 @@ import { getIO } from '../../socket/socket.server.js';
 import { ROOMS } from '../../socket/rooms.js';
 import { sendNotification } from '../../services/notification.service.js';
 import User from '../auth/user.model.js';
+import { deleteFile, extractPublicId } from '../../services/storage.service.js';
 
 // --- RESIDENT SERVICES ---
 
@@ -108,6 +109,20 @@ export const deleteMyVehicle = async (userId, vehicleId) => {
     const activeLog = await vehicleRepo.getLatestActiveLog(vehicleId);
     if (activeLog) {
         throw ApiError.badRequest('Cannot delete vehicle while it is currently inside the society.');
+    }
+
+    // Delete associated images from Cloudinary
+    for (const url of [vehicle.rcPhotoUrl, vehicle.vehiclePhotoUrl]) {
+        if (url) {
+            const publicId = extractPublicId(url);
+            if (publicId) {
+                try {
+                    await deleteFile(publicId);
+                } catch (error) {
+                    console.error(`Failed to delete vehicle image ${publicId}: ${error.message}`);
+                }
+            }
+        }
     }
 
     // Free up parking slot if assigned

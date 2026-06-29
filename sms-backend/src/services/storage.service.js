@@ -62,3 +62,30 @@ export const deleteFile = async (publicId) => {
         throw error;
     }
 };
+
+/**
+ * Extracts the public ID from a Cloudinary URL.
+ * 
+ * @param {string} url - The Cloudinary URL
+ * @returns {string|null} The public ID or null if invalid
+ */
+export const extractPublicId = (url) => {
+    if (!url) return null;
+    try {
+        const parts = url.split('/upload/');
+        if (parts.length < 2) return null;
+        let path = parts[1];
+        // Remove version if present (e.g., v1234567890/)
+        if (path.match(/^v\d+\//)) {
+            path = path.replace(/^v\d+\//, '');
+        }
+        // Remove extension
+        const lastDot = path.lastIndexOf('.');
+        if (lastDot !== -1) {
+            path = path.substring(0, lastDot);
+        }
+        return path;
+    } catch (error) {
+        return null;
+    }
+};

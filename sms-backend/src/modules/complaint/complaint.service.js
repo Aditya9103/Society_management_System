@@ -11,6 +11,7 @@ import { ROOMS } from '../../socket/rooms.js';
 import User from '../auth/user.model.js';
 import { sendNotification } from '../../services/notification.service.js';
 import logger from '../../utils/logger.js';
+import { deleteFile, extractPublicId } from '../../services/storage.service.js';
 
 const STAFF_WHO_CAN_READ = [
     ROLES.SOCIETY_ADMIN,
@@ -321,6 +322,20 @@ export const deleteComplaint = async (id, societyId, role) => {
 
     if (complaint.status !== 'CLOSED') {
         throw ApiError.badRequest('Only fully resolved and CLOSED complaints can be deleted');
+    }
+
+    // Delete associated images from Cloudinary
+    if (complaint.images && complaint.images.length > 0) {
+        for (const imageUrl of complaint.images) {
+            const publicId = extractPublicId(imageUrl);
+            if (publicId) {
+                try {
+                    await deleteFile(publicId);
+                } catch (error) {
+                    logger.error(`Failed to delete complaint image ${publicId}: ${error.message}`);
+                }
+            }
+        }
     }
 
     await complaintRepo.deleteCommentsByComplaintId(id);

@@ -1,5 +1,8 @@
 import * as pollRepo from './poll.repository.js';
 import * as residentRepo from '../resident/resident.repository.js';
+
+import { deleteFile, extractPublicId } from '../../services/storage.service.js';
+import logger from '../../utils/logger.js';
 import ApiError from '../../utils/ApiError.js';
 import { sendNotification } from '../../services/notification.service.js';
 import { getIO } from '../../socket/socket.server.js';
@@ -75,6 +78,27 @@ export const closePoll = async (societyId, pollId) => {
 };
 
 export const deletePoll = async (societyId, pollId) => {
+    const poll = await pollRepo.getPollById(pollId, societyId);
+    if (!poll) {
+        throw new Error('Poll not found');
+    }
+
+    // Delete associated images from Cloudinary
+    if (poll.options && poll.options.length > 0) {
+        for (const option of poll.options) {
+            if (option.photoUrl) {
+                const publicId = extractPublicId(option.photoUrl);
+                if (publicId) {
+                    try {
+                        await deleteFile(publicId);
+                    } catch (error) {
+                        logger.error(`Failed to delete poll option image ${publicId}: ${error.message}`);
+                    }
+                }
+            }
+        }
+    }
+
     return pollRepo.deletePoll(pollId, societyId);
 };
 
@@ -82,14 +106,17 @@ export const getResidentActivePolls = async (societyId, userId) => {
     const resident = await residentRepo.findByUserId(userId);
     if (!resident) return [];
 
+    const user = await User.findById(userId);
     const polls = await pollRepo.getPollsBySociety(societyId);
     const now = new Date();
     
-    const activePolls = polls.filter(p => 
-        p.status === 'ACTIVE' && 
-        new Date(p.startDate) <= now && 
-        new Date(p.endDate) >= now
-    );
+    const activePolls = polls.filter(p => {
+        if (p.status !== 'ACTIVE' || new Date(p.startDate) > now || new Date(p.endDate) < now) return false;
+        if (p.eligibleVoters === 'OWNERS_ONLY' && resident.ownershipType !== 'OWNER') return false;
+        if (p.eligibleVoters === 'TENANTS_ONLY' && resident.ownershipType !== 'TENANT') return false;
+        if (p.eligibleVoters === 'COMMITTEE' && user?.role !== 'COMMITTEE_MEMBER') return false;
+        return true;
+    });
 
     const votes = await pollRepo.findVotesByVoter(resident._id);
     const votedPollIds = votes.map(v => v.pollId.toString());
@@ -102,13 +129,21 @@ export const getResidentVotedPolls = async (societyId, userId) => {
     const resident = await residentRepo.findByUserId(userId);
     if (!resident) return [];
 
+    const user = await User.findById(userId);
     const polls = await pollRepo.getPollsBySociety(societyId);
+
+    const eligiblePolls = polls.filter(p => {
+        if (p.eligibleVoters === 'OWNERS_ONLY' && resident.ownershipType !== 'OWNER') return false;
+        if (p.eligibleVoters === 'TENANTS_ONLY' && resident.ownershipType !== 'TENANT') return false;
+        if (p.eligibleVoters === 'COMMITTEE' && user?.role !== 'COMMITTEE_MEMBER') return false;
+        return true;
+    });
 
     const votes = await pollRepo.findVotesByVoter(resident._id);
     const votedPollIds = votes.map(v => v.pollId.toString());
 
     // Return all polls (active/closed) that the resident has voted on
-    return polls.filter(p => votedPollIds.includes(p._id.toString()));
+    return eligiblePolls.filter(p => votedPollIds.includes(p._id.toString()));
 };
 
 export const getResidentPollById = async (societyId, pollId, userId) => {
@@ -116,6 +151,11 @@ export const getResidentPollById = async (societyId, pollId, userId) => {
     if (!poll) throw ApiError.notFound('Poll not found');
 
     const resident = await residentRepo.findByUserId(userId);
+    const user = await User.findById(userId);
+
+    if (poll.eligibleVoters === 'OWNERS_ONLY' && resident?.ownershipType !== 'OWNER') throw ApiError.forbidden('Only owners can view this poll');
+    if (poll.eligibleVoters === 'TENANTS_ONLY' && resident?.ownershipType !== 'TENANT') throw ApiError.forbidden('Only tenants can view this poll');
+    if (poll.eligibleVoters === 'COMMITTEE' && user?.role !== 'COMMITTEE_MEMBER') throw ApiError.forbidden('Only committee members can view this poll');
     let hasVoted = false;
     let myVote = null;
 
@@ -154,13 +194,17 @@ export const submitVote = async (societyId, pollId, userId, optionIds) => {
     // Verify resident
     const resident = await residentRepo.findByUserId(userId);
     if (!resident) throw ApiError.unauthorized('Resident profile not found');
+    const user = await User.findById(userId);
 
     // Check eligibility logic
-    if (poll.eligibleVoters === 'OWNERS_ONLY' && resident.residentType !== 'OWNER') {
+    if (poll.eligibleVoters === 'OWNERS_ONLY' && resident.ownershipType !== 'OWNER') {
         throw ApiError.forbidden('Only owners are allowed to vote in this poll');
     }
-    if (poll.eligibleVoters === 'TENANTS_ONLY' && resident.residentType !== 'TENANT') {
+    if (poll.eligibleVoters === 'TENANTS_ONLY' && resident.ownershipType !== 'TENANT') {
         throw ApiError.forbidden('Only tenants are allowed to vote in this poll');
+    }
+    if (poll.eligibleVoters === 'COMMITTEE' && user?.role !== 'COMMITTEE_MEMBER') {
+        throw ApiError.forbidden('Only committee members are allowed to vote in this poll');
     }
 
     // Single vs Multiple choice constraint

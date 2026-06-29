@@ -2,6 +2,7 @@ import * as dsRepo from './domesticStaff.repository.js';
 import * as residentRepo from './resident.repository.js';
 import ApiError from '../../utils/ApiError.js';
 import { generateQRCodeDataURI } from '../../services/qr.service.js';
+import { deleteFile, extractPublicId } from '../../services/storage.service.js';
 
 export const addDomesticStaff = async (userId, societyId, data) => {
     const resident = await residentRepo.findByUserId(userId);
@@ -55,6 +56,18 @@ export const removeDomesticStaff = async (id, userId) => {
     const staff = await dsRepo.findById(id);
     if (!staff || staff.registeredBy.toString() !== resident._id.toString()) {
         throw ApiError.notFound('Domestic staff not found or access denied.');
+    }
+
+    // Delete associated photo from Cloudinary
+    if (staff.photoUrl) {
+        const publicId = extractPublicId(staff.photoUrl);
+        if (publicId) {
+            try {
+                await deleteFile(publicId);
+            } catch (error) {
+                console.error(`Failed to delete domestic staff image ${publicId}: ${error.message}`);
+            }
+        }
     }
 
     return dsRepo.deleteById(id);

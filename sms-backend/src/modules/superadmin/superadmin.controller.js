@@ -27,7 +27,8 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
  * Provision a new Tenant + Society in one atomic operation.
  */
 export const createTenantWithSociety = asyncHandler(async (req, res) => {
-    const result = await superAdminService.createTenantWithSociety(req.body);
+    const payload = { ...req.body, logoBuffer: req.file?.buffer };
+    const result = await superAdminService.createTenantWithSociety(payload);
     res.status(201).json(
         new ApiResponse(201, result, 'Tenant and Society provisioned successfully'),
     );

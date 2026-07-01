@@ -10,12 +10,57 @@ import EmptyState from '../../../components/ui/EmptyState';
 import Pagination from '../../../components/ui/Pagination';
 import RejectResidentModal from '../components/RejectResidentModal';
 import ApprovalCard from '../components/approvals/ApprovalCard';
+import { useLazyGetDocumentsQuery } from '../../../store/api/documentApi';
+import Modal from '../../../components/ui/Modal';
+import { FileText, Download } from 'lucide-react';
+
+function ViewDocsModal({ isOpen, onClose, userId }) {
+    const [trigger, { data, isFetching }] = useLazyGetDocumentsQuery();
+
+    React.useEffect(() => {
+        if (isOpen && userId) {
+            trigger({ ownerId: userId, ownerType: 'RESIDENT' });
+        }
+    }, [isOpen, userId, trigger]);
+
+    const docs = data?.data?.documents || [];
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Resident Documents">
+            <div className="p-4 space-y-4">
+                {isFetching ? (
+                    <div className="text-center py-4 text-slate-500">Loading documents...</div>
+                ) : docs.length === 0 ? (
+                    <div className="text-center py-8 text-slate-500">No documents found.</div>
+                ) : (
+                    <div className="space-y-3">
+                        {docs.map(doc => (
+                            <div key={doc._id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <FileText className="h-8 w-8 text-indigo-500" />
+                                    <div>
+                                        <p className="font-semibold text-slate-800">{doc.title}</p>
+                                        <p className="text-xs text-slate-500">{doc.documentType.replace(/_/g, ' ')}</p>
+                                    </div>
+                                </div>
+                                <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="p-2 bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100">
+                                    <Download className="h-4 w-4" />
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Modal>
+    );
+}
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function PendingApprovalsPage() {
     const [page, setPage] = useState(1);
     const [alertMsg, setAlertMsg] = useState({ type: '', msg: '' });
     const [rejectModal, setRejectModal] = useState({ open: false, userId: '', name: '' });
+    const [docsModal, setDocsModal] = useState({ open: false, userId: '' });
 
     const { data, isLoading, isError, refetch, isFetching } = useListResidentProfilesQuery({
         page,
@@ -89,6 +134,7 @@ export default function PendingApprovalsPage() {
                             resident={resident}
                             onApprove={handleApprove}
                             onReject={handleOpenReject}
+                            onViewDocs={(id) => setDocsModal({ open: true, userId: id })}
                             isApproving={isApproving}
                         />
                     ))}
@@ -103,6 +149,12 @@ export default function PendingApprovalsPage() {
                 residentUserId={rejectModal.userId}
                 residentName={rejectModal.name}
                 onSuccess={(msg) => showAlert('success', msg)}
+            />
+
+            <ViewDocsModal
+                isOpen={docsModal.open}
+                onClose={() => setDocsModal({ open: false, userId: '' })}
+                userId={docsModal.userId}
             />
         </div>
     );

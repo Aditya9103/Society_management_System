@@ -32,6 +32,17 @@ export const updateSociety = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { society }, 'Society updated successfully'));
 });
 
+/**
+ * PATCH /api/v1/societies/profile/logo
+ * Update society logo.
+ */
+export const updateSocietyLogo = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    if (!req.file) throw ApiError.badRequest('Logo file is required');
+    const society = await societyService.updateSocietyLogo(societyId, req.file.buffer);
+    res.status(200).json(new ApiResponse(200, { society }, 'Society logo updated successfully'));
+});
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 
 /**
@@ -126,6 +137,31 @@ export const rejectResident = asyncHandler(async (req, res) => {
 
     const resident = await societyService.rejectResident(id, adminUserId, reason);
     res.status(200).json(new ApiResponse(200, { user: resident }, 'Resident rejected successfully'));
+});
+
+/**
+ * PATCH /api/v1/societies/resident/:id/revoke
+ * Revoke an approved resident.
+ */
+export const revokeResident = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const adminUserId = req.user.sub;
+
+    const resident = await societyService.revokeResident(id, adminUserId, reason);
+    res.status(200).json(new ApiResponse(200, { user: resident }, 'Resident access revoked successfully'));
+});
+
+/**
+ * GET /api/v1/societies/resident/:id
+ * Get single resident full profile.
+ */
+export const getResidentProfile = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const societyId = req.user.societyId;
+    
+    const data = await societyService.getResidentProfile(id, societyId);
+    res.status(200).json(new ApiResponse(200, data, 'Resident profile fetched successfully'));
 });
 
 // ── Tower Management ──────────────────────────────────────────────────────────

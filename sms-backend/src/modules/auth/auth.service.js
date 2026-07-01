@@ -368,12 +368,21 @@ export const registerFcmToken = async (userId, fcmToken) => {
  * Creates an UNVERIFIED user and sends an OTP.
  */
 export const initiateResidentRegistration = async (firstName, lastName, email, password) => {
+    const passwordHash = await bcrypt.hash(password, 10);
     const existing = await userRepo.findByEmail(email);
+
     if (existing) {
+        if (existing.registrationStatus === 'UNVERIFIED' || existing.registrationStatus === 'INCOMPLETE_PROFILE') {
+            await userRepo.updateUser(existing._id, {
+                firstName,
+                lastName,
+                passwordHash,
+            });
+            await sendOtp(email, OTP_CONFIG.PURPOSES.REGISTER);
+            return;
+        }
         throw ApiError.badRequest('Email is already registered. Please login instead.');
     }
-
-    const passwordHash = await bcrypt.hash(password, 10);
 
     await userRepo.createUser({
         firstName,

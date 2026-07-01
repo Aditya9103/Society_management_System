@@ -32,9 +32,11 @@ export default function ResidentEmergencyPage() {
         e.preventDefault(); // prevent text selection
         if (isLoading) return;
         setIsHolding(true);
+        // eslint-disable-next-line react-hooks/purity
         startTimeRef.current = Date.now();
         
         const updateProgress = () => {
+            // eslint-disable-next-line react-hooks/purity
             const elapsed = Date.now() - startTimeRef.current;
             const progress = Math.min((elapsed / 3000) * 100, 100);
             setHoldProgress(progress);

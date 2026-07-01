@@ -19,6 +19,7 @@ import {
     createTenantWithSocietySchema,
     listQuerySchema,
 } from './superadmin.validator.js';
+import { uploadSingle } from '../../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -41,6 +42,7 @@ router.get('/dashboard', superAdminController.getDashboardStats);
  */
 router.post(
     '/tenants',
+    uploadSingle('logo', 'societies', 'image'),
     validate(createTenantWithSocietySchema),
     superAdminController.createTenantWithSociety,
 );

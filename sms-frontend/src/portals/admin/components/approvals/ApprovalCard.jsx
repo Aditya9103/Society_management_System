@@ -4,7 +4,7 @@ import { Button } from '../../../../components/ui/Button';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import Card from '../../../../components/ui/Card';
 
-export default function ApprovalCard({ resident, onApprove, onReject, isApproving }) {
+export default function ApprovalCard({ resident, onApprove, onReject, onViewDocs, isApproving }) {
     const user = resident.userId;
     if (!user) return null;
 
@@ -67,6 +67,13 @@ export default function ApprovalCard({ resident, onApprove, onReject, isApprovin
 
                 {/* Right — Actions */}
                 <div className="flex shrink-0 items-center gap-2 self-end sm:self-start">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onViewDocs(user._id)}
+                    >
+                        View Docs
+                    </Button>
                     <Button
                         size="sm"
                         variant="danger"

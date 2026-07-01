@@ -14,7 +14,8 @@ import GuardVisitorsPage from './pages/GuardVisitorsPage';
 import GuardVehiclePage from './pages/GuardVehiclePage';
 import StaffProfilePage from '../staff/pages/StaffProfilePage';
 import AdminEmergencyPage from '../admin/pages/AdminEmergencyPage';
-import { QrCode, ShieldAlert, Car } from 'lucide-react';
+import VerifyIdCardPage from './pages/VerifyIdCardPage';
+import { QrCode, ShieldAlert, Car, ScanLine } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Guard Portal', subtitle: 'Security Guard', Icon: ShieldCheck },
@@ -23,6 +24,7 @@ const SIDEBAR_CONFIG = {
     navItems: [
         { to: '/guard', label: 'Dashboard', Icon: ShieldCheck, end: true },
         { to: '/guard/visitors', label: 'Visitor Gates', Icon: QrCode },
+        { to: '/guard/verify-id', label: 'Verify ID Card', Icon: ScanLine },
         { to: '/guard/vehicles', label: 'Vehicle Gates', Icon: Car },
         { to: '/guard/emergencies', label: 'Emergencies', Icon: ShieldAlert },
         { to: '/guard/residents', label: 'Resident Lookup', Icon: Users },
@@ -36,6 +38,7 @@ export default function GuardApp() {
     <PortalLayout sidebarConfig={SIDEBAR_CONFIG} maxWidth="max-w-3xl">
       <Routes>
         <Route index element={<GuardDashboardPage />} />
+        <Route path="verify-id" element={<VerifyIdCardPage />} />
         <Route path="visitors" element={<GuardVisitorsPage />} />
         <Route path="vehicles" element={<GuardVehiclePage />} />
         <Route path="emergencies" element={<AdminEmergencyPage />} />

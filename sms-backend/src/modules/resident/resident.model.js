@@ -184,6 +184,10 @@ const residentSchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        qrData: {
+            type: String,
+            default: null
+        },
         // Id card generated at
         idCardGeneratedAt: {
             type: Date,

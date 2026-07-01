@@ -5,6 +5,7 @@ import logger from '../utils/logger.js';
 import { scheduleInvoiceGenerator } from './invoiceGenerator.job.js';
 import { scheduleNoticeSender } from './noticeSender.job.js';
 import { scheduleQrExpiry } from './qrExpiry.job.js';
+import { initializeDocumentExpiryJob } from './documentExpiry.job.js';
 import { scheduleReminderSender } from './reminderSender.job.js';
 import { scheduleReportGenerator } from './reportGenerator.job.js';
 import { scheduleSlaChecker } from './slaChecker.job.js';
@@ -14,6 +15,8 @@ export const initializeJobs = () => {
 
     // Mount schedules
     // scheduleInvoiceGenerator();
+    initializeDocumentExpiryJob();
+    logger.info('Scheduled jobs initialized');
     scheduleNoticeSender();
     scheduleQrExpiry();
     scheduleReminderSender();

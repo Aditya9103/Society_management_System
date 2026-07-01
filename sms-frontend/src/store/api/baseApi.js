@@ -148,12 +148,14 @@ export const axiosBaseQuery =
       setupResponseInterceptor(api.dispatch);
 
       try {
+        const isFormData = data instanceof FormData;
+        
         const result = await axiosInstance({
           url,
           method,
           data,
           params,
-          headers,
+          headers: isFormData ? { ...headers, 'Content-Type': undefined } : headers,
         });
         return { data: result.data };
       } catch (axiosError) {

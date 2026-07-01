@@ -55,6 +55,13 @@ router.get('/profile', societyController.getSocietyProfile);
  */
 router.patch('/profile', validate(updateSocietySchema), societyController.updateSociety);
 
+/**
+ * PATCH /api/v1/societies/profile/logo
+ * Update society logo.
+ */
+import { uploadSingle } from '../../middleware/upload.middleware.js';
+router.patch('/profile/logo', uploadSingle('logo'), societyController.updateSocietyLogo);
+
 // ── Staff ─────────────────────────────────────────────────────────────────────
 
 /**
@@ -108,6 +115,22 @@ router.patch(
     validate(rejectResidentSchema),
     societyController.rejectResident,
 );
+
+/**
+ * PATCH /api/v1/societies/resident/:id/revoke
+ * Revoke an approved resident.
+ */
+router.patch(
+    '/resident/:id/revoke',
+    validate(rejectResidentSchema), // Re-using schema for reason
+    societyController.revokeResident,
+);
+
+/**
+ * GET /api/v1/societies/resident/:id
+ * Get detailed resident profile.
+ */
+router.get('/resident/:id', societyController.getResidentProfile);
 
 // ── Towers ────────────────────────────────────────────────────────────────────
 

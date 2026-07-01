@@ -2,7 +2,10 @@ import mongoose from 'mongoose';
 import * as residentRepo from './resident.repository.js';
 import * as userRepo from '../auth/user.repository.js';
 import * as unitRepo from '../../shared/repositories/unit.repository.js';
+import * as societyRepo from '../society/society.repository.js';
 import ApiError from '../../utils/ApiError.js';
+import { uploadFile } from '../../services/storage.service.js';
+import { uploadToCloudinary } from '../../middleware/upload.middleware.js';
 
 /**
  * Step 3: Complete Resident Profile
@@ -40,13 +43,21 @@ export const completeResidentProfile = async (userId, profileData) => {
         uploadedDocuments: [profileData.aadhaarUrl, profileData.agreementUrl].filter(Boolean),
     });
 
+    // Upload profile photo if provided
+    let profilePhotoUrl = user.profilePhotoUrl;
+    if (profileData.profilePhotoBuffer) {
+        const uploadResult = await uploadToCloudinary(profileData.profilePhotoBuffer, 'avatars');
+        profilePhotoUrl = uploadResult.secure_url;
+    }
+
     // Update user status to PENDING_APPROVAL and bind societyId
-    await userRepo.updateUser(userId, {
+    const updatedUser = await userRepo.updateUser(userId, {
         registrationStatus: 'PENDING_APPROVAL',
-        societyId: unit.societyId
+        societyId: unit.societyId,
+        ...(profilePhotoUrl && { profilePhotoUrl })
     });
 
-    return profile;
+    return { profile, user: updatedUser };
 };
 
 /**
@@ -62,7 +73,7 @@ export const getMyResidentProfile = async (userId) => {
     
     // Populate references
     await profile.populate('unitId', 'unitNumber bhkType unitType ownershipStatus');
-    await profile.populate('societyId', 'name address city state emergencyContacts');
+    await profile.populate('societyId', 'name address city state emergencyContacts logoUrl');
     await profile.populate('userId', 'firstName lastName email phone registrationStatus');
     
     return profile;
@@ -80,6 +91,16 @@ export const updateMyProfile = async (userId, data) => {
     );
 
     return userRepo.updateUser(userId, updates);
+};
+
+export const updateMyAvatar = async (userId, imageBuffer) => {
+    const uploadResult = await uploadFile(imageBuffer, { folder: 'resident_avatars' });
+    
+    // Save photo to User document
+    const updatedUser = await userRepo.updateUser(userId, { profilePhotoUrl: uploadResult.secure_url });
+    const profile = await residentRepo.findByUserId(userId);
+
+    return { profile, user: updatedUser };
 };
 
 // ── Family Members ────────────────────────────────────────────────────────────

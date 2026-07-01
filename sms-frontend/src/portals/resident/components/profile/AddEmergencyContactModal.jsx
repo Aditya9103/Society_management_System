@@ -15,11 +15,13 @@ export function AddEmergencyContactModal({ onClose, onAdd }) {
         if (!form.phone.trim()) return setError('Phone is required');
         
         let processedData = { ...form };
-        if (processedData.relation !== 'OTHER') {
-            delete processedData.customRelation;
-        } else if (!processedData.customRelation?.trim()) {
-            return setError('Please specify the relation');
+        if (processedData.relation === 'OTHER') {
+            if (!processedData.customRelation?.trim()) {
+                return setError('Please specify the relation');
+            }
+            processedData.relation = processedData.customRelation.trim();
         }
+        delete processedData.customRelation;
         
         setLoading(true);
         try {

@@ -22,6 +22,9 @@ const envSchema = Joi.object({
     JWT_ACCESS_EXPIRES: Joi.string().default('15m'),
     JWT_REFRESH_EXPIRES: Joi.string().default('7d'),
 
+    // ID Card Secret
+    ID_CARD_SECRET: Joi.string().required().description('Secret for signing ID card QR codes'),
+
     // Cloudinary (file uploads)
     CLOUDINARY_CLOUD_NAME: Joi.string().optional().allow(''),
     CLOUDINARY_API_KEY: Joi.string().optional().allow(''),
@@ -80,6 +83,9 @@ const env = Object.freeze({
         accessExpires: value.JWT_ACCESS_EXPIRES,
         refreshExpires: value.JWT_REFRESH_EXPIRES,
     },
+
+    // ID Card
+    idCardSecret: value.ID_CARD_SECRET,
 
     // Cloudinary
     cloudinary: {

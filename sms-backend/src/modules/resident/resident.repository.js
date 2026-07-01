@@ -18,7 +18,11 @@ export const createResident = (data) => {
     return Resident.create(data);
 };
 
-export const updateResident = (id, updates) => {
+export const findByResidentCode = async (residentCode) => {
+    return Resident.findOne({ residentCode });
+};
+
+export const updateResident = async (id, updates) => {
     return Resident.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).lean();
 };
 

@@ -13,10 +13,11 @@
  */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Save, Trash2, Plus } from 'lucide-react';
+import { Save, Trash2, Plus, Camera, Loader2 } from 'lucide-react';
 import {
     useGetSocietyProfileQuery,
     useUpdateSocietyProfileMutation,
+    useUpdateSocietyLogoMutation,
 } from '../../../store/api/societyAdminApi';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -32,6 +33,7 @@ const EMERGENCY_TYPES = ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AG
 export default function SocietyProfilePage() {
     const { data, isLoading } = useGetSocietyProfileQuery();
     const [updateProfile, { isLoading: isSaving }] = useUpdateSocietyProfileMutation();
+    const [updateLogo, { isLoading: isUpdatingLogo }] = useUpdateSocietyLogoMutation();
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState('');
     const [emergencyContacts, setEmergencyContacts] = useState([]);
@@ -39,13 +41,36 @@ export default function SocietyProfilePage() {
 
     const society = data?.data?.society;
 
+    const { register, handleSubmit, reset } = useForm();
+
+    // Populate form fields properly when data loads or updates
+    React.useEffect(() => {
+        if (society) {
+            reset(society);
+        }
+    }, [society, reset]);
+
+    const handleLogoChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            setSaveError('');
+            const formData = new FormData();
+            formData.append('logo', file);
+            await updateLogo(formData).unwrap();
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        } catch (err) {
+            setSaveError(err?.message || err?.data?.message || 'Failed to update logo.');
+        }
+    };
+
     // Initialize emergency contacts once data arrives
     if (society && !contactsInit) {
         setEmergencyContacts(society.emergencyContacts ?? []);
         setContactsInit(true);
     }
-
-    const { register, handleSubmit } = useForm();
 
     const onSubmit = async (formData) => {
         setSaveError('');
@@ -134,6 +159,43 @@ export default function SocietyProfilePage() {
 
             {/* Basic Info */}
             <Section title="Basic Information" description="General details about your society">
+                {/* Logo Upload */}
+                <div className="mb-6 flex items-center gap-6">
+                    <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md">
+                        {s?.logoUrl ? (
+                            <img src={s.logoUrl} alt="Society Logo" className="h-full w-full object-cover" />
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
+                                <Camera className="h-8 w-8 opacity-50" />
+                            </div>
+                        )}
+                        {isUpdatingLogo && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                <Loader2 className="h-6 w-6 animate-spin text-white" />
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <h4 className="text-sm font-medium text-slate-900">Society Logo</h4>
+                        <p className="mt-1 text-xs text-slate-500">
+                            Square image recommended. Max 5MB.
+                        </p>
+                        <div className="mt-3 relative">
+                            <input
+                                type="file"
+                                id="logo-upload"
+                                className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                                accept="image/*"
+                                onChange={handleLogoChange}
+                                disabled={isUpdatingLogo}
+                            />
+                            <Button type="button" variant="outline" size="sm" className="pointer-events-none gap-2">
+                                <Camera className="h-4 w-4" /> Change Logo
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Society Name">
                         <Input defaultValue={s?.name} {...register('name')} placeholder="Society name" />

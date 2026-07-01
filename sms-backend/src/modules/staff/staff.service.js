@@ -25,7 +25,7 @@ export const getSocietyProfile = async (societyId) => {
     if (!societyId) throw ApiError.forbidden('You are not associated with a society.');
     const society = await Society
         .findById(societyId)
-        .select('name address city state zipCode phone email logo description settings.maintenanceDueDay totalTowers totalUnits isActive')
+        .select('name address city state zipCode phone email logo description emergencyContacts settings.maintenanceDueDay totalTowers totalUnits isActive')
         .lean();
     if (!society) throw ApiError.notFound('Society');
     return society;

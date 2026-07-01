@@ -14,12 +14,13 @@ export const completeProfile = asyncHandler(async (req, res) => {
         ownershipType: req.body.ownershipType,
         aadhaarUrl: req.body.aadhaarUrl,
         agreementUrl: req.body.agreementUrl,
+        profilePhotoBuffer: req.file?.buffer, // Add the image buffer if uploaded
     };
 
-    const profile = await residentService.completeResidentProfile(userId, profileData);
+    const { profile, user: updatedUser } = await residentService.completeResidentProfile(userId, profileData);
 
     res.status(201).json(
-        new ApiResponse(201, { profile }, 'Profile completed successfully. Pending admin approval.'),
+        new ApiResponse(201, { profile, user: updatedUser }, 'Profile completed successfully. Pending admin approval.'),
     );
 });
 
@@ -43,6 +44,17 @@ export const updateMyProfile = asyncHandler(async (req, res) => {
     const userId = req.user.sub;
     const user = await residentService.updateMyProfile(userId, req.body);
     res.status(200).json(new ApiResponse(200, { user }, 'Profile updated'));
+});
+
+/**
+ * PATCH /api/v1/residents/profile/me/avatar
+ * Update resident profile avatar/photo.
+ */
+export const updateMyAvatar = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    if (!req.file) throw ApiError.badRequest('Avatar image is required');
+    const { profile, user: updatedUser } = await residentService.updateMyAvatar(userId, req.file.buffer);
+    res.status(200).json(new ApiResponse(200, { profile, user: updatedUser }, 'Avatar updated successfully'));
 });
 
 /**

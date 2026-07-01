@@ -10,19 +10,19 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     useRegisterResidentInitiateMutation,
     useRegisterResidentVerifyMutation,
     useRegisterResidentProfileMutation,
     useGetPublicSocietiesQuery,
-    useGetPublicUnitsQuery,
+    useGetPublicUnitsQuery
 } from '../store/api/authApi';
-import { setCredentials } from '../store/slices/authSlice';
+import { setCredentials, logout } from '../store/slices/authSlice';
 import { Input } from '../components/ui/Input';
 import { AuthCard } from '../components/ui/AuthCard';
 import { Button } from '../components/ui/Button';
-import { Eye, EyeOff, CheckCircle2, ArrowRight, Building2, Home } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle2, ArrowRight, Building2, Home, Upload, AlertCircle, Lock, Mail, User } from 'lucide-react';
 
 // ── Step indicator ────────────────────────────────────────────────────────────
 function StepDot({ n, current }) {
@@ -31,8 +31,8 @@ function StepDot({ n, current }) {
     return (
         <div className="flex items-center gap-1.5">
             <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${done ? 'bg-indigo-600 text-white' :
-                    active ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-400' :
-                        'bg-slate-100 text-slate-400'
+                active ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-400' :
+                    'bg-slate-100 text-slate-400'
                 }`}>
                 {done ? <CheckCircle2 className="h-4 w-4" /> : n}
             </div>
@@ -43,12 +43,26 @@ function StepDot({ n, current }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function RegisterPage() {
-    const [step, setStep] = useState(1);
+    const { isAuthenticated, user, accessToken, refreshToken } = useSelector((state) => state.auth);
+    const [step, setStep] = useState(() => {
+        if (isAuthenticated && user?.registrationStatus === 'INCOMPLETE_PROFILE') return 3;
+        return 1;
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const [registrationEmail, setRegistrationEmail] = useState('');
     const [selectedSocietyId, setSelectedSocietyId] = useState('');
     const [selectedUnitId, setSelectedUnitId] = useState('');
+    const [profilePhoto, setProfilePhoto] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfilePhoto(file);
+            setPhotoPreview(URL.createObjectURL(file));
+        }
+    };
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -104,10 +118,7 @@ export default function RegisterPage() {
                 otp: formData.otp,
             }).unwrap();
 
-            // Backend returns: { success, data: { accessToken, refreshToken, user }, message }
             const { accessToken, refreshToken, user } = response.data;
-
-            // Persist token so subsequent authenticated calls (step 3) work
             dispatch(setCredentials({ user, accessToken, refreshToken }));
 
             setStep(3);
@@ -124,13 +135,28 @@ export default function RegisterPage() {
             return;
         }
         try {
+            const data = new FormData();
+            data.append('unitId', selectedUnitId);
+            data.append('ownershipType', formData.ownershipType);
+            if (profilePhoto) {
+                data.append('profilePhoto', profilePhoto);
+            }
+
             // Token is already in localStorage via setCredentials → axiosBaseQuery picks it up
-            await completeProfile({
-                payload: {
-                    unitId: selectedUnitId,
-                    ownershipType: formData.ownershipType,
-                },
+            const res = await completeProfile({
+                payload: data,
             }).unwrap();
+
+            // The backend returns the updated user in res.data.user
+            // We need to update Redux so the frontend knows they are now PENDING_APPROVAL
+            if (res?.data?.user) {
+                dispatch(setCredentials({
+                    user: res.data.user,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }));
+            }
+
             setStep(4);
         } catch (err) {
             setErrorMsg(err?.data?.message ?? 'Failed to complete profile. Please try again.');
@@ -153,8 +179,9 @@ export default function RegisterPage() {
 
             {/* Error banner */}
             {errorMsg && (
-                <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
-                    {errorMsg}
+                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-600 font-medium leading-relaxed">{errorMsg}</p>
                 </div>
             )}
 
@@ -164,63 +191,65 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <Input
                             label="First Name"
-                            autoFocus
-                            {...register('firstName', { required: 'Required' })}
+                            icon={User}
+                            placeholder="John"
                             error={errors.firstName?.message}
+                            {...register('firstName', { required: 'Required' })}
                         />
                         <Input
                             label="Last Name"
-                            {...register('lastName', { required: 'Required' })}
+                            icon={User}
+                            placeholder="Doe"
                             error={errors.lastName?.message}
+                            {...register('lastName', { required: 'Required' })}
                         />
                     </div>
                     <Input
                         label="Email Address"
+                        icon={Mail}
                         type="email"
-                        autoComplete="email"
-                        {...register('email', { required: 'Required' })}
+                        placeholder="john@example.com"
                         error={errors.email?.message}
+                        {...register('email', { required: 'Required' })}
                     />
-                    <div className="relative">
-                        <Input
-                            label="Password"
-                            type={showPassword ? 'text' : 'password'}
-                            autoComplete="new-password"
-                            {...register('password', {
-                                required: 'Required',
-                                minLength: { value: 8, message: 'Minimum 8 characters' },
-                            })}
-                            error={errors.password?.message}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword((s) => !s)}
-                            className="absolute right-3 top-9 text-gray-400 hover:text-gray-500"
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
+                    <Input
+                        label="Password"
+                        icon={Lock}
+                        type="password"
+                        placeholder="Create a strong password"
+                        error={errors.password?.message}
+                        {...register('password', {
+                            required: 'Required',
+                            minLength: { value: 6, message: 'Min 6 chars' },
+                        })}
+                    />
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full" disabled={isInitiating}>
+                            {isInitiating ? 'Creating Account...' : 'Continue to Verify'}
+                        </Button>
                     </div>
-                    <Button type="submit" disabled={isInitiating} className="w-full" isLoading={isInitiating}>
-                        Continue <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Button>
                 </form>
             )}
 
             {/* ── Step 2: OTP Verification ── */}
             {step === 2 && (
-                <form className="space-y-4" onSubmit={handleSubmit(onVerify)}>
-                    <p className="text-center text-sm text-gray-500">
-                        We sent a 6-digit code to <span className="font-semibold text-gray-800">{registrationEmail}</span>
-                    </p>
+                <form className="space-y-6" onSubmit={handleSubmit(onVerify)}>
+                    <div className="text-center space-y-2">
+                        <div className="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Mail className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800">Check your email</h3>
+                        <p className="text-sm text-slate-500">
+                            We've sent a 6-digit verification code to <br />
+                            <span className="font-medium text-slate-700">{registrationEmail}</span>
+                        </p>
+                    </div>
                     <Input
-                        label="Enter 6-digit OTP"
+                        label="Verification Code"
+                        icon={CheckCircle2}
                         type="text"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
+                        placeholder="123456"
                         maxLength={6}
-                        className="text-center text-2xl tracking-[0.5em]"
-                        autoFocus
                         {...register('otp', {
                             required: 'Required',
                             minLength: { value: 6, message: 'Enter all 6 digits' },
@@ -243,6 +272,25 @@ export default function RegisterPage() {
             {/* ── Step 3: Flat Details ── */}
             {step === 3 && (
                 <form className="space-y-4" onSubmit={handleSubmit(onCompleteProfile)}>
+
+                    {/* Avatar Upload */}
+                    <div className="flex flex-col items-center justify-center space-y-3 mb-6">
+                        <div className="relative">
+                            <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-10 h-10 text-slate-400" />
+                                )}
+                            </div>
+                            <label className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 shadow-md transition-colors">
+                                <Upload className="w-4 h-4" />
+                                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                            </label>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">Upload Profile Photo (Optional)</p>
+                    </div>
+
                     {/* Society */}
                     <div>
                         <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -321,6 +369,18 @@ export default function RegisterPage() {
                     >
                         Submit for Approval <ArrowRight className="ml-1.5 h-4 w-4" />
                     </Button>
+                    {isAuthenticated && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                dispatch(logout());
+                                setStep(1);
+                            }}
+                            className="w-full mt-3 text-sm text-slate-500 hover:text-indigo-600 transition-colors"
+                        >
+                            Not you? Start over
+                        </button>
+                    )}
                 </form>
             )}
 

@@ -5,7 +5,7 @@
  * Uses global components: PageHeader, Alert, Card, EmptyState.
  */
 import React from 'react';
-import { Shield, Phone, Building2, MapPin } from 'lucide-react';
+import { Shield, Phone, Building2, MapPin, Flame, Ambulance } from 'lucide-react';
 import { useGetStaffSocietyProfileQuery } from '../../../store/api/staffApi';
 import PageHeader from '../../../components/ui/PageHeader';
 import Alert from '../../../components/ui/Alert';
@@ -25,6 +25,17 @@ const EMERGENCY_COLOR = {
 export default function GuardSocietyPage() {
     const { data, isLoading, isError, refetch, isFetching } = useGetStaffSocietyProfileQuery();
     const profile = data?.data?.profile;
+
+    // Helper to get icon for contact type
+    const getContactIcon = (type) => {
+        switch (type) {
+            case 'POLICE': return <Shield className="w-5 h-5 text-blue-500" />;
+            case 'FIRE': return <Flame className="w-5 h-5 text-orange-500" />;
+            case 'AMBULANCE': return <Ambulance className="w-5 h-5 text-red-500" />;
+            case 'HOSPITAL': return <MapPin className="w-5 h-5 text-emerald-500" />;
+            default: return <Phone className="w-5 h-5 text-slate-500" />;
+        }
+    };
 
     return (
         <div className="space-y-5">
@@ -61,38 +72,42 @@ export default function GuardSocietyPage() {
 
                     {/* Emergency contacts */}
                     {profile.emergencyContacts?.length > 0 ? (
-                        <Card>
-                            <Card.Header
-                                title={
-                                    <span className="flex items-center gap-2 text-red-600">
-                                        <Shield className="h-4 w-4" /> Emergency Contacts
-                                    </span>
-                                }
-                            />
-                            <Card.Body className="space-y-3">
-                                {profile.emergencyContacts.map((c, i) => (
-                                    <div key={i} className="flex items-center justify-between rounded-xl bg-red-50 p-3.5 ring-1 ring-red-100">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100">
-                                                <Phone className="h-5 w-5 text-red-600" />
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
+                                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                                    <Shield className="h-4 w-4 text-red-600" /> Quick Contacts
+                                </h3>
+                            </div>
+                            <div className="divide-y divide-slate-100">
+                                {profile.emergencyContacts.map((contact, idx) => (
+                                    <a 
+                                        key={idx} 
+                                        href={`tel:${contact.phone}`}
+                                        className="flex items-center justify-between p-4 hover:bg-slate-50 transition active:bg-slate-100"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+                                                {getContactIcon(contact.type)}
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-900">{c.name}</p>
-                                                <span className={cn('inline-block rounded-full px-2 py-0.5 text-xs font-semibold', EMERGENCY_COLOR[c.type] ?? 'bg-gray-100 text-gray-600')}>
-                                                    {c.type?.replace(/_/g, ' ')}
-                                                </span>
+                                                <p className="font-semibold text-slate-900 flex items-center gap-2">
+                                                    {contact.name}
+                                                    {contact.type && (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 uppercase tracking-wider">
+                                                            {(contact.type === 'OTHER' ? contact.customContactType || 'OTHER' : contact.type).replace(/_/g, ' ')}
+                                                        </span>
+                                                    )}
+                                                </p>
+                                                <p className="text-sm text-slate-500 mt-0.5">{contact.phone}</p>
                                             </div>
                                         </div>
-                                        <a
-                                            href={`tel:${c.phone}`}
-                                            className="flex items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-sm font-bold text-white shadow transition hover:bg-red-700"
-                                        >
-                                            <Phone className="h-3.5 w-3.5" /> {c.phone}
-                                        </a>
-                                    </div>
+                                        <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                            <Phone className="w-4 h-4" />
+                                        </div>
+                                    </a>
                                 ))}
-                            </Card.Body>
-                        </Card>
+                            </div>
+                        </div>
                     ) : (
                         <Alert type="warning">No emergency contacts configured. Contact the Society Admin.</Alert>
                     )}

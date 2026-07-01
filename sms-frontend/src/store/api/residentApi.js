@@ -23,6 +23,11 @@ export const residentApi = createApi({
             invalidatesTags: ['ResidentProfile'],
         }),
 
+        updateMyAvatar: builder.mutation({
+            query: (data) => ({ url: '/residents/profile/me/avatar', method: 'PATCH', data }),
+            invalidatesTags: ['ResidentProfile'],
+        }),
+
         getMe: builder.query({
             query: () => ({ url: '/auth/me', method: 'GET' }),
             providesTags: ['ResidentStatus'],
@@ -198,6 +203,7 @@ export const residentApi = createApi({
 export const {
     useGetMyProfileQuery,
     useUpdateMyProfileMutation,
+    useUpdateMyAvatarMutation,
     useGetMeQuery,
     useAddFamilyMemberMutation,
     useUpdateFamilyMemberMutation,

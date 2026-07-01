@@ -5,6 +5,7 @@ import { authorize } from '../../middleware/rbac.middleware.js';
 import { ROLES } from '../../config/constants.js';
 import validate from '../../middleware/validate.middleware.js';
 import { completeProfileSchema } from './resident.validator.js';
+import { uploadSingle } from '../../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use(authenticate, authorize(ROLES.RESIDENT));
  */
 router.post(
     '/profile',
+    uploadSingle('profilePhoto', 'avatars', 'image'),
     validate(completeProfileSchema),
     residentController.completeProfile
 );
@@ -32,6 +34,12 @@ router.get('/profile/me', residentController.getMyProfile);
  * Update own profile (name, phone).
  */
 router.put('/profile/me', residentController.updateMyProfile);
+
+/**
+ * PATCH /api/v1/residents/profile/me/avatar
+ * Update resident profile avatar/photo.
+ */
+router.patch('/profile/me/avatar', ...uploadSingle('avatar', 'avatars', 'image'), residentController.updateMyAvatar);
 
 /**
  * POST /api/v1/residents/family-members
@@ -75,7 +83,6 @@ router.delete(
 
 import * as dsController from './domesticStaff.controller.js';
 import { addDomesticStaffSchema, updateDomesticStaffSchema } from './resident.validator.js';
-import { uploadSingle } from '../../middleware/upload.middleware.js';
 
 router.post(
     '/domestic-staff', 

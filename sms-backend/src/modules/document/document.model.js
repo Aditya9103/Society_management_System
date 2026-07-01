@@ -8,11 +8,23 @@ const documentSchema = new mongoose.Schema(
             ref: 'Society',
             required: true,
         },
-        // Document name
-        documentName: {
+        // Document title/name
+        title: {
             type: String,
             required: true,
             trim: true
+        },
+        // Description
+        description: {
+            type: String,
+            trim: true,
+            default: null
+        },
+        // Category
+        category: {
+            type: String,
+            enum: ['IDENTITY', 'RESIDENTIAL', 'VEHICLE', 'SOCIETY', 'MAINTENANCE', 'LEGAL', 'OTHER'],
+            required: true,
         },
         // Document type
         documentType: {
@@ -32,6 +44,15 @@ const documentSchema = new mongoose.Schema(
                 'MAINTENANCE_NOTICE',
                 'INSURANCE',
                 'RC_BOOK',
+                'EMISSION_CERTIFICATE',
+                'VENDOR_CONTRACT',
+                'VENDOR_INVOICE',
+                'AMC',
+                'SERVICE_REPORT',
+                'WARRANTY_CARD',
+                'COURT_ORDER',
+                'LEGAL_NOTICE',
+                'DISPUTE_RESOLUTION',
                 'OTHER',
             ],
             required: true,
@@ -46,14 +67,19 @@ const documentSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        // Reference to the associated Cloudinary public
-        cloudinaryPublicId: {
+        // Storage key for generic cloud storage
+        storageKey: {
             type: String,
             default: null
         },
         // File size bytes
-        fileSizeBytes: {
+        fileSize: {
             type: Number,
+            default: null
+        },
+        // Checksum for duplicate detection
+        checksum: {
+            type: String,
             default: null
         },
         // Mime type
@@ -70,8 +96,20 @@ const documentSchema = new mongoose.Schema(
         // Reference to the associated Owner
         ownerId: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
+            default: null, // Allow null for society level documents
             refPath: 'ownerType',
+        },
+        // Related unit (optional)
+        unitId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Unit',
+            default: null,
+        },
+        // Related vehicle (optional)
+        vehicleId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Vehicle',
+            default: null,
         },
         // Uploaded by
         uploadedBy: {
@@ -100,16 +138,27 @@ const documentSchema = new mongoose.Schema(
             type: Date,
             default: null
         },
-        // Access level
-        accessLevel: {
+        // Access level / visibility
+        visibility: {
             type: String,
-            enum: ['PRIVATE', 'RESIDENT_ONLY', 'ADMIN_ONLY', 'PUBLIC'],
+            enum: ['PRIVATE', 'UNIT_SHARED', 'SOCIETY', 'MANAGEMENT', 'DEPARTMENT', 'PUBLIC'],
             default: 'PRIVATE',
         },
-        // Indicates whether archived is true or false
-        isArchived: {
-            type: Boolean,
-            default: false
+        // Status
+        status: {
+            type: String,
+            enum: ['PENDING', 'ACTIVE', 'REJECTED', 'ARCHIVED'],
+            default: 'ACTIVE'
+        },
+        // Current Version
+        currentVersion: {
+            type: Number,
+            default: 1
+        },
+        // Soft delete timestamp
+        deletedAt: {
+            type: Date,
+            default: null
         },
         // Tags
         tags: {

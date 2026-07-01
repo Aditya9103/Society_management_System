@@ -83,7 +83,7 @@ const fileFilter = (allowType = 'any') => (req, file, cb) => {
  * @param {string} [publicId]  - Optional custom public_id
  * @returns {Promise<object>}  Cloudinary upload result
  */
-const uploadToCloudinary = (buffer, folder, publicId) => {
+export const uploadToCloudinary = (buffer, folder, publicId) => {
     return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             {
@@ -126,6 +126,9 @@ const cloudinaryUploadMiddleware = (folder) => async (req, res, next) => {
             req.file.cloudinaryResult = result;
             req.file.cloudinaryUrl = result.secure_url;
             req.file.cloudinaryPublicId = result.public_id;
+            // Generic decoupled keys for new modules
+            req.file.fileUrl = result.secure_url;
+            req.file.storageKey = result.public_id;
         }
 
         // uploadMultiple case
@@ -136,6 +139,9 @@ const cloudinaryUploadMiddleware = (folder) => async (req, res, next) => {
                     file.cloudinaryResult = result;
                     file.cloudinaryUrl = result.secure_url;
                     file.cloudinaryPublicId = result.public_id;
+                    // Generic decoupled keys for new modules
+                    file.fileUrl = result.secure_url;
+                    file.storageKey = result.public_id;
                 }),
             );
         }

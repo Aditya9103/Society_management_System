@@ -10,6 +10,7 @@
 
 import bcrypt from 'bcryptjs';
 import ApiError from '../../utils/ApiError.js';
+import { uploadToCloudinary } from '../../middleware/upload.middleware.js';
 import { sendEmail } from '../../services/email.service.js';
 import { ROLES, ACCOUNT_SECURITY } from '../../config/constants.js';
 import { parsePagination, buildPaginationMeta } from '../../utils/pagination.js';
@@ -29,7 +30,7 @@ import * as societyRepo from '../society/society.repository.js';
 export const createTenantWithSociety = async (data) => {
     const {
         tenantName, tenantSlug, contactName, contactEmail, contactPhone, plan,
-        societyName, addressLine1, addressLine2, city, state, pincode, country,
+        societyName, addressLine1, addressLine2, city, state, pincode, country, logoBuffer
     } = data;
 
     // Guard: Unique slug
@@ -54,6 +55,12 @@ export const createTenantWithSociety = async (data) => {
         plan: plan || 'BASIC',
     });
 
+    let logoUrl = '';
+    if (logoBuffer) {
+        const uploadResult = await uploadToCloudinary(logoBuffer, 'societies');
+        logoUrl = uploadResult.secure_url;
+    }
+
     // 2. Create Society under the new Tenant
     const society = await societyRepo.createSociety({
         tenantId: tenant._id,
@@ -66,6 +73,7 @@ export const createTenantWithSociety = async (data) => {
         country: country || 'India',
         contactEmail,
         contactPhone,
+        ...(logoUrl && { logoUrl }),
     });
 
     return { tenant, society };

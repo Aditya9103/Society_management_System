@@ -23,6 +23,8 @@ import AdminEmergencyPage from './pages/AdminEmergencyPage';
 import AdminVehiclePage from './pages/AdminVehiclePage';
 import AdminParkingPage from './pages/AdminParkingPage';
 import AdminPollsPage from './pages/AdminPollsPage';
+import AdminDocumentsPage from './pages/AdminDocumentsPage';
+import { FileText } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Society Admin', subtitle: 'Management Portal', Icon: ShieldCheck },
@@ -43,6 +45,7 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/vehicles', label: 'Vehicles', Icon: Car },
     { to: '/admin/parking', label: 'Parking', Icon: MapPin },
     { to: '/admin/polls', label: 'Polls & Voting', Icon: BarChart2 },
+    { to: '/admin/documents', label: 'Documents', Icon: FileText },
   ],
 };
 
@@ -64,6 +67,7 @@ export default function AdminApp() {
         <Route path="vehicles" element={<AdminVehiclePage />} />
         <Route path="parking" element={<AdminParkingPage />} />
         <Route path="polls" element={<AdminPollsPage />} />
+        <Route path="documents" element={<AdminDocumentsPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </PortalLayout>

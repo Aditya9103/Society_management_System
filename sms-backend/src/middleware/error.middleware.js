@@ -31,16 +31,16 @@ const errorMiddleware = (err, req, res, next) => {
     error = ApiError.validationError(errors);
   } else if (err instanceof mongoose.Error.CastError) {
 
-  /** Mongoose invalid ObjectId (e.g. /residents/not-an-id) */
+    /** Mongoose invalid ObjectId (e.g. /residents/not-an-id) */
     error = ApiError.badRequest(`Invalid value for field '${err.path}'`);
   } else if (err.code === 11000) {
 
-  /** MongoDB duplicate key (unique constraint) */
+    /** MongoDB duplicate key (unique constraint) */
     const field = Object.keys(err.keyValue ?? {})[0] ?? 'field';
     error = ApiError.conflict(`A record with this ${field} already exists`);
   } else if (!(err instanceof ApiError)) {
 
-  /** Fallback: treat unknown errors as internal server errors */
+    /** Fallback: treat unknown errors as internal server errors */
     error = ApiError.internal(
       process.env.NODE_ENV === 'production'
         ? 'Internal server error'
@@ -49,8 +49,9 @@ const errorMiddleware = (err, req, res, next) => {
   }
 
   // ── 2. Log programmer errors (non-operational) ─────────────────────────────
-  if (!error.isOperational) {
+  if (!error.isOperational || error.statusCode === 500) {
     logger.error('[UNHANDLED ERROR]', err);
+    console.error('[UNHANDLED ERROR]', err);
   }
 
   // ── 3. Send standardised response ──────────────────────────────────────────

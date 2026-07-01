@@ -2,11 +2,12 @@
  * ResidentApp.jsx — Resident portal shell with full feature routing.
  */
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, User, MessageSquareWarning,
     Bell, UserCheck, Receipt, Home, ShieldAlert, Car, Users, BarChart2
 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import PortalLayout from '../../components/layout/PortalLayout';
 import ResidentDashboardPage from './pages/ResidentDashboardPage';
 import ResidentProfilePage from './pages/ResidentProfilePage';
@@ -17,7 +18,11 @@ import ResidentVisitorPage from './pages/ResidentVisitorPage';
 import ResidentInvoicesPage from './pages/ResidentInvoicesPage';
 import ResidentVehiclePage from './pages/ResidentVehiclePage';
 import ResidentPollsPage from './pages/ResidentPollsPage';
+import ResidentDocumentsPage from './pages/ResidentDocumentsPage';
 import ResidentWalkInListener from './components/ResidentWalkInListener';
+import { PendingApprovalScreen } from './components/dashboard/PendingApprovalScreen';
+import { RejectedScreen } from './components/dashboard/RejectedScreen';
+import { FileText } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
     brand: { title: 'Resident Portal', subtitle: 'My Home Hub', Icon: Home },
@@ -33,10 +38,32 @@ const SIDEBAR_CONFIG = {
         { to: '/resident/visitors', label: 'Visitor Passes', Icon: UserCheck },
         { to: '/resident/polls', label: 'Polls & Voting', Icon: BarChart2 },
         { to: '/resident/invoices', label: 'Invoices & Bills', Icon: Receipt },
+        { to: '/resident/documents', label: 'Documents', Icon: FileText },
     ],
 };
 
 export default function ResidentApp() {
+    const { user } = useSelector((state) => state.auth);
+    const location = useLocation();
+
+    // Block REJECTED / Revoked users entirely
+    if (user?.registrationStatus === 'REJECTED') {
+        return <RejectedScreen />;
+    }
+
+    // Block PENDING_APPROVAL users from all pages EXCEPT documents
+    if (
+        user?.registrationStatus === 'PENDING_APPROVAL' && 
+        !location.pathname.includes('/documents')
+    ) {
+        return <PendingApprovalScreen />;
+    }
+
+    // Force INCOMPLETE_PROFILE back to registration step 3
+    if (user?.registrationStatus === 'INCOMPLETE_PROFILE') {
+        return <Navigate to="/auth/register/resident" replace />;
+    }
+
     return (
         <PortalLayout sidebarConfig={SIDEBAR_CONFIG}>
             <ResidentWalkInListener />
@@ -50,6 +77,7 @@ export default function ResidentApp() {
                 <Route path="visitors" element={<ResidentVisitorPage />} />
                 <Route path="polls" element={<ResidentPollsPage />} />
                 <Route path="invoices" element={<ResidentInvoicesPage />} />
+                <Route path="documents" element={<ResidentDocumentsPage />} />
                 <Route path="*" element={<Navigate to="/resident" replace />} />
             </Routes>
         </PortalLayout>

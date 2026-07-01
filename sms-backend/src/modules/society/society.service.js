@@ -14,6 +14,7 @@ import { sendEmail } from '../../services/email.service.js';
 import { generateCode, floorName } from '../../utils/generateCode.js';
 import * as userRepo from '../auth/user.repository.js';
 import * as residentRepo from '../resident/resident.repository.js';
+import * as idCardService from '../idCard/idCard.service.js';
 import * as societyRepo from './society.repository.js';
 import * as towerRepo from '../../shared/repositories/tower.repository.js';
 import * as floorRepo from '../../shared/repositories/floor.repository.js';
@@ -21,6 +22,7 @@ import * as unitRepo from '../../shared/repositories/unit.repository.js';
 import { ROLES } from '../../config/constants.js';
 import User from '../auth/user.model.js';
 import Resident from '../resident/resident.model.js';
+import { uploadFile } from '../../services/storage.service.js';
 
 // ── Society Profile ───────────────────────────────────────────────────────────
 
@@ -65,6 +67,13 @@ export const updateSociety = async (societyId, data) => {
     }
 
     const updated = await societyRepo.updateSociety(societyId, { $set: update });
+    return updated;
+};
+
+export const updateSocietyLogo = async (societyId, imageBuffer) => {
+    const uploadResult = await uploadFile(imageBuffer, { folder: 'society_logos' });
+    const updated = await societyRepo.updateSociety(societyId, { $set: { logoUrl: uploadResult.secure_url } });
+    if (!updated) throw ApiError.notFound('Society');
     return updated;
 };
 
@@ -188,7 +197,7 @@ export const approveResident = async (residentUserId, adminUserId, adminComments
     if (!user) throw ApiError.notFound('Resident user');
 
     if (user.role !== ROLES.RESIDENT) throw ApiError.badRequest('User is not a resident.');
-    if (user.registrationStatus !== 'PENDING_APPROVAL') {
+    if (user.registrationStatus !== 'PENDING_APPROVAL' && user.registrationStatus !== 'REJECTED') {
         throw ApiError.badRequest(`Resident status is ${user.registrationStatus}, cannot approve.`);
     }
 
@@ -211,10 +220,15 @@ export const approveResident = async (residentUserId, adminUserId, adminComments
         });
     }
 
+    // Generate ID Card asynchronously
+    idCardService.generateAndUploadIdCard(residentDoc._id)
+        .then(() => console.log(`ID Card generated for resident ${residentDoc._id}`))
+        .catch(err => console.error(`Failed to generate ID Card for resident ${residentDoc._id}:`, err));
+
     await sendEmail({
         to: user.email,
         subject: 'Your Registration Has Been Approved',
-        html: `<h3>Hello ${user.firstName},</h3><p>Your resident registration has been <strong>approved</strong>!</p><p>You can now log into the portal.</p>`,
+        html: `<h3>Hello ${user.firstName},</h3><p>Your resident registration has been <strong>approved</strong>!</p><p>You can now log into the portal. Your Digital ID Card is being generated and will be available in your profile shortly.</p>`,
     });
 
     return user;
@@ -666,5 +680,54 @@ export const getDashboardStats = async (societyId) => {
         pendingResidents,
         totalResidents,
         totalStaff: staffCount,
+    };
+};
+
+// ── Additional Resident Actions ────────────────────────────────────────────────
+
+export const revokeResident = async (residentUserId, adminUserId, reason) => {
+    const user = await userRepo.findById(residentUserId);
+    if (!user) throw ApiError.notFound('Resident user');
+
+    if (user.role !== ROLES.RESIDENT) throw ApiError.badRequest('User is not a resident.');
+    // We only revoke if they are currently APPROVED
+    if (user.registrationStatus !== 'APPROVED') {
+        throw ApiError.badRequest(`Resident status is ${user.registrationStatus}, cannot revoke.`);
+    }
+
+    const residentDoc = await residentRepo.findByUserId(residentUserId);
+    if (!residentDoc) throw ApiError.notFound('Resident profile');
+
+    // Change status to REJECTED to revoke login access
+    await userRepo.updateUser(residentUserId, { registrationStatus: 'REJECTED' });
+    await residentRepo.updateResident(residentDoc._id, {
+        approvalStatus: 'REJECTED',
+        approvedBy: adminUserId,
+        approvedAt: new Date(),
+        rejectionReason: reason || 'Access Revoked',
+    });
+
+    await sendEmail({
+        to: user.email,
+        subject: 'Your Portal Access Has Been Revoked',
+        html: `<h3>Hello ${user.firstName},</h3><p>Your access to the resident portal has been <strong>revoked</strong>.</p><p><b>Reason:</b> ${reason || 'Administrative action'}</p><p>Please contact your society admin for more information.</p>`,
+    });
+
+    return user;
+};
+
+export const getResidentProfile = async (residentUserId, societyId) => {
+    const user = await userRepo.findById(residentUserId);
+    if (!user || user.societyId.toString() !== societyId.toString()) {
+        throw ApiError.notFound('Resident not found in this society');
+    }
+
+    const residentDoc = await Resident.findOne({ userId: residentUserId, societyId })
+        .populate('unitId')
+        .lean();
+
+    return {
+        user,
+        residentDetails: residentDoc,
     };
 };

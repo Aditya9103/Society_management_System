@@ -1,10 +1,74 @@
 import React, { useState } from 'react';
 import { useGetAllVehiclesQuery, useApproveVehicleMutation, useRejectVehicleMutation, useBlockVehicleMutation, useGetVehicleLogsQuery } from '../../../store/api/vehicleApi';
-import { Check, X, ShieldAlert, Car, MapPin, Clock } from 'lucide-react';
+import { useLazyGetDocumentsQuery, useDeleteDocumentMutation } from '../../../store/api/documentApi';
+import { Check, X, ShieldAlert, Car, MapPin, Clock, FileText, Download, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Button } from '../../../components/ui/Button';
+import Modal from '../../../components/ui/Modal';
+
+function ViewVehicleDocsModal({ isOpen, onClose, vehicleId }) {
+    const [trigger, { data, isFetching }] = useLazyGetDocumentsQuery();
+
+    React.useEffect(() => {
+        if (isOpen && vehicleId) {
+            trigger({ vehicleId: vehicleId });
+        }
+    }, [isOpen, vehicleId, trigger]);
+
+    const [deleteDocument] = useDeleteDocumentMutation();
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this document?')) return;
+        try {
+            await deleteDocument(id).unwrap();
+            toast.success('Document deleted successfully');
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete document');
+        }
+    };
+
+    const docs = data?.data?.documents || [];
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Vehicle Documents">
+            <div className="p-4 space-y-4">
+                {isFetching ? (
+                    <div className="text-center py-4 text-slate-500">Loading documents...</div>
+                ) : docs.length === 0 ? (
+                    <div className="text-center py-8 text-slate-500">No documents linked to this vehicle.</div>
+                ) : (
+                    <div className="space-y-3">
+                        {docs.map(doc => (
+                            <div key={doc._id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <FileText className="h-8 w-8 text-indigo-500" />
+                                    <div>
+                                        <p className="font-semibold text-slate-800">{doc.title}</p>
+                                        <p className="text-xs text-slate-500">{doc.documentType.replace(/_/g, ' ')}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="p-2 bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100" title="Download">
+                                        <Download className="h-4 w-4" />
+                                    </a>
+                                    <button onClick={() => handleDelete(doc._id)} className="p-2 bg-red-50 text-red-600 rounded hover:bg-red-100" title="Delete">
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Modal>
+    );
+}
 
 export default function AdminVehiclePage() {
     const [activeTab, setActiveTab] = useState('VEHICLES');
+    const [docsModal, setDocsModal] = useState({ open: false, vehicleId: '' });
+    
     const { data: vehiclesData, isLoading: isLoadingVehicles } = useGetAllVehiclesQuery(undefined, { skip: activeTab !== 'VEHICLES' });
     const { data: logsData, isLoading: isLoadingLogs } = useGetVehicleLogsQuery(undefined, { skip: activeTab !== 'LOGS' });
 
@@ -91,6 +155,9 @@ export default function AdminVehiclePage() {
                                     </td>
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
+                                            <Button size="sm" variant="outline" onClick={() => setDocsModal({ open: true, vehicleId: v._id })}>
+                                                Docs
+                                            </Button>
                                             {v.status === 'PENDING_APPROVAL' && (
                                                 <>
                                                     <button onClick={() => handleApprove(v._id)} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded" title="Approve"><Check className="h-4 w-4" /></button>
@@ -145,6 +212,12 @@ export default function AdminVehiclePage() {
                     </table>
                 </div>
             )}
+
+            <ViewVehicleDocsModal 
+                isOpen={docsModal.open} 
+                onClose={() => setDocsModal({ open: false, vehicleId: '' })} 
+                vehicleId={docsModal.vehicleId} 
+            />
         </div>
     );
 }

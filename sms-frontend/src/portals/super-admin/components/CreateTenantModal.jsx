@@ -4,6 +4,7 @@
  */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Upload, Building2 } from 'lucide-react';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
 import { Button } from '../../../components/ui/Button';
@@ -15,20 +16,43 @@ import { useCreateTenantWithSocietyMutation } from '../../../store/api/superAdmi
 export default function CreateTenantModal({ isOpen, onClose }) {
     const [createTenant, { isLoading }] = useCreateTenantWithSocietyMutation();
     const [errorMsg, setErrorMsg] = useState(null);
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [logoFile, setLogoFile] = useState(null);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setLogoFile(file);
+            setLogoPreview(URL.createObjectURL(file));
+        }
+    };
 
     const onSubmit = async (data) => {
         setErrorMsg(null);
         try {
-            await createTenant(data).unwrap();
+            const formData = new FormData();
+            Object.keys(data).forEach((key) => formData.append(key, data[key]));
+            if (logoFile) {
+                formData.append('logo', logoFile);
+            }
+            await createTenant(formData).unwrap();
             reset();
+            setLogoFile(null);
+            setLogoPreview(null);
             onClose();
         } catch (err) {
             setErrorMsg(err?.data?.message || 'Failed to create tenant. Please try again.');
         }
     };
 
-    const handleClose = () => { reset(); setErrorMsg(null); onClose(); };
+    const handleClose = () => {
+        reset();
+        setErrorMsg(null);
+        setLogoFile(null);
+        setLogoPreview(null);
+        onClose();
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Provision New Tenant" description="Create a new tenant and their first society" size="lg">
@@ -74,10 +98,25 @@ export default function CreateTenantModal({ isOpen, onClose }) {
                     <div>
                         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Society Details</p>
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="sm:col-span-2">
-                                <FormField label="Society Name" error={errors.societyName?.message} required>
-                                    <Input placeholder="e.g. Green Valley Apartments" {...register('societyName', { required: 'Society name is required' })} />
-                                </FormField>
+                            <div className="sm:col-span-2 flex items-center gap-4">
+                                <div className="relative shrink-0">
+                                    <div className="w-16 h-16 rounded-lg bg-slate-100 border border-slate-300 flex items-center justify-center overflow-hidden">
+                                        {logoPreview ? (
+                                            <img src={logoPreview} alt="Society Logo" className="w-full h-full object-contain" />
+                                        ) : (
+                                            <Building2 className="w-6 h-6 text-slate-400" />
+                                        )}
+                                    </div>
+                                    <label className="absolute -bottom-2 -right-2 p-1 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 shadow-sm transition-colors border border-white">
+                                        <Upload className="w-3 h-3" />
+                                        <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+                                    </label>
+                                </div>
+                                <div className="flex-1">
+                                    <FormField label="Society Name" error={errors.societyName?.message} required>
+                                        <Input placeholder="e.g. Green Valley Apartments" {...register('societyName', { required: 'Society name is required' })} />
+                                    </FormField>
+                                </div>
                             </div>
                             <div className="sm:col-span-2">
                                 <FormField label="Address Line 1" error={errors.addressLine1?.message} required>
@@ -109,7 +148,7 @@ export default function CreateTenantModal({ isOpen, onClose }) {
                 </div>
 
                 {/* ── Pinned footer — always visible ── */}
-                <div className="flex shrink-0 justify-end gap-3 border-t border-slate-100 pt-4">
+                <div className="flex shrink-0 justify-end gap-3 border-t border-slate-100 pt-4 mt-2">
                     <Button type="button" variant="secondary" onClick={handleClose}>Cancel</Button>
                     <Button type="submit" isLoading={isLoading}>
                         {isLoading ? 'Provisioning…' : 'Provision Tenant'}

@@ -13,9 +13,9 @@
 import React from 'react';
 import { cn } from './Button';
 
-function Table({ children, className }) {
+function Table({ children, className, ...props }) {
   return (
-    <div className={cn('overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100', className)}>
+    <div className={cn('overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100', className)} {...props}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-max text-left text-sm">
           {children}
@@ -25,41 +25,41 @@ function Table({ children, className }) {
   );
 }
 
-Table.Head = function TableHead({ children, className }) {
+Table.Head = function TableHead({ children, className, ...props }) {
   return (
-    <thead className={cn('border-b border-slate-100 bg-slate-50/70', className)}>
+    <thead className={cn('border-b border-slate-100 bg-slate-50/70', className)} {...props}>
       <tr>{children}</tr>
     </thead>
   );
 };
 
-Table.HeadCell = function TableHeadCell({ children, className }) {
+Table.HeadCell = function TableHeadCell({ children, className, ...props }) {
   return (
-    <th className={cn('px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500', className)}>
+    <th className={cn('px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500', className)} {...props}>
       {children}
     </th>
   );
 };
 
-Table.Body = function TableBody({ children, className }) {
+Table.Body = function TableBody({ children, className, ...props }) {
   return (
-    <tbody className={cn('divide-y divide-slate-50 bg-white', className)}>
+    <tbody className={cn('divide-y divide-slate-50 bg-white', className)} {...props}>
       {children}
     </tbody>
   );
 };
 
-Table.Row = function TableRow({ children, className }) {
+Table.Row = function TableRow({ children, className, ...props }) {
   return (
-    <tr className={cn('transition-colors hover:bg-slate-50/60', className)}>
+    <tr className={cn('transition-colors hover:bg-slate-50/60', className)} {...props}>
       {children}
     </tr>
   );
 };
 
-Table.Cell = function TableCell({ children, className }) {
+Table.Cell = function TableCell({ children, className, ...props }) {
   return (
-    <td className={cn('px-5 py-3.5', className)}>
+    <td className={cn('px-5 py-3.5', className)} {...props}>
       {children}
     </td>
   );

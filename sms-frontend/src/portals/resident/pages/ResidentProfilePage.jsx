@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
     useGetMyProfileQuery,
     useUpdateMyProfileMutation,
+    useUpdateMyAvatarMutation,
     useAddFamilyMemberMutation,
     useDeleteFamilyMemberMutation,
     useGetMyDomesticStaffQuery,
@@ -14,9 +15,10 @@ import {
 } from '../../../store/api/residentApi';
 import { setCredentials } from '../../../store/slices/authSlice';
 import { residentApi } from '../../../store/api/residentApi';
+import { useEmailIdCardMutation } from '../../../store/api/idCardApi';
 import {
     User, Phone, Mail, Home, Building2, Edit2, Plus, Trash2,
-    CheckCircle2, X, Save, Users, RefreshCw, AlertCircle, Briefcase, QrCode
+    CheckCircle2, X, Save, Users, RefreshCw, AlertCircle, Briefcase, QrCode, Download
 } from 'lucide-react';
 
 import { FamilyMemberCard } from '../components/profile/FamilyMemberCard';
@@ -25,6 +27,7 @@ import { DomesticStaffCard } from '../components/profile/DomesticStaffCard';
 import { AddDomesticStaffModal } from '../components/profile/AddDomesticStaffModal';
 import { AddEmergencyContactModal } from '../components/profile/AddEmergencyContactModal';
 import { EmergencyContactCard } from '../components/profile/EmergencyContactCard';
+import { DigitalIdCard } from '../components/profile/DigitalIdCard';
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ResidentProfilePage() {
@@ -33,12 +36,14 @@ export default function ResidentProfilePage() {
     const { data, isLoading } = useGetMyProfileQuery();
     const { data: staffData } = useGetMyDomesticStaffQuery();
     const [updateMyProfile, { isLoading: isSaving }] = useUpdateMyProfileMutation();
+    const [updateMyAvatar, { isLoading: isUpdatingAvatar }] = useUpdateMyAvatarMutation();
     const [addFamilyMember] = useAddFamilyMemberMutation();
     const [deleteFamilyMember] = useDeleteFamilyMemberMutation();
     const [addDomesticStaff] = useAddDomesticStaffMutation();
     const [removeDomesticStaff] = useRemoveDomesticStaffMutation();
     const [addEmergencyContact] = residentApi.endpoints.addEmergencyContact.useMutation();
     const [deleteEmergencyContact] = residentApi.endpoints.deleteEmergencyContact.useMutation();
+    const [emailIdCard, { isLoading: isEmailingIdCard }] = useEmailIdCardMutation();
 
     const profile = data?.data?.profile;
     const unit = profile?.unitId;
@@ -95,12 +100,41 @@ export default function ResidentProfilePage() {
         formData.append('role', staffInfo.role);
         if (staffInfo.phone) formData.append('phone', staffInfo.phone);
         if (staffInfo.photoFile) formData.append('photo', staffInfo.photoFile);
-        
+
         await addDomesticStaff(formData).unwrap();
     };
 
     const handleDeleteStaff = async (staffId) => {
         await removeDomesticStaff(staffId).unwrap();
+    };
+
+    const handleEmailIdCard = async () => {
+        try {
+            await emailIdCard().unwrap();
+            alert('ID Card sent to your email successfully!');
+        } catch (error) {
+            console.error(error);
+            alert('Failed to send ID Card to email.');
+        }
+    };
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            const res = await updateMyAvatar(formData).unwrap();
+            
+            // Instantly update Redux auth state so the header navigation image also updates!
+            if (res?.data?.user) {
+                dispatch(setCredentials({ user: res.data.user, accessToken: localStorage.getItem('accessToken') }));
+            }
+        } catch (error) {
+            console.error('Failed to update avatar:', error);
+            alert('Failed to update avatar.');
+        }
     };
 
     if (isLoading) {
@@ -112,8 +146,21 @@ export default function ResidentProfilePage() {
             {/* Header */}
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-6 text-white shadow-lg">
                 <div className="relative z-10 flex items-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-white text-2xl font-bold">
-                        {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    <div className="relative group flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white text-2xl font-bold overflow-hidden cursor-pointer">
+                        {user?.profilePhotoUrl ? (
+                            <img src={user.profilePhotoUrl} alt="Avatar" className="h-full w-full object-cover" />
+                        ) : (
+                            <>{user?.firstName?.[0]}{user?.lastName?.[0]}</>
+                        )}
+                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <Plus className="h-6 w-6 text-white" />
+                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} disabled={isUpdatingAvatar} />
+                        </label>
+                        {isUpdatingAvatar && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                                <RefreshCw className="h-5 w-5 animate-spin text-white" />
+                            </div>
+                        )}
                     </div>
                     <div>
                         <div className="flex items-center gap-2 text-indigo-200 text-xs mb-1">
@@ -139,14 +186,14 @@ export default function ResidentProfilePage() {
                     {!editing
                         ? <button onClick={startEdit} className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition">
                             <Edit2 className="h-3.5 w-3.5" /> Edit
-                          </button>
+                        </button>
                         : <div className="flex gap-2">
                             <button onClick={() => setEditing(false)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
                             <button onClick={handleSave} disabled={isSaving}
                                 className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-60">
                                 {isSaving ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
                             </button>
-                          </div>
+                        </div>
                     }
                 </div>
 
@@ -195,6 +242,17 @@ export default function ResidentProfilePage() {
                 </div>
             )}
 
+            {/* Digital ID Card */}
+            <DigitalIdCard
+                user={user}
+                profile={profile}
+                society={society}
+                unit={unit}
+                onEmail={handleEmailIdCard}
+                isEmailing={isEmailingIdCard}
+                onUploadSuccess={() => window.location.reload()}
+            />
+
             {/* Family Members */}
             <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
                 <div className="flex items-center justify-between mb-5">
@@ -224,7 +282,7 @@ export default function ResidentProfilePage() {
             <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
                 <div className="flex items-center justify-between mb-5">
                     <h2 className="font-bold text-slate-800 flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-red-500" /> Emergency Contacts 
+                        <AlertCircle className="h-5 w-5 text-red-500" /> Emergency Contacts
                         <span className="text-xs font-normal text-slate-400">({emergencyContacts.length}/10)</span>
                     </h2>
                     {emergencyContacts.length < 10 && (

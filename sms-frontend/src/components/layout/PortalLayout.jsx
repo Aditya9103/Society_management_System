@@ -71,8 +71,12 @@ export default function PortalLayout({
           {/* User avatar & Notifications */}
           <div className="flex items-center gap-3">
             <NotificationDropdown />
-            <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow', accentFrom, accentTo)}>
-              {initials}
+            <div className={cn('relative overflow-hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow', accentFrom, accentTo)}>
+              {user?.profilePhotoUrl ? (
+                <img src={user.profilePhotoUrl} alt="User Avatar" className="h-full w-full object-cover" />
+              ) : (
+                <>{initials}</>
+              )}
             </div>
           </div>
         </header>

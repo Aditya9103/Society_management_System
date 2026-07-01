@@ -11,9 +11,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useGetMyProfileQuery } from '../../../store/api/residentApi';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { PendingApprovalScreen } from '../components/dashboard/PendingApprovalScreen';
+import EmptyState from '../../../components/ui/EmptyState';
 import { RejectedScreen } from '../components/dashboard/RejectedScreen';
 import { ApprovedDashboard } from '../components/dashboard/ApprovedDashboard';
+import { PendingApprovalScreen } from '../components/dashboard/PendingApprovalScreen';
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ResidentDashboardPage() {

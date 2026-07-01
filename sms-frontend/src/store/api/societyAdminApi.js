@@ -36,6 +36,11 @@ export const societyAdminApi = createApi({
             invalidatesTags: [{ type: 'Society', id: 'PROFILE' }, 'DashboardStats'],
         }),
 
+        updateSocietyLogo: builder.mutation({
+            query: (data) => ({ url: '/societies/profile/logo', method: 'PATCH', data }),
+            invalidatesTags: [{ type: 'Society', id: 'PROFILE' }, 'DashboardStats'],
+        }),
+
         // ── Staff ────────────────────────────────────────────────────────────
 
         listStaff: builder.query({
@@ -95,6 +100,24 @@ export const societyAdminApi = createApi({
                 { type: 'Resident', id: 'PROFILES' },
                 'DashboardStats',
             ],
+        }),
+
+        revokeResident: builder.mutation({
+            query: ({ id, reason }) => ({
+                url: `/societies/resident/${id}/revoke`,
+                method: 'PATCH',
+                data: { reason },
+            }),
+            invalidatesTags: [
+                { type: 'Resident', id: 'LIST' },
+                { type: 'Resident', id: 'PROFILES' },
+                'DashboardStats',
+            ],
+        }),
+
+        getResidentProfile: builder.query({
+            query: (id) => ({ url: `/societies/resident/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'Resident', id: `PROFILE_${id}` }],
         }),
 
         // ── Towers ───────────────────────────────────────────────────────────
@@ -307,13 +330,16 @@ export const {
     useGetAdminDashboardQuery,
     useGetSocietyProfileQuery,
     useUpdateSocietyProfileMutation,
+    useUpdateSocietyLogoMutation,
     useListStaffQuery,
     useCreateStaffMutation,
     useDeactivateStaffMutation,
     useListResidentsQuery,
     useListResidentProfilesQuery,
+    useGetResidentProfileQuery,
     useApproveResidentMutation,
     useRejectResidentMutation,
+    useRevokeResidentMutation,
     useListTowersQuery,
     useCreateTowerMutation,
     useUpdateTowerMutation,

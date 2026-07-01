@@ -68,7 +68,7 @@ export default function PortalLayout({
                 <BrandIcon className="h-4 w-4 text-white" />
               </div>
             )}
-            <span className="text-sm font-bold text-slate-800">{brand?.title}</span>
+            <span className="text-base font-bold text-slate-900">{brand?.title}</span>
           </div>
 
           {/* User avatar & Notifications */}

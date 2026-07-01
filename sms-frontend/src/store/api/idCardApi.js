@@ -19,6 +19,25 @@ export const idCardApi = createApi({
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             }),
+            async onQueryStarted({ residentId, formData }, { dispatch, queryFulfilled }) {
+                const { societyAdminApi } = await import('./societyAdminApi');
+                const patchResult = dispatch(
+                    societyAdminApi.util.updateQueryData('getResidentProfile', residentId, (draft) => {
+                        if (draft.data?.residentDetails) {
+                            draft.data.residentDetails.idCardGeneratedAt = new Date().toISOString();
+                            const pdfBlob = formData.get('pdf');
+                            if (pdfBlob) {
+                                draft.data.residentDetails.idCardUrl = URL.createObjectURL(pdfBlob);
+                            }
+                        }
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+                }
+            },
             invalidatesTags: ['IdCard'],
         }),
         verifyIdCard: builder.mutation({

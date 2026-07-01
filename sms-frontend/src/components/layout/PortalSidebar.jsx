@@ -73,7 +73,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
               )}
               <div>
                 <p className="text-sm font-bold leading-tight text-white">{brand?.title}</p>
-                <p className="text-[10px] text-slate-400">{brand?.subtitle}</p>
+                <p className="text-xs text-slate-300">{brand?.subtitle}</p>
               </div>
             </div>
             {/* Close button — mobile only */}
@@ -88,7 +88,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
 
           {/* ── Navigation ────────────────────────────────────────────── */}
           <nav className="flex-1 overflow-y-auto px-3 py-5">
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
               Navigation
             </p>
             <ul className="space-y-0.5">
@@ -100,10 +100,10 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
                     onClick={onClose}
                     className={({ isActive }) =>
                       cn(
-                        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition-all duration-150',
                         isActive
                           ? cn('bg-gradient-to-r text-white shadow-lg', accentFrom, accentTo)
-                          : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                       )
                     }
                   >
@@ -129,12 +129,12 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
                 <p className="truncate text-sm font-semibold text-white">
                   {user?.firstName} {user?.lastName}
                 </p>
-                <p className="truncate text-[11px] text-slate-400">{user?.email}</p>
+                <p className="truncate text-xs text-slate-300">{user?.email}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400"
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-[15px] text-slate-300 transition-colors hover:bg-slate-800 hover:text-red-400"
             >
               <LogOut className="h-4 w-4" />
               Sign out
@@ -156,7 +156,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
               )}
               <div>
                 <p className="text-sm font-bold leading-tight text-white">{brand?.title}</p>
-                <p className="text-[10px] text-slate-400">{brand?.subtitle}</p>
+                <p className="text-xs text-slate-300">{brand?.subtitle}</p>
               </div>
             </div>
             <NotificationDropdown align="left" />
@@ -164,7 +164,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
 
           {/* ── Navigation ────────────────────────────────────────────── */}
           <nav className="flex-1 overflow-y-auto px-3 py-5">
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
               Navigation
             </p>
             <ul className="space-y-0.5">
@@ -176,10 +176,10 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
                     onClick={onClose}
                     className={({ isActive }) =>
                       cn(
-                        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition-all duration-150',
                         isActive
                           ? cn('bg-gradient-to-r text-white shadow-lg', accentFrom, accentTo)
-                          : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                       )
                     }
                   >
@@ -205,12 +205,12 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
                 <p className="truncate text-sm font-semibold text-white">
                   {user?.firstName} {user?.lastName}
                 </p>
-                <p className="truncate text-[11px] text-slate-400">{user?.email}</p>
+                <p className="truncate text-xs text-slate-300">{user?.email}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400"
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-[15px] text-slate-300 transition-colors hover:bg-slate-800 hover:text-red-400"
             >
               <LogOut className="h-4 w-4" />
               Sign out

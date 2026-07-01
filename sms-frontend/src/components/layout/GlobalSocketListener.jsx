@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { getSocket } from '../../socket/socketClient';
 import { vehicleApi } from '../../store/api/vehicleApi';
 import { pollApi } from '../../store/api/pollApi';
+import { facilityApi } from '../../store/api/facilityApi';
 
 import UrgentNoticeToast from './UrgentNoticeToast';
 
@@ -170,11 +171,17 @@ export default function GlobalSocketListener() {
             dispatch(pollApi.util.invalidateTags(['Poll']));
         };
 
+        const handleAmenityUpdated = () => {
+            console.log('🏢 Amenity/Booking update received');
+            dispatch(facilityApi.util.invalidateTags(['Booking', 'Amenity']));
+        };
+
         socket.on('EMERGENCY_ALARM', handleEmergencyAlarm);
         socket.on('EMERGENCY_UPDATED', handleEmergencyUpdated);
         socket.on('POLL_CREATED', handlePollEvent);
         socket.on('POLL_UPDATED', handlePollEvent);
         socket.on('POLL_CLOSED', handlePollEvent);
+        socket.on('AMENITY_UPDATED', handleAmenityUpdated);
 
         return () => {
             socket.off('URGENT_NOTICE', handleUrgentNotice);
@@ -184,6 +191,7 @@ export default function GlobalSocketListener() {
             socket.off('POLL_CREATED', handlePollEvent);
             socket.off('POLL_UPDATED', handlePollEvent);
             socket.off('POLL_CLOSED', handlePollEvent);
+            socket.off('AMENITY_UPDATED', handleAmenityUpdated);
         };
     }, [isAuthenticated]);
 

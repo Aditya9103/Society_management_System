@@ -97,8 +97,8 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                     const formData = new FormData();
                     formData.append('pdf', pdfBlob, 'id_card.pdf');
 
-                    // 4. Upload
-                    await uploadPdf({ residentId: profile?._id, formData }).unwrap();
+                    // 4. Upload (optimistically)
+                    uploadPdf({ residentId: profile?._id, formData }).unwrap().catch(e => console.error("Upload failed", e));
 
                     if (onComplete) onComplete();
                 } catch (error) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, Home, FileText, CheckCircle, XCircle, AlertTriangle, Download, RefreshCw, Trash2, Shield } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Modal from '../../../../components/ui/Modal';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import { Button } from '../../../../components/ui/Button';
@@ -41,17 +42,17 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                 setTriggerGeneration(true); // This triggers the hidden generator
                 // We don't onClose here, we wait for onComplete
             } else if (actionType === 'REJECT') {
-                if (!reason) return alert('Please provide a reason');
+                if (!reason) return toast.error('Please provide a reason');
                 await reject({ id: residentId, rejectionReason: reason }).unwrap();
                 onClose();
             } else if (actionType === 'REVOKE') {
-                if (!reason) return alert('Please provide a reason');
+                if (!reason) return toast.error('Please provide a reason');
                 await revoke({ id: residentId, rejectionReason: reason }).unwrap();
                 onClose();
             }
         } catch (error) {
             console.error('Action Error:', error);
-            alert(error?.data?.message || 'Action failed');
+            toast.error(error?.data?.message || 'Action failed');
             setActionLoading(false);
         } finally {
             if (actionType !== 'APPROVE') setActionLoading(false);
@@ -61,25 +62,24 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
     const handleGenerationComplete = () => {
         setTriggerGeneration(false);
         if (isApproving) {
-            alert('Resident approved and ID Card generated successfully!');
+            toast.success('Resident approved and ID Card generated successfully!');
             setIsApproving(false);
             setActionLoading(false);
             onClose();
         } else {
-            alert('ID Card generated successfully!');
-            refetch();
+            toast.success('ID Card generated successfully!');
         }
     };
 
     const handleGenerationError = () => {
         setTriggerGeneration(false);
         if (isApproving) {
-            alert('Resident approved, but ID Card generation failed. You can generate it later.');
+            toast.error('Resident approved, but ID Card generation failed. You can generate it later.');
             setIsApproving(false);
             setActionLoading(false);
             onClose();
         } else {
-            alert('Failed to generate ID Card');
+            toast.error('Failed to generate ID Card');
         }
     };
 

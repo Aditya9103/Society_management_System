@@ -10,6 +10,7 @@ import { vehicleApi } from './api/vehicleApi';
 import { pollApi } from './api/pollApi';
 import { documentApi } from './api/documentApi';
 import { idCardApi } from './api/idCardApi';
+import { facilityApi } from './api/facilityApi';
 import authReducer from './slices/authSlice';
 
 export const store = configureStore({
@@ -26,6 +27,7 @@ export const store = configureStore({
     [pollApi.reducerPath]: pollApi.reducer,
     [documentApi.reducerPath]: documentApi.reducer,
     [idCardApi.reducerPath]: idCardApi.reducer,
+    [facilityApi.reducerPath]: facilityApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -39,5 +41,6 @@ export const store = configureStore({
       .concat(vehicleApi.middleware)
       .concat(pollApi.middleware)
       .concat(documentApi.middleware)
-      .concat(idCardApi.middleware),
+      .concat(idCardApi.middleware)
+      .concat(facilityApi.middleware),
 });

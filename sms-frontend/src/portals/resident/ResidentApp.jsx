@@ -5,7 +5,7 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, User, MessageSquareWarning,
-    Bell, UserCheck, Receipt, Home, ShieldAlert, Car, Users, BarChart2
+    Bell, UserCheck, Receipt, Home, ShieldAlert, Car, Users, BarChart2, Building2
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import PortalLayout from '../../components/layout/PortalLayout';
@@ -19,6 +19,7 @@ import ResidentInvoicesPage from './pages/ResidentInvoicesPage';
 import ResidentVehiclePage from './pages/ResidentVehiclePage';
 import ResidentPollsPage from './pages/ResidentPollsPage';
 import ResidentDocumentsPage from './pages/ResidentDocumentsPage';
+import ResidentAmenitiesPage from './pages/ResidentAmenitiesPage';
 import ResidentWalkInListener from './components/ResidentWalkInListener';
 import { PendingApprovalScreen } from './components/dashboard/PendingApprovalScreen';
 import { RejectedScreen } from './components/dashboard/RejectedScreen';
@@ -39,6 +40,7 @@ const SIDEBAR_CONFIG = {
         { to: '/resident/polls', label: 'Polls & Voting', Icon: BarChart2 },
         { to: '/resident/invoices', label: 'Invoices & Bills', Icon: Receipt },
         { to: '/resident/documents', label: 'Documents', Icon: FileText },
+        { to: '/resident/amenities', label: 'Amenities', Icon: Building2 },
     ],
 };
 
@@ -78,6 +80,7 @@ export default function ResidentApp() {
                 <Route path="polls" element={<ResidentPollsPage />} />
                 <Route path="invoices" element={<ResidentInvoicesPage />} />
                 <Route path="documents" element={<ResidentDocumentsPage />} />
+                <Route path="amenities" element={<ResidentAmenitiesPage />} />
                 <Route path="*" element={<Navigate to="/resident" replace />} />
             </Routes>
         </PortalLayout>

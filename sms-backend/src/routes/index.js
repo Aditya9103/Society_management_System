@@ -15,6 +15,7 @@ import vehicleRoutes     from '../modules/vehicle/vehicle.routes.js';
 import pollRoutes        from '../modules/poll/poll.routes.js';
 import documentRoutes    from '../modules/document/document.routes.js';
 import idCardRoutes      from '../modules/idCard/idCard.routes.js';
+import facilityRoutes    from '../modules/facility/facility.routes.js';
 
 /**
  * routes/index.js — Central API router (v1).
@@ -54,5 +55,6 @@ router.use('/vehicles',    vehicleRoutes);     // Vehicle module
 router.use('/polls',       pollRoutes);        // Polls & Voting module
 router.use('/documents',   documentRoutes);    // Document Management module
 router.use('/id-cards',    idCardRoutes);      // Digital ID Card module
+router.use('/facilities',  facilityRoutes);    // Amenity & Booking module
 
 export default router;

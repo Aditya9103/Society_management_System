@@ -140,6 +140,18 @@ const bookingSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        // ── Payment placeholder fields (not enforced now, reserved for future) ──
+        // Whether this booking requires payment
+        paymentRequired: {
+            type: Boolean,
+            default: false,
+        },
+        // Payment status (NOT_REQUIRED / PENDING / PAID)
+        paymentStatus: {
+            type: String,
+            enum: ['NOT_REQUIRED', 'PENDING', 'PAID'],
+            default: 'NOT_REQUIRED',
+        },
     },
     { timestamps: true }
 );

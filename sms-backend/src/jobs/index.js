@@ -19,9 +19,9 @@ export const initializeJobs = () => {
     logger.info('Scheduled jobs initialized');
     scheduleNoticeSender();
     scheduleQrExpiry();
-    scheduleReminderSender();
+    //scheduleReminderSender();
     //scheduleReportGenerator();
     scheduleSlaChecker();
 
-    console.log('✅  Background jobs initialized:       6 active schedules running');
+    console.log('✅  Background jobs initialized:       active schedules running');
 };

@@ -66,6 +66,17 @@ export const findByPhoneOrEmail = (identifier, withPassword = false) => {
 };
 
 /**
+ * Find users by their roles in a given society.
+ * 
+ * @param {string} societyId
+ * @param {string[]} roles
+ * @returns {Promise<UserDocument[]>}
+ */
+export const findByRoleInSociety = (societyId, roles) => {
+    return User.find({ societyId, role: { $in: roles } }).lean();
+};
+
+/**
  * Create a new user document.
  *
  * @param {object} data - User fields

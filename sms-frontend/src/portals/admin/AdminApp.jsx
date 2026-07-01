@@ -24,6 +24,7 @@ import AdminVehiclePage from './pages/AdminVehiclePage';
 import AdminParkingPage from './pages/AdminParkingPage';
 import AdminPollsPage from './pages/AdminPollsPage';
 import AdminDocumentsPage from './pages/AdminDocumentsPage';
+import AdminAmenitiesPage from './pages/AdminAmenitiesPage';
 import { FileText } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
@@ -46,6 +47,7 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/parking', label: 'Parking', Icon: MapPin },
     { to: '/admin/polls', label: 'Polls & Voting', Icon: BarChart2 },
     { to: '/admin/documents', label: 'Documents', Icon: FileText },
+    { to: '/admin/amenities', label: 'Amenities', Icon: Building2 },
   ],
 };
 
@@ -68,6 +70,7 @@ export default function AdminApp() {
         <Route path="parking" element={<AdminParkingPage />} />
         <Route path="polls" element={<AdminPollsPage />} />
         <Route path="documents" element={<AdminDocumentsPage />} />
+        <Route path="amenities" element={<AdminAmenitiesPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </PortalLayout>

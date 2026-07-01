@@ -11,6 +11,7 @@
 
 import * as authService from './auth.service.js';
 import ApiResponse from '../../utils/ApiResponse.js';
+import ApiError from '../../utils/ApiError.js';
 import asyncHandler from '../../utils/asyncHandler.js';
 
 // ── Helper: extract device context from the request ───────────────────────────
@@ -174,6 +175,17 @@ export const getMe = asyncHandler(async (req, res) => {
     res.status(200).json(
         new ApiResponse(200, { user }, 'Profile retrieved successfully'),
     );
+});
+
+/**
+ * PATCH /api/v1/auth/me/avatar
+ * Update the authenticated user's avatar.
+ */
+export const updateMyAvatar = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    if (!req.file) throw ApiError.badRequest('Avatar image is required');
+    const user = await authService.updateMyAvatar(userId, req.file.buffer);
+    res.status(200).json(new ApiResponse(200, { user }, 'Avatar updated successfully'));
 });
 
 // ── Password ──────────────────────────────────────────────────────────────────

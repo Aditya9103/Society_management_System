@@ -18,6 +18,7 @@
  *   - Sticky header prevents layout shift on scroll
  */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Menu } from 'lucide-react';
 import PortalSidebar from './PortalSidebar';
@@ -30,10 +31,12 @@ export default function PortalLayout({
   maxWidth = 'max-w-7xl',
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
-  const { brand, accentFrom = 'from-indigo-600', accentTo = 'to-violet-600' } = sidebarConfig;
+  const { brand, accentFrom = 'from-indigo-600', accentTo = 'to-violet-600', navItems = [] } = sidebarConfig;
   const BrandIcon = brand?.Icon;
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
+  const profileRoute = sidebarConfig.profilePath || navItems.find(i => i.to.endsWith('/profile'))?.to || 'profile';
 
   return (
     <div className="flex min-h-[100dvh]" style={{ backgroundColor: '#f4f5f7' }}>
@@ -71,7 +74,10 @@ export default function PortalLayout({
           {/* User avatar & Notifications */}
           <div className="flex items-center gap-3">
             <NotificationDropdown />
-            <div className={cn('relative overflow-hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow', accentFrom, accentTo)}>
+            <div 
+              onClick={() => navigate(profileRoute)}
+              className={cn('relative overflow-hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow cursor-pointer ring-2 ring-transparent hover:ring-slate-300 transition-all', accentFrom, accentTo)}
+            >
               {user?.profilePhotoUrl ? (
                 <img src={user.profilePhotoUrl} alt="User Avatar" className="h-full w-full object-cover" />
               ) : (

@@ -23,6 +23,11 @@ export const societyAdminApi = createApi({
             providesTags: ['DashboardStats'],
         }),
 
+        updateMyAvatar: builder.mutation({
+            query: (data) => ({ url: '/auth/me/avatar', method: 'PATCH', data }),
+            // Profile image is retrieved via auth state, but we provide a mutation here for Admin.
+        }),
+
         // ── Society Profile ──────────────────────────────────────────────────
 
         getSocietyProfile: builder.query({
@@ -328,6 +333,7 @@ export const societyAdminApi = createApi({
 
 export const {
     useGetAdminDashboardQuery,
+    useUpdateMyAvatarMutation,
     useGetSocietyProfileQuery,
     useUpdateSocietyProfileMutation,
     useUpdateSocietyLogoMutation,

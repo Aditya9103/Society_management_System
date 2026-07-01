@@ -35,6 +35,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
   const { brand, navItems = [], accentFrom = 'from-indigo-600', accentTo = 'to-violet-600' } = config;
   const BrandIcon = brand?.Icon;
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
+  const profileRoute = config.profilePath || navItems.find(i => i.to.endsWith('/profile'))?.to || 'profile';
 
   const handleLogout = () => {
     dispatch(logout());
@@ -117,7 +118,10 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
 
           {/* ── User card + Logout ─────────────────────────────────────── */}
           <div className="shrink-0 border-t border-slate-700/60 p-4">
-            <div className="mb-2 flex items-center gap-3 rounded-xl bg-slate-800/60 p-3">
+            <div 
+              onClick={() => { navigate(profileRoute); onClose?.(); }}
+              className="mb-2 flex items-center gap-3 rounded-xl bg-slate-800/60 p-3 cursor-pointer hover:bg-slate-700/60 transition-colors"
+            >
               <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold shadow', accentFrom, accentTo)}>
                 {initials}
               </div>
@@ -190,7 +194,10 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
 
           {/* ── User card + Logout ─────────────────────────────────────── */}
           <div className="shrink-0 border-t border-slate-700/60 p-4">
-            <div className="mb-2 flex items-center gap-3 rounded-xl bg-slate-800/60 p-3">
+            <div 
+              onClick={() => { navigate(profileRoute); }}
+              className="mb-2 flex items-center gap-3 rounded-xl bg-slate-800/60 p-3 cursor-pointer hover:bg-slate-700/60 transition-colors"
+            >
               <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold shadow', accentFrom, accentTo)}>
                 {initials}
               </div>

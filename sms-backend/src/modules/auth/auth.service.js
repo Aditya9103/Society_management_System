@@ -23,6 +23,7 @@ import ApiError from '../../utils/ApiError.js';
 import { OTP_CONFIG, ACCOUNT_SECURITY, ROLES } from '../../config/constants.js';
 import { sendEmail } from '../../services/email.service.js';
 import { generateOtp } from '../../services/otp.service.js';
+import { uploadFile } from '../../services/storage.service.js';
 import env from '../../config/env.js';
 import logger from '../../utils/logger.js';
 
@@ -359,6 +360,23 @@ export const getAuthenticatedUser = async (userId) => {
  */
 export const registerFcmToken = async (userId, fcmToken) => {
     await userRepo.addFcmToken(userId, fcmToken);
+};
+
+/**
+ * Update a user's avatar.
+ * Uploads to cloudinary and saves the secure URL to the User record.
+ * 
+ * @param {string} userId 
+ * @param {Buffer} imageBuffer 
+ * @returns {Promise<UserDocument>}
+ */
+export const updateMyAvatar = async (userId, imageBuffer) => {
+    const uploadResult = await uploadFile(imageBuffer, { folder: 'user_avatars' });
+    const updatedUser = await userRepo.updateUser(userId, { profilePhotoUrl: uploadResult.secure_url });
+    
+    // Strip sensitive fields
+    const { passwordHash, passwordHistory, ...safeUser } = updatedUser;
+    return safeUser;
 };
 
 // ── Resident Registration ─────────────────────────────────────────────────────

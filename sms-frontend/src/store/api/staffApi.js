@@ -29,6 +29,11 @@ export const staffApi = createApi({
             providesTags: ['StaffProfile'],
         }),
 
+        updateMyAvatar: builder.mutation({
+            query: (data) => ({ url: '/auth/me/avatar', method: 'PATCH', data }),
+            invalidatesTags: ['StaffProfile'],
+        }),
+
         // ── Society profile (read-only) ───────────────────────────────────────
 
         /**
@@ -198,6 +203,7 @@ export const staffApi = createApi({
 
 export const {
     useGetStaffMeQuery,
+    useUpdateMyAvatarMutation,
     useGetStaffSocietyProfileQuery,
     useGetStaffDashboardQuery,
     useGetStaffResidentsQuery,

@@ -2,9 +2,10 @@
  * StaffProfilePage.jsx — Staff member's own profile.
  */
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { User, Mail, Phone, Shield, Lock, CheckCircle2 } from 'lucide-react';
-import { useGetStaffMeQuery } from '../../../store/api/staffApi';
+import { useSelector, useDispatch } from 'react-redux';
+import { User, Mail, Phone, Shield, Lock, CheckCircle2, Plus, RefreshCw } from 'lucide-react';
+import { useGetStaffMeQuery, useUpdateMyAvatarMutation } from '../../../store/api/staffApi';
+import { setCredentials } from '../../../store/slices/authSlice';
 import PageHeader from '../../../components/ui/PageHeader';
 import Alert from '../../../components/ui/Alert';
 import Card from '../../../components/ui/Card';
@@ -34,12 +35,34 @@ function DetailRow({ icon: Icon, label, value }) {
 
 export default function StaffProfilePage() {
   const { user: authUser } = useSelector((s) => s.auth);
+  const dispatch = useDispatch();
   const { data, isLoading, isError } = useGetStaffMeQuery();
+  const [updateMyAvatar, { isLoading: isUpdatingAvatar }] = useUpdateMyAvatarMutation();
+  
   const profile = data?.data?.user ?? authUser;
 
   const role = profile?.role ?? '';
   const roleLabel = ROLE_LABELS[role] ?? role;
   const initials = `${profile?.firstName?.[0] ?? ''}${profile?.lastName?.[0] ?? ''}`;
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const res = await updateMyAvatar(formData).unwrap();
+        
+        // Instantly update Redux auth state so the header navigation image also updates
+        if (res?.data?.user) {
+            dispatch(setCredentials({ user: res.data.user, accessToken: localStorage.getItem('accessToken') }));
+        }
+    } catch (error) {
+        console.error('Failed to update avatar:', error);
+        alert('Failed to update avatar.');
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -54,8 +77,21 @@ export default function StaffProfilePage() {
           {/* Avatar card */}
           <Card>
             <Card.Body className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-2xl font-bold text-white shadow-lg">
-                {initials}
+              <div className="relative group flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-2xl font-bold text-white shadow-lg overflow-hidden cursor-pointer">
+                {profile?.profilePhotoUrl ? (
+                    <img src={profile.profilePhotoUrl} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                    <>{initials}</>
+                )}
+                <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Plus className="h-6 w-6 text-white" />
+                    <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} disabled={isUpdatingAvatar} />
+                </label>
+                {isUpdatingAvatar && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                        <RefreshCw className="h-5 w-5 animate-spin text-white" />
+                    </div>
+                )}
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">

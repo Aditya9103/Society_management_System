@@ -25,6 +25,7 @@ import {
 import validate from '../../middleware/validate.middleware.js';
 import { authenticate } from '../../middleware/auth.middleware.js';
 import { authLimiter, otpLimiter } from '../../middleware/rateLimit.middleware.js';
+import { uploadSingle } from '../../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -148,6 +149,18 @@ router.get(
     '/me',
     authenticate,
     authController.getMe,
+);
+
+/**
+ * PATCH /api/v1/auth/me/avatar
+ * Update the authenticated user's avatar.
+ * Requires a valid access token.
+ */
+router.patch(
+    '/me/avatar',
+    authenticate,
+    ...uploadSingle('avatar', 'avatars', 'image'),
+    authController.updateMyAvatar,
 );
 
 /**

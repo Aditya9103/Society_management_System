@@ -13,11 +13,14 @@
  */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Save, Trash2, Plus, Camera, Loader2 } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Save, Trash2, Plus, Camera, Loader2, RefreshCw } from 'lucide-react';
+import { setCredentials } from '../../../store/slices/authSlice';
 import {
     useGetSocietyProfileQuery,
     useUpdateSocietyProfileMutation,
     useUpdateSocietyLogoMutation,
+    useUpdateMyAvatarMutation,
 } from '../../../store/api/societyAdminApi';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -31,15 +34,19 @@ const EMERGENCY_TYPES = ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AG
 
 
 export default function SocietyProfilePage() {
+    const { user } = useSelector(s => s.auth);
+    const dispatch = useDispatch();
     const { data, isLoading } = useGetSocietyProfileQuery();
     const [updateProfile, { isLoading: isSaving }] = useUpdateSocietyProfileMutation();
     const [updateLogo, { isLoading: isUpdatingLogo }] = useUpdateSocietyLogoMutation();
+    const [updateMyAvatar, { isLoading: isUpdatingAvatar }] = useUpdateMyAvatarMutation();
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState('');
     const [emergencyContacts, setEmergencyContacts] = useState([]);
     const [contactsInit, setContactsInit] = useState(false);
 
     const society = data?.data?.society;
+    const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
 
     const { register, handleSubmit, reset } = useForm();
 
@@ -63,6 +70,24 @@ export default function SocietyProfilePage() {
             setTimeout(() => setSaveSuccess(false), 3000);
         } catch (err) {
             setSaveError(err?.message || err?.data?.message || 'Failed to update logo.');
+        }
+    };
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            const res = await updateMyAvatar(formData).unwrap();
+            
+            // Instantly update Redux auth state
+            if (res?.data?.user) {
+                dispatch(setCredentials({ user: res.data.user, accessToken: localStorage.getItem('accessToken') }));
+            }
+        } catch (error) {
+            console.error('Failed to update avatar:', error);
+            alert('Failed to update avatar.');
         }
     };
 
@@ -156,6 +181,33 @@ export default function SocietyProfilePage() {
 
             {saveSuccess && <Alert type="success">Changes saved successfully!</Alert>}
             {saveError && <Alert type="error">{saveError}</Alert>}
+
+            {/* Admin Personal Profile */}
+            <Section title="My Admin Account" description="Manage your personal profile and avatar">
+                <div className="flex items-center gap-5">
+                    <div className="relative group flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-2xl font-bold text-white shadow-lg overflow-hidden cursor-pointer">
+                        {user?.profilePhotoUrl ? (
+                            <img src={user.profilePhotoUrl} alt="Avatar" className="h-full w-full object-cover" />
+                        ) : (
+                            <>{initials}</>
+                        )}
+                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <Plus className="h-6 w-6 text-white" />
+                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} disabled={isUpdatingAvatar} />
+                        </label>
+                        {isUpdatingAvatar && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                                <RefreshCw className="h-5 w-5 animate-spin text-white" />
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold text-slate-900">{user?.firstName} {user?.lastName}</h4>
+                        <p className="text-sm text-slate-500">{user?.email}</p>
+                        <p className="text-xs font-semibold text-indigo-600 mt-1 uppercase tracking-wider">{user?.role?.replace('_', ' ')}</p>
+                    </div>
+                </div>
+            </Section>
 
             {/* Basic Info */}
             <Section title="Basic Information" description="General details about your society">

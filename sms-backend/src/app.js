@@ -28,7 +28,7 @@ app.use(helmet());
 // ── CORS ─────────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGINS?.split(',') ?? '*',
+    origin: env.clientOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   }),

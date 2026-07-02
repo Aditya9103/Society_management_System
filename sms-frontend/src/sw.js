@@ -26,8 +26,11 @@ import { BackgroundSyncPlugin } from 'workbox-background-sync';
 // ─── Core ────────────────────────────────────────────────────────────────────
 clientsClaim();
 
+// Capture the manifest injected by vite-plugin-pwa (MUST only appear once in this file!)
+const precacheManifest = self.__WB_MANIFEST || [];
+
 // Precache all assets injected by vite-plugin-pwa at build time
-precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute(precacheManifest);
 
 // Remove stale precaches from previous versions
 cleanupOutdatedCaches();
@@ -143,7 +146,7 @@ registerRoute(
 
 // ─── Navigation: SPA fallback ─────────────────────────────────────────────────
 // In production, index.html is precached. In dev, it is not.
-const hasIndexHtml = self.__WB_MANIFEST.some(entry => 
+const hasIndexHtml = precacheManifest.some(entry => 
     (typeof entry === 'string' ? entry : entry.url).endsWith('index.html')
 );
 

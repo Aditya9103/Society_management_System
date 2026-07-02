@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import Modal from '../../../../components/ui/Modal';
 import { Input } from '../../../../components/ui/Input';
 import Select from '../../../../components/ui/Select';
@@ -52,7 +53,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
         if (processedData.vehicleType !== 'OTHER') {
             delete processedData.customVehicleType;
         } else if (!processedData.customVehicleType?.trim()) {
-            return alert('Please specify the custom vehicle type');
+            return toast.error('Please specify the custom vehicle type');
         }
 
         onAdd(processedData);

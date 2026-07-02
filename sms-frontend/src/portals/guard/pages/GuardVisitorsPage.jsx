@@ -4,6 +4,7 @@ import ScanQrForm from '../components/visitors/ScanQrForm';
 import ActiveVisitorsList from '../components/visitors/ActiveVisitorsList';
 import { useSelector } from 'react-redux';
 import { getSocket } from '../../../socket/socketClient';
+import toast from 'react-hot-toast';
 
 import PageHeader from '../../../components/ui/PageHeader';
 import TabBar from '../../../components/ui/TabBar';
@@ -25,11 +26,11 @@ export default function GuardVisitorsPage() {
         if (!socket) return;
 
         const handleApproved = (data) => {
-            alert(`✅ Walk-In Approved by Resident!\nVisitor: ${data.visitorName}`);
+            toast.success(`Walk-In Approved by Resident!\nVisitor: ${data.visitorName}`);
             setRecentApprovalEvent({ type: 'APPROVED', data });
         };
         const handleDenied = (data) => {
-            alert(`❌ Walk-In Denied by Resident!\nVisitor: ${data.visitorName}`);
+            toast.error(`Walk-In Denied by Resident!\nVisitor: ${data.visitorName}`);
             setRecentApprovalEvent({ type: 'DENIED', data });
         };
 

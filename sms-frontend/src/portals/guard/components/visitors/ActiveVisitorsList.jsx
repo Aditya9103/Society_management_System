@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 import { useGetGuardActiveVisitorsQuery, useGuardLogExitMutation, useGuardLogEntryMutation } from '../../../../store/api/staffApi';
 import { LogOut, LogIn, User, Clock, MapPin } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
@@ -18,9 +19,9 @@ export default function ActiveVisitorsList() {
         setLoadingId(visitorId);
         try {
             await logExit({ id: visitorId }).unwrap();
-            alert('Exit logged successfully!');
+            toast.success('Exit logged successfully!');
         } catch (err) {
-            alert('Failed to log exit: ' + (err.data?.message || err.message));
+            toast.error('Failed to log exit: ' + (err.data?.message || err.message));
         } finally {
             setLoadingId(null);
         }
@@ -30,9 +31,9 @@ export default function ActiveVisitorsList() {
         setLoadingId(visitorId);
         try {
             await logEntry({ id: visitorId }).unwrap();
-            alert('Entry logged successfully!');
+            toast.success('Entry logged successfully!');
         } catch (err) {
-            alert('Failed to log entry: ' + (err.data?.message || err.message));
+            toast.error('Failed to log entry: ' + (err.data?.message || err.message));
         } finally {
             setLoadingId(null);
         }

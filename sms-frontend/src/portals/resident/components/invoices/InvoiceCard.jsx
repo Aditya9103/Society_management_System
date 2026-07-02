@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Calendar, ChevronDown, ChevronUp, CreditCard, IndianRupee } from 'lucide-react';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import { Button } from '../../../../components/ui/Button';
@@ -47,7 +48,7 @@ export function InvoiceCard({ invoice }) {
                         {expanded ? <><ChevronUp className="h-3.5 w-3.5" /> Hide details</> : <><ChevronDown className="h-3.5 w-3.5" /> View line items</>}
                     </button>
                     {!isPaid && invoice.balanceAmount > 0 && (
-                        <Button size="sm" onClick={() => alert('Razorpay integration coming soon!')}>
+                        <Button size="sm" onClick={() => toast('Razorpay integration coming soon!')}>
                             <IndianRupee className="h-3.5 w-3.5 mr-1" /> Pay Now
                         </Button>
                     )}

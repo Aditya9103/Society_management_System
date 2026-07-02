@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { getSocket, disconnectSocket } from '../../../socket/socketClient';
 import { useApproveWalkInMutation, useDenyWalkInMutation, useGetMyVisitorsQuery } from '../../../store/api/residentApi';
 import { ShieldAlert, Check, X, RefreshCw } from 'lucide-react';
@@ -66,7 +67,7 @@ export default function ResidentWalkInListener() {
             if (err?.status === 400 || err?.data?.message?.includes('not pending')) {
                 setApprovalRequest(null);
             } else {
-                alert('Failed to approve visitor: ' + (err.data?.message || err.message));
+                toast.error('Failed to approve visitor: ' + (err.data?.message || err.message));
             }
         }
     };
@@ -80,7 +81,7 @@ export default function ResidentWalkInListener() {
             if (err?.status === 400 || err?.data?.message?.includes('not pending')) {
                 setApprovalRequest(null);
             } else {
-                alert('Failed to deny visitor: ' + (err.data?.message || err.message));
+                toast.error('Failed to deny visitor: ' + (err.data?.message || err.message));
             }
         }
     };

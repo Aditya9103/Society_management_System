@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import Card from '../../../../components/ui/Card';
 import StatusBadge from '../../../../components/ui/StatusBadge';
 import { Button } from '../../../../components/ui/Button';
@@ -48,7 +49,7 @@ export default function ComplaintCard({ complaint }) {
             }
             await changeStatus(data).unwrap();
         } catch (e) {
-            alert('Failed to update status');
+            toast.error('Failed to update status');
         }
     };
 
@@ -64,7 +65,7 @@ export default function ComplaintCard({ complaint }) {
             setActionModal({ open: false, type: null });
             setNotes('');
         } catch (e) {
-            alert('Failed to update complaint');
+            toast.error('Failed to update complaint');
         }
     };
 

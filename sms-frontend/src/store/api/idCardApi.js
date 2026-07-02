@@ -19,10 +19,10 @@ export const idCardApi = createApi({
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             }),
-            async onQueryStarted({ residentId, formData }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ residentId, userId, formData }, { dispatch, queryFulfilled }) {
                 const { societyAdminApi } = await import('./societyAdminApi');
                 const patchResult = dispatch(
-                    societyAdminApi.util.updateQueryData('getResidentProfile', residentId, (draft) => {
+                    societyAdminApi.util.updateQueryData('getResidentProfile', userId || residentId, (draft) => {
                         if (draft.data?.residentDetails) {
                             draft.data.residentDetails.idCardGeneratedAt = new Date().toISOString();
                             const pdfBlob = formData.get('pdf');
@@ -33,7 +33,15 @@ export const idCardApi = createApi({
                     })
                 );
                 try {
-                    await queryFulfilled;
+                    const { data } = await queryFulfilled;
+                    // Update cache with the actual new URL from backend
+                    dispatch(
+                        societyAdminApi.util.updateQueryData('getResidentProfile', userId || residentId, (draft) => {
+                            if (draft.data?.residentDetails && data?.data?.idCardUrl) {
+                                draft.data.residentDetails.idCardUrl = data.data.idCardUrl;
+                            }
+                        })
+                    );
                 } catch {
                     patchResult.undo();
                 }

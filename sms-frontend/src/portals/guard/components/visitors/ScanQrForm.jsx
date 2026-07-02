@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useGuardScanQrMutation, useGuardLogEntryMutation } from '../../../../store/api/staffApi';
 import { QrCode, LogIn, Camera } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -56,10 +57,10 @@ export default function ScanQrForm() {
         if (!data?.data?.visitor?._id) return;
         try {
             await guardLogEntry({ id: data.data.visitor._id }).unwrap();
-            alert('Entry Logged Successfully!');
+            toast.success('Entry Logged Successfully!');
             setQrCode('');
         } catch (err) {
-            alert('Failed to log entry: ' + (err.data?.message || err.message));
+            toast.error('Failed to log entry: ' + (err.data?.message || err.message));
         }
     };
 

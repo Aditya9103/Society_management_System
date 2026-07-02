@@ -258,7 +258,11 @@ function ProfileTab({ profile, onRefetch, onTriggerGeneration, isGenerating }) {
                         <div className="flex items-center gap-2">
                             {profile.residentDetails?.idCardUrl && (
                                 <a 
-                                    href={profile.residentDetails.idCardUrl} 
+                                    href={
+                                        profile.residentDetails.idCardUrl.startsWith('blob:') 
+                                            ? profile.residentDetails.idCardUrl 
+                                            : `${profile.residentDetails.idCardUrl}${profile.residentDetails.idCardUrl.includes('?') ? '&' : '?'}t=${Date.now()}`
+                                    }
                                     target="_blank" 
                                     rel="noreferrer"
                                     className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg transition"

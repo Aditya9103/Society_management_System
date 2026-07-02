@@ -58,6 +58,7 @@ const notificationSchema = new mongoose.Schema(
                 'EMERGENCY_ALERT',
                 'EMERGENCY_SOS',
                 'EMERGENCY_BROADCAST',
+                'ID_CARD_GENERATED',
                 'POLL_STARTED',
                 'RESIDENT_APPROVED',
                 'RESIDENT_REJECTED',

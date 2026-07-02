@@ -12,6 +12,7 @@
  * Uses global components: Input, Select, Button, Alert, PageHeader, Card.
  */
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Save, Trash2, Plus, Camera, Loader2, RefreshCw } from 'lucide-react';
@@ -87,7 +88,7 @@ export default function SocietyProfilePage() {
             }
         } catch (error) {
             console.error('Failed to update avatar:', error);
-            alert('Failed to update avatar.');
+            toast.error('Failed to update avatar.');
         }
     };
 

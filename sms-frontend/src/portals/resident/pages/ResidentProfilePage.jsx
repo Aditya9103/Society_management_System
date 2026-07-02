@@ -2,6 +2,7 @@
  * ResidentProfilePage.jsx — View/edit profile + manage family members.
  */
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     useGetMyProfileQuery,
@@ -111,10 +112,10 @@ export default function ResidentProfilePage() {
     const handleEmailIdCard = async () => {
         try {
             await emailIdCard().unwrap();
-            alert('ID Card sent to your email successfully!');
+            toast.success('ID Card sent to your email successfully!');
         } catch (error) {
             console.error(error);
-            alert('Failed to send ID Card to email.');
+            toast.error('Failed to send ID Card to email.');
         }
     };
 
@@ -133,7 +134,7 @@ export default function ResidentProfilePage() {
             }
         } catch (error) {
             console.error('Failed to update avatar:', error);
-            alert('Failed to update avatar.');
+            toast.error('Failed to update avatar.');
         }
     };
 

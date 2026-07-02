@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useGetStaffUnitsQuery, useGuardWalkInMutation } from '../../../../store/api/staffApi';
 import { UserPlus, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Input } from '../../../../components/ui/Input';
@@ -30,7 +31,7 @@ export default function WalkInForm({ recentApprovalEvent }) {
             if (payload.visitorType !== 'OTHER') {
                 delete payload.customVisitorType;
             } else if (!payload.customVisitorType?.trim()) {
-                return alert('Please specify the custom visitor type');
+                return toast.error('Please specify the custom visitor type');
             }
             await guardWalkIn(payload).unwrap();
             setRecentVisitor({ name: form.visitorName, status: 'WAITING' });

@@ -2,6 +2,7 @@
  * StaffProfilePage.jsx — Staff member's own profile.
  */
 import React from 'react';
+import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { User, Mail, Phone, Shield, Lock, CheckCircle2, Plus, RefreshCw } from 'lucide-react';
 import { useGetStaffMeQuery, useUpdateMyAvatarMutation } from '../../../store/api/staffApi';
@@ -60,7 +61,7 @@ export default function StaffProfilePage() {
         }
     } catch (error) {
         console.error('Failed to update avatar:', error);
-        alert('Failed to update avatar.');
+        toast.error('Failed to update avatar.');
     }
   };
 

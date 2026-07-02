@@ -75,41 +75,33 @@ export const uploadIdCardPdf = async (residentId, fileBuffer) => {
         idCardUrl: uploadResult.secure_url,
     });
 
-    // Send email with the generated ID Card URL
+    // Send email with the generated ID Card URL asynchronously
     if (resident.userId?.email) {
-        try {
-            await sendEmail({
-                to: resident.userId.email,
-                subject: 'Your Digital ID Card is Ready',
-                html: `
-                    <h3>Hello ${resident.userId.firstName},</h3>
-                    <p>Your Digital ID Card has been generated and is ready to use.</p>
-                    <p>You can download or print it to show at the gate.</p>
-                    <p><a href="${uploadResult.secure_url}" target="_blank">Download ID Card PDF</a></p>
-                    <br/>
-                    <p>Thank you,</p>
-                    <p>Society Management System</p>
-                `,
-            });
-        } catch (error) {
-            console.error('Failed to send ID Card email:', error);
-        }
+        sendEmail({
+            to: resident.userId.email,
+            subject: 'Your Digital ID Card is Ready',
+            html: `
+                <h3>Hello ${resident.userId.firstName},</h3>
+                <p>Your Digital ID Card has been generated and is ready to use.</p>
+                <p>You can download or print it to show at the gate.</p>
+                <p><a href="${uploadResult.secure_url}" target="_blank">Download ID Card PDF</a></p>
+                <br/>
+                <p>Thank you,</p>
+                <p>Society Management System</p>
+            `,
+        }).catch(error => console.error('Failed to send ID Card email:', error));
     }
 
-    // Send in-app notification
+    // Send in-app notification asynchronously
     if (resident.userId?._id) {
-        try {
-            await sendNotification({
-                users: [resident.userId],
-                societyId: resident.societyId,
-                type: 'ID_CARD_GENERATED',
-                title: 'Digital ID Card Generated',
-                message: 'Your official Digital ID Card has been generated and is ready to download.',
-                priority: 'NORMAL',
-            });
-        } catch (error) {
-            console.error('Failed to send ID Card notification:', error);
-        }
+        sendNotification({
+            users: [resident.userId],
+            societyId: resident.societyId,
+            type: 'ID_CARD_GENERATED',
+            title: 'Digital ID Card Generated',
+            message: 'Your official Digital ID Card has been generated and is ready to download.',
+            priority: 'NORMAL',
+        }).catch(error => console.error('Failed to send ID Card notification:', error));
     }
 
     return updatedCard;

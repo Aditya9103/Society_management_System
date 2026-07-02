@@ -98,7 +98,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                     formData.append('pdf', pdfBlob, 'id_card.pdf');
 
                     // 4. Upload (optimistically)
-                    uploadPdf({ residentId: profile?._id, formData }).unwrap().catch(e => console.error("Upload failed", e));
+                    uploadPdf({ residentId: profile?._id, userId: user?._id, formData }).unwrap().catch(e => console.error("Upload failed", e));
 
                     if (onComplete) onComplete();
                 } catch (error) {
@@ -129,6 +129,23 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
     // Single uniform gradient reused across the whole card
     const brandGradient = 'linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #7e22ce 100%)';
 
+    const issueDateObj = new Date();
+    const issueDateStr = issueDateObj.toLocaleDateString('en-GB');
+    let validUntilStr = '—';
+    if (profile?.ownershipType === 'OWNER') {
+        const d = new Date(issueDateObj);
+        d.setFullYear(d.getFullYear() + 5);
+        validUntilStr = d.toLocaleDateString('en-GB');
+    } else {
+        if (profile?.leaseEndDate) {
+            validUntilStr = new Date(profile.leaseEndDate).toLocaleDateString('en-GB');
+        } else {
+            const d = new Date(issueDateObj);
+            d.setFullYear(d.getFullYear() + 1);
+            validUntilStr = d.toLocaleDateString('en-GB');
+        }
+    }
+
     return (
         <div style={containerStyle}>
             {/* 214 x 338 = standard CR80 aspect ratio (2.125 x 3.375 in) */}
@@ -139,7 +156,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
             >
                 {/* ===== TOP BAND ===== */}
                 <div
-                    className="w-full pt-3 pb-9 px-3.5 flex items-center gap-2 relative"
+                    className="w-full pt-2.5 pb-7 px-3.5 flex items-center gap-2 relative"
                     style={{ background: brandGradient }}
                 >
                     <div
@@ -163,9 +180,9 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                 </div>
 
                 {/* ===== PHOTO (overlaps band edge) ===== */}
-                <div className="flex justify-center -mt-8 relative z-10">
+                <div className="flex justify-center -mt-6 relative z-10">
                     <div
-                        className="w-[76px] h-[92px] rounded-md overflow-hidden border-[3px] shadow-md flex items-center justify-center"
+                        className="w-[70px] h-[84px] rounded-md overflow-hidden border-[3px] shadow-md flex items-center justify-center"
                         style={{ borderColor: '#ffffff', backgroundColor: '#f1f5f9' }}
                     >
                         {photoBase64 ? (
@@ -190,7 +207,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                 </div>
 
                 {/* ===== DETAILS  ===== */}
-                <div className="px-5 mt-3.5 flex flex-col gap-1.5">
+                <div className="px-5 mt-2.5 flex flex-col gap-1">
                     <div className="flex items-baseline justify-between">
                         <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Unit No.</span>
                         <span className="text-[10px] font-bold" style={{ color: '#1e1b4b' }}>
@@ -198,9 +215,21 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                         </span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>ID No.</span>
+                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Card No.</span>
                         <span className="text-[10px] font-bold font-mono" style={{ color: '#4338ca' }}>
                             {idNumber}
+                        </span>
+                    </div>
+                    <div className="flex items-baseline justify-between">
+                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Issue Date</span>
+                        <span className="text-[9px] font-bold" style={{ color: '#1e1b4b' }}>
+                            {issueDateStr}
+                        </span>
+                    </div>
+                    <div className="flex items-baseline justify-between">
+                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Valid Until</span>
+                        <span className="text-[9px] font-bold text-red-600">
+                            {validUntilStr}
                         </span>
                     </div>
                 </div>
@@ -210,7 +239,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
 
                 {/* ===== BOTTOM BAND: QR ===== */}
                 <div
-                    className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5"
+                    className="w-full flex items-center justify-between gap-2 px-3.5 py-1.5 mt-auto"
                     style={{ background: brandGradient }}
                 >
                     <p className="text-[6px] font-medium leading-snug max-w-[100px]" style={{ color: '#e0d4fd' }}>
@@ -218,9 +247,9 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                     </p>
                     <div className="shrink-0 p-1 rounded-md" style={{ backgroundColor: '#ffffff' }}>
                         {qrData ? (
-                            <QRCode value={qrData} size={58} level="Q" />
+                            <QRCode value={qrData} size={48} level="Q" />
                         ) : (
-                            <div className="w-[58px] h-[58px] rounded flex items-center justify-center" style={{ backgroundColor: '#f1f5f9' }} />
+                            <div className="w-[48px] h-[48px] rounded flex items-center justify-center" style={{ backgroundColor: '#f1f5f9' }} />
                         )}
                     </div>
                 </div>

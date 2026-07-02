@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useGetAllVehiclesQuery, useAssignParkingSlotMutation } from '../../../../store/api/vehicleApi';
 import Modal from '../../../../components/ui/Modal';
 import Select from '../../../../components/ui/Select';
@@ -17,7 +18,7 @@ export default function AssignSlotModal({ slot, onClose }) {
             await assignSlot({ slotId: slot._id, vehicleId }).unwrap();
             onClose();
         } catch (e) {
-            alert('Failed to assign');
+            toast.error('Failed to assign');
         }
     };
 

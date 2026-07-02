@@ -124,6 +124,16 @@ export const superAdminApi = createApi({
         id: 'LIST'
       }],
     }),
+
+    // ── Audit Logs ────────────────────────────────────────────────────────────
+
+    listAuditLogs: builder.query({
+      query: (params = {}) => ({
+        url: '/admin/audit-logs',
+        method: 'GET',
+        params
+      }),
+    }),
   }),
 });
 
@@ -136,4 +146,5 @@ export const {
   useToggleSocietyStatusMutation,
   useCreateSocietyAdminMutation,
   useListSocietiesForSelectQuery,
+  useListAuditLogsQuery,
 } = superAdminApi;

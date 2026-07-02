@@ -13,17 +13,17 @@ export default function PageHeader({ title, subtitle, onRefresh, isFetching, act
         <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
         {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex w-full sm:w-auto shrink-0 items-center gap-2">
         {onRefresh && (
           <button
             onClick={onRefresh}
             title="Refresh"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-slate-700"
           >
             <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
           </button>
         )}
-        {actions}
+        <div className="flex-1 sm:flex-none w-full">{actions}</div>
       </div>
     </div>
   );

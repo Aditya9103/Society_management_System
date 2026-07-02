@@ -101,21 +101,21 @@ export default function AdminVehiclePage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Vehicle Management</h1>
-                    <p className="text-slate-500">Manage society vehicles, approvals, and logs.</p>
+                    <p className="text-slate-500 text-sm sm:text-base">Manage society vehicles, approvals, and logs.</p>
                 </div>
-                <div className="flex bg-slate-100 p-1 rounded-lg">
+                <div className="flex w-full sm:w-auto bg-slate-100 p-1 rounded-lg">
                     <button 
                         onClick={() => setActiveTab('VEHICLES')}
-                        className={`px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'VEHICLES' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'VEHICLES' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         Directory & Approvals
                     </button>
                     <button 
                         onClick={() => setActiveTab('LOGS')}
-                        className={`px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'LOGS' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'LOGS' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         Entry/Exit Logs
                     </button>
@@ -128,10 +128,10 @@ export default function AdminVehiclePage() {
                         <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
                             <tr>
                                 <th className="p-4 font-semibold">Vehicle</th>
-                                <th className="p-4 font-semibold">Resident</th>
-                                <th className="p-4 font-semibold">Flat/Unit</th>
+                                <th className="p-4 hidden sm:table-cell font-semibold">Resident</th>
+                                <th className="p-4 hidden sm:table-cell font-semibold">Flat/Unit</th>
                                 <th className="p-4 font-semibold">Status</th>
-                                <th className="p-4 font-semibold">Actions</th>
+                                <th className="p-4 font-semibold text-right sm:text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -142,11 +142,16 @@ export default function AdminVehiclePage() {
                                     <td className="p-4">
                                         <div className="font-bold text-slate-800">{v.vehicleNumber}</div>
                                         <div className="text-xs text-slate-500">{v.make} {v.model} ({v.color})</div>
+                                        {/* Mobile only info */}
+                                        <div className="sm:hidden mt-2 text-xs">
+                                            <div className="font-medium text-slate-700">{v.residentId?.firstName} {v.residentId?.lastName}</div>
+                                            <div className="text-slate-500">Flat: {v.unitId?.unitNumber}</div>
+                                        </div>
                                     </td>
-                                    <td className="p-4 font-medium">{v.residentId?.firstName} {v.residentId?.lastName}</td>
-                                    <td className="p-4">{v.unitId?.unitNumber}</td>
+                                    <td className="p-4 hidden sm:table-cell font-medium">{v.residentId?.firstName} {v.residentId?.lastName}</td>
+                                    <td className="p-4 hidden sm:table-cell">{v.unitId?.unitNumber}</td>
                                     <td className="p-4">
-                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
+                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold
                                             ${v.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' :
                                               v.status === 'PENDING_APPROVAL' ? 'bg-amber-100 text-amber-700' :
                                               v.status === 'BLOCKED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
@@ -154,7 +159,7 @@ export default function AdminVehiclePage() {
                                         </span>
                                     </td>
                                     <td className="p-4">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center justify-end sm:justify-start gap-2">
                                             <Button size="sm" variant="outline" onClick={() => setDocsModal({ open: true, vehicleId: v._id })}>
                                                 Docs
                                             </Button>
@@ -183,8 +188,8 @@ export default function AdminVehiclePage() {
                             <tr>
                                 <th className="p-4 font-semibold">Vehicle No.</th>
                                 <th className="p-4 font-semibold">Event Type</th>
-                                <th className="p-4 font-semibold">Gate & Guard</th>
-                                <th className="p-4 font-semibold">Time</th>
+                                <th className="p-4 hidden sm:table-cell font-semibold">Gate & Guard</th>
+                                <th className="p-4 font-semibold text-right sm:text-left">Time</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -192,19 +197,26 @@ export default function AdminVehiclePage() {
                                 <tr><td colSpan="4" className="p-8 text-center">Loading...</td></tr>
                             ) : logs.map(log => (
                                 <tr key={log._id} className="hover:bg-slate-50">
-                                    <td className="p-4 font-bold text-slate-800">{log.vehicleNumber}</td>
                                     <td className="p-4">
-                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${log.status === 'ENTRY' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
+                                        <div className="font-bold text-slate-800">{log.vehicleNumber}</div>
+                                        {/* Mobile only info */}
+                                        <div className="sm:hidden mt-1 text-[10px] text-slate-500">
+                                            <div>{log.gateId?.name || 'Gate'}</div>
+                                            <div>({log.guardId?.name || 'Guard'})</div>
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold ${log.status === 'ENTRY' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
                                             {log.status}
                                         </span>
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 hidden sm:table-cell">
                                         <div className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {log.gateId?.name || 'Gate'}</div>
                                         <div className="text-xs text-slate-500">by {log.guardId?.name || 'Guard'}</div>
                                     </td>
-                                    <td className="p-4 text-xs">
-                                        <div className="flex items-center gap-1"><Clock className="h-3 w-3" /> {log.status === 'ENTRY' ? new Date(log.entryTime).toLocaleString() : new Date(log.exitTime).toLocaleString()}</div>
-                                        {log.status === 'EXIT' && log.durationMinutes && <div className="text-slate-500">Duration: {log.durationMinutes} mins</div>}
+                                    <td className="p-4 text-xs text-right sm:text-left">
+                                        <div className="flex items-center justify-end sm:justify-start gap-1"><Clock className="h-3 w-3" /> {log.status === 'ENTRY' ? new Date(log.entryTime).toLocaleString() : new Date(log.exitTime).toLocaleString()}</div>
+                                        {log.status === 'EXIT' && log.durationMinutes && <div className="text-slate-500 mt-1">Duration: {log.durationMinutes} mins</div>}
                                     </td>
                                 </tr>
                             ))}

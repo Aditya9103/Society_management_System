@@ -93,4 +93,16 @@ router.post(
     superAdminController.createSocietyAdmin,
 );
 
+// ── Audit Logs ────────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/v1/admin/audit-logs
+ * List system audit logs.
+ */
+router.get(
+    '/audit-logs',
+    validate(listQuerySchema),
+    superAdminController.getAuditLogs,
+);
+
 export default router;

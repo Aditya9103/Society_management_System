@@ -7,19 +7,13 @@ import PageHeader from '../../../components/ui/PageHeader';
 import Alert from '../../../components/ui/Alert';
 import EmptyState from '../../../components/ui/EmptyState';
 import Pagination from '../../../components/ui/Pagination';
-import Table from '../../../components/ui/Table';
 import CreateTenantModal from '../components/CreateTenantModal';
 import CreateSocietyAdminModal from '../components/CreateSocietyAdminModal';
+import TenantsTable from '../components/tenants/TenantsTable';
 import {
     useListTenantsQuery,
     useToggleTenantStatusMutation,
 } from '../../../store/api/superAdminApi';
-
-const PLAN_COLORS = {
-    BASIC: 'bg-gray-100 text-gray-600',
-    STANDARD: 'bg-blue-100 text-blue-700',
-    ENTERPRISE: 'bg-violet-100 text-violet-700',
-};
 
 export default function TenantsPage() {
     const [search, setSearch] = useState('');
@@ -46,14 +40,15 @@ export default function TenantsPage() {
                 onRefresh={refetch}
                 isFetching={isFetching}
                 actions={
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
                         <Button
                             variant="secondary"
                             onClick={() => setIsAssignAdminOpen(true)}
+                            className="w-full sm:w-auto"
                         >
                             Assign Society Admin
                         </Button>
-                        <Button onClick={() => setIsCreateOpen(true)}>
+                        <Button onClick={() => setIsCreateOpen(true)} className="w-full sm:w-auto">
                             <Plus className="mr-1.5 h-4 w-4" /> New Tenant
                         </Button>
                     </div>
@@ -72,69 +67,12 @@ export default function TenantsPage() {
             {!isError && tenants.length === 0 && !isLoading ? (
                 <EmptyState icon={Building2} title="No tenants found" />
             ) : (
-                <Table>
-                    <Table.Head>
-                        <Table.HeadCell>Organisation</Table.HeadCell>
-                        <Table.HeadCell className="hidden sm:table-cell">Slug</Table.HeadCell>
-                        <Table.HeadCell className="hidden sm:table-cell">Plan</Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">Contact</Table.HeadCell>
-                        <Table.HeadCell>Status</Table.HeadCell>
-                        <Table.HeadCell>Actions</Table.HeadCell>
-                    </Table.Head>
-                    {isLoading ? (
-                        <Table.Loader rows={6} cols={6} />
-                    ) : (
-                        <Table.Body>
-                            {tenants.map((t) => (
-                                <Table.Row key={t._id}>
-                                    <Table.Cell className="whitespace-normal min-w-[200px]">
-                                        <p className="font-medium text-slate-900">{t.name}</p>
-                                        <p className="text-xs text-slate-400">
-                                            {new Date(t.createdAt).toLocaleDateString('en-IN')}
-                                        </p>
-                                        {/* Mobile stacked info */}
-                                        <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-1">
-                                            <p><span className="font-semibold">Slug:</span> {t.slug}</p>
-                                            <p><span className="font-semibold">Plan:</span> {t.plan}</p>
-                                            <p><span className="font-semibold">Contact:</span> {t.contactName} ({t.contactEmail})</p>
-                                        </div>
-                                        {/* Tablet stacked info */}
-                                        <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
-                                            <p><span className="font-semibold">Contact:</span> {t.contactName} ({t.contactEmail})</p>
-                                        </div>
-                                    </Table.Cell>
-                                    <Table.Cell className="hidden sm:table-cell">
-                                        <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">
-                                            {t.slug}
-                                        </span>
-                                    </Table.Cell>
-                                    <Table.Cell className="hidden sm:table-cell">
-                                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_COLORS[t.plan] || 'bg-slate-100 text-slate-600'}`}>
-                                            {t.plan}
-                                        </span>
-                                    </Table.Cell>
-                                    <Table.Cell className="hidden md:table-cell">
-                                        <p className="text-slate-700">{t.contactName}</p>
-                                        <p className="text-xs text-slate-400">{t.contactEmail}</p>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <StatusBadge status={t.isActive ? 'ACTIVE' : 'INACTIVE'} />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Button
-                                            variant={t.isActive ? 'danger' : 'secondary'}
-                                            size="sm"
-                                            isLoading={isToggling}
-                                            onClick={() => toggleStatus(t._id)}
-                                        >
-                                            {t.isActive ? 'Deactivate' : 'Activate'}
-                                        </Button>
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    )}
-                </Table>
+                <TenantsTable
+                    tenants={tenants}
+                    isLoading={isLoading}
+                    isToggling={isToggling}
+                    onToggleStatus={toggleStatus}
+                />
             )}
 
             <Pagination pagination={pagination} page={page} onPageChange={setPage} />

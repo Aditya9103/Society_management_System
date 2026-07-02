@@ -38,7 +38,7 @@ export default function Modal({ isOpen, onClose, title, description, size = 'md'
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 flex items-end justify-center p-4 sm:items-center" style={{ zIndex: 9999 }} role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"

@@ -11,7 +11,7 @@ import PageHeader from '../../../components/ui/PageHeader';
 import Alert from '../../../components/ui/Alert';
 import EmptyState from '../../../components/ui/EmptyState';
 import Pagination from '../../../components/ui/Pagination';
-import Table from '../../../components/ui/Table';
+import SocietiesTable from '../components/societies/SocietiesTable';
 import {
     useListSocietiesQuery,
     useToggleSocietyStatusMutation,
@@ -48,61 +48,12 @@ export default function SocietiesPage() {
             {!isError && societies.length === 0 && !isLoading ? (
                 <EmptyState icon={Building2} title="No societies found" />
             ) : (
-                <Table>
-                    <Table.Head>
-                        <Table.HeadCell>Society</Table.HeadCell>
-                        <Table.HeadCell className="hidden sm:table-cell">Location</Table.HeadCell>
-                        <Table.HeadCell className="hidden md:table-cell">Units</Table.HeadCell>
-                        <Table.HeadCell>Status</Table.HeadCell>
-                        <Table.HeadCell>Actions</Table.HeadCell>
-                    </Table.Head>
-                    {isLoading ? (
-                        <Table.Loader rows={6} cols={5} />
-                    ) : (
-                        <Table.Body>
-                            {societies.map((s) => (
-                                <Table.Row key={s._id}>
-                                    <Table.Cell className="whitespace-normal min-w-[200px]">
-                                        <p className="font-medium text-slate-900">{s.name}</p>
-                                        {s.registrationNumber && (
-                                            <p className="text-xs text-slate-400">Reg: {s.registrationNumber}</p>
-                                        )}
-                                        {/* Mobile stacked info */}
-                                        <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-0.5">
-                                            <p>{s.city}, {s.state} {s.pincode}</p>
-                                            <p>{s.totalUnits} units total</p>
-                                        </div>
-                                        {/* Tablet stacked info */}
-                                        <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
-                                            <p>{s.totalUnits} units total</p>
-                                        </div>
-                                    </Table.Cell>
-                                    <Table.Cell className="hidden sm:table-cell">
-                                        <p>{s.city}, {s.state}</p>
-                                        <p className="text-xs text-slate-400">{s.pincode}</p>
-                                    </Table.Cell>
-                                    <Table.Cell className="hidden md:table-cell">
-                                        <span className="font-medium">{s.totalUnits}</span>
-                                        <span className="text-slate-400"> total</span>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <StatusBadge status={s.isActive ? 'ACTIVE' : 'INACTIVE'} />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Button
-                                            variant={s.isActive ? 'danger' : 'secondary'}
-                                            size="sm"
-                                            isLoading={isToggling}
-                                            onClick={() => toggleStatus(s._id)}
-                                        >
-                                            {s.isActive ? 'Deactivate' : 'Activate'}
-                                        </Button>
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    )}
-                </Table>
+                <SocietiesTable
+                    societies={societies}
+                    isLoading={isLoading}
+                    isToggling={isToggling}
+                    onToggleStatus={toggleStatus}
+                />
             )}
 
             <Pagination pagination={pagination} page={page} onPageChange={setPage} />

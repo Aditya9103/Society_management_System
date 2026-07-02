@@ -59,6 +59,7 @@ export const listQuerySchema = {
         limit: Joi.number().integer().min(1).max(100).default(20),
         search: Joi.string().trim().allow('').default(''),
         isActive: Joi.boolean().optional(),
+        action: Joi.string().optional(),
     }),
 
 };

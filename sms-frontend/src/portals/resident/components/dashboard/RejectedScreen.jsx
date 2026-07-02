@@ -1,7 +1,19 @@
 import React from 'react';
 import { XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../../store/slices/authSlice';
+import { disconnectSocket } from '../../../../socket/socketClient';
 
 export function RejectedScreen({ reason }) {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        disconnectSocket();
+        navigate('/auth/login', { replace: true });
+    };
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
             <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
@@ -23,6 +35,13 @@ export function RejectedScreen({ reason }) {
             >
                 Contact Admin
             </a>
+            
+            <button 
+                onClick={handleLogout}
+                className="mt-8 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            >
+                Sign out
+            </button>
         </div>
     );
 }

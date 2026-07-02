@@ -89,8 +89,8 @@ export default function PortalLayout({
         </header>
 
         {/* ── Main content ───────────────────────────────────────── */}
-        {/* pb-20 ensures content isn't hidden behind the bottom navigation bar on mobile */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-20 lg:pb-0">
+        {/* pb-28 ensures content isn't hidden behind the bottom navigation bar on mobile */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-28 lg:pb-0">
           <div className={cn('mx-auto px-4 py-6 sm:px-6 lg:px-8', maxWidth)}>
             {children}
           </div>

@@ -1,9 +1,19 @@
 import React from 'react';
 import { Clock, FileText, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../../store/slices/authSlice';
+import { disconnectSocket } from '../../../../socket/socketClient';
 
 export function PendingApprovalScreen() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        disconnectSocket();
+        navigate('/auth/login', { replace: true });
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -36,6 +46,13 @@ export function PendingApprovalScreen() {
                     </div>
                 </div>
             </div>
+            
+            <button 
+                onClick={handleLogout}
+                className="mt-8 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            >
+                Sign out
+            </button>
         </div>
     );
 }

@@ -48,7 +48,8 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden"
+          style={{ zIndex: 90 }}
           onClick={onClose}
           aria-hidden="true"
         />
@@ -57,9 +58,10 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
       {/* Mobile drawer */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-[60] w-72 transform transition-transform duration-300 ease-in-out lg:hidden',
+          'fixed inset-y-0 left-0 w-72 transform transition-transform duration-300 ease-in-out lg:hidden',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
+        style={{ zIndex: 100 }}
         aria-label="Sidebar"
       >
         <div className="flex h-full flex-col bg-slate-900 text-white">
@@ -117,7 +119,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
           </nav>
 
           {/* ── User card + Logout ─────────────────────────────────────── */}
-          <div className="shrink-0 border-t border-slate-700/60 p-4">
+          <div className="shrink-0 border-t border-slate-700/60 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div 
               onClick={() => { navigate(profileRoute); onClose?.(); }}
               className="mb-2 flex items-center gap-3 rounded-xl bg-slate-800/60 p-3 cursor-pointer hover:bg-slate-700/60 transition-colors"

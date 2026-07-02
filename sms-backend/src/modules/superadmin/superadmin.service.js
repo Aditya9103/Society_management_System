@@ -18,6 +18,24 @@ import { parsePagination, buildPaginationMeta } from '../../utils/pagination.js'
 import * as userRepo from '../auth/user.repository.js';
 import * as tenantRepo from '../../shared/repositories/tenant.repository.js';
 import * as societyRepo from '../society/society.repository.js';
+import AuditLog from '../../shared/models/AuditLog.js';
+
+// ── Audit Logging Helper ──────────────────────────────────────────────────────
+
+const logAudit = async (action, entityType, entityId, performedBy, ipAddress, details = {}) => {
+    try {
+        await AuditLog.create({
+            action,
+            entityType,
+            entityId,
+            performedBy,
+            ipAddress,
+            details
+        });
+    } catch (error) {
+        console.error('AuditLog Error:', error);
+    }
+};
 
 // ── Tenant + Society Provisioning ─────────────────────────────────────────────
 
@@ -25,9 +43,11 @@ import * as societyRepo from '../society/society.repository.js';
  * Atomically provision a new Tenant + its first Society.
  *
  * @param {object} data
+ * @param {string} adminId
+ * @param {string} ipAddress
  * @returns {Promise<{ tenant, society }>}
  */
-export const createTenantWithSociety = async (data) => {
+export const createTenantWithSociety = async (data, adminId, ipAddress) => {
     const {
         tenantName, tenantSlug, contactName, contactEmail, contactPhone, plan,
         societyName, addressLine1, addressLine2, city, state, pincode, country, logoBuffer
@@ -61,7 +81,6 @@ export const createTenantWithSociety = async (data) => {
         logoUrl = uploadResult.secure_url;
     }
 
-    // 2. Create Society under the new Tenant
     const society = await societyRepo.createSociety({
         tenantId: tenant._id,
         name: societyName,
@@ -76,6 +95,12 @@ export const createTenantWithSociety = async (data) => {
         ...(logoUrl && { logoUrl }),
     });
 
+    await logAudit('PROVISION', 'TENANT', tenant._id, adminId, ipAddress, {
+        tenantName,
+        societyName,
+        plan
+    });
+
     return { tenant, society };
 };
 
@@ -85,9 +110,11 @@ export const createTenantWithSociety = async (data) => {
  * Provision a SOCIETY_ADMIN user for an existing society.
  *
  * @param {object} adminData - { firstName, lastName, email, phone, societyId }
+ * @param {string} superAdminId
+ * @param {string} ipAddress
  * @returns {Promise<UserDocument>}
  */
-export const createSocietyAdmin = async ({ firstName, lastName, email, phone, societyId }) => {
+export const createSocietyAdmin = async ({ firstName, lastName, email, phone, societyId }, superAdminId, ipAddress) => {
     const society = await societyRepo.findById(societyId);
     if (!society) throw ApiError.notFound('Society not found.');
 
@@ -116,6 +143,11 @@ export const createSocietyAdmin = async ({ firstName, lastName, email, phone, so
         subject: 'Welcome to SMS — Your Society Admin Credentials',
         text: `Hello ${firstName},\n\nYou have been provisioned as a Society Admin for "${society.name}".\n\nLogin: ${email}\nTemporary Password: ${generatedPassword}\n\nPlease log in and change your password immediately.\n\nRegards,\nSMS Platform`,
         html: `<h3>Hello ${firstName},</h3><p>You have been provisioned as a <strong>Society Admin</strong> for <strong>${society.name}</strong>.</p><p><strong>Login:</strong> ${email}<br><strong>Temporary Password:</strong> ${generatedPassword}</p><p>Please log in and change your password immediately.</p><br><p>Regards,<br>SMS Platform</p>`,
+    });
+
+    await logAudit('PROVISION', 'USER', user._id, superAdminId, ipAddress, {
+        societyId,
+        adminEmail: email
     });
 
     return user;
@@ -190,26 +222,42 @@ export const listSocieties = async (query) => {
  * Toggle a Tenant's isActive flag.
  *
  * @param {string} tenantId
+ * @param {string} adminId
+ * @param {string} ipAddress
  * @returns {Promise<TenantDocument>}
  */
-export const toggleTenantStatus = async (tenantId) => {
+export const toggleTenantStatus = async (tenantId, adminId, ipAddress) => {
     const tenant = await tenantRepo.findById(tenantId);
     if (!tenant) throw ApiError.notFound('Tenant not found.');
 
-    return tenantRepo.updateTenant(tenantId, { isActive: !tenant.isActive });
+    const updated = await tenantRepo.updateTenant(tenantId, { isActive: !tenant.isActive });
+
+    await logAudit('STATUS_CHANGE', 'TENANT', tenantId, adminId, ipAddress, {
+        newStatus: updated.isActive
+    });
+
+    return updated;
 };
 
 /**
  * Toggle a Society's isActive flag.
  *
  * @param {string} societyId
+ * @param {string} adminId
+ * @param {string} ipAddress
  * @returns {Promise<SocietyDocument>}
  */
-export const toggleSocietyStatus = async (societyId) => {
+export const toggleSocietyStatus = async (societyId, adminId, ipAddress) => {
     const society = await societyRepo.findById(societyId);
     if (!society) throw ApiError.notFound('Society not found.');
 
-    return societyRepo.updateSociety(societyId, { isActive: !society.isActive });
+    const updated = await societyRepo.updateSociety(societyId, { isActive: !society.isActive });
+
+    await logAudit('STATUS_CHANGE', 'SOCIETY', societyId, adminId, ipAddress, {
+        newStatus: updated.isActive
+    });
+
+    return updated;
 };
 
 // ── Summary Stats ─────────────────────────────────────────────────────────────
@@ -235,4 +283,33 @@ export const getDashboardStats = async () => {
         activeSocieties,
         inactiveSocieties: totalSocieties - activeSocieties,
     };
+};
+
+// ── Audit Logs ───────────────────────────────────────────────────────────────
+
+/**
+ * List audit logs with pagination and optional filtering
+ *
+ * @param {object} query - req.query
+ * @returns {Promise<{ data, pagination }>}
+ */
+export const listAuditLogs = async (query) => {
+    const { page, limit, skip } = parsePagination(query);
+    const { action, entityType } = query;
+
+    const filter = {};
+    if (action) filter.action = action;
+    if (entityType) filter.entityType = entityType;
+
+    const [data, total] = await Promise.all([
+        AuditLog.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('performedBy', 'firstName lastName email role')
+            .lean(),
+        AuditLog.countDocuments(filter)
+    ]);
+
+    return { data, pagination: buildPaginationMeta(page, limit, total) };
 };

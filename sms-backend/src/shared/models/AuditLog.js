@@ -31,7 +31,7 @@ const auditLogSchema = new mongoose.Schema(
             enum: [
                 'CREATE', 'UPDATE', 'DELETE', 'APPROVE', 'REJECT',
                 'LOGIN', 'LOGOUT', 'EXPORT', 'VIEW', 'UPLOAD', 'DOWNLOAD',
-                'PAYMENT', 'REFUND', 'STATUS_CHANGE',
+                'PAYMENT', 'REFUND', 'STATUS_CHANGE', 'PROVISION',
             ],
             required: true,
         },
@@ -41,7 +41,7 @@ const auditLogSchema = new mongoose.Schema(
             enum: [
                 'USER', 'RESIDENT', 'VISITOR', 'VEHICLE', 'INVOICE',
                 'PAYMENT', 'COMPLAINT', 'NOTICE', 'BOOKING', 'EMERGENCY',
-                'POLL', 'DOCUMENT', 'SOCIETY', 'UNIT', 'TOWER', 'EXPENSE',
+                'POLL', 'DOCUMENT', 'SOCIETY', 'UNIT', 'TOWER', 'EXPENSE', 'TENANT'
             ],
             required: true,
         },

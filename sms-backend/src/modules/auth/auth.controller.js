@@ -73,7 +73,7 @@ export const loginWithOtp = asyncHandler(async (req, res) => {
     // Register FCM token if provided
     if (fcmToken && user._id) {
         // Fire-and-forget — don't block the login response
-        authService.registerFcmToken?.(user._id.toString(), fcmToken).catch(() => {});
+        authService.registerFcmToken?.(user._id.toString(), fcmToken).catch(() => { });
     }
 
     res.status(200).json(
@@ -160,12 +160,29 @@ export const logoutAll = asyncHandler(async (req, res) => {
     );
 });
 
-// ── Profile ───────────────────────────────────────────────────────────────────
+/**
+ * POST /api/v1/auth/fcm-token
+ * Register FCM token for push notifications
+ */
+export const registerFcmToken = asyncHandler(async (req, res) => {
+    const { fcmToken } = req.body;
+    const { sub: userId } = req.user;
+
+    if (fcmToken && userId) {
+        await authService.registerFcmToken?.(userId, fcmToken);
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, null, 'FCM token registered successfully'),
+    );
+});
+
+// ── Profile / Me ──────────────────────────────────────────────────────────────
 
 /**
  * GET /api/v1/auth/me
- * Return the currently authenticated user's profile.
- * The user context is already attached to req.user by auth.middleware.
+ * Fetch the currently authenticated user's profile.
+ * Requires authentication.
  */
 export const getMe = asyncHandler(async (req, res) => {
     // req.user contains the full JWT payload.
@@ -237,7 +254,7 @@ export const verifyResidentRegistration = asyncHandler(async (req, res) => {
     );
 
     if (fcmToken && user._id) {
-        authService.registerFcmToken?.(user._id.toString(), fcmToken).catch(() => {});
+        authService.registerFcmToken?.(user._id.toString(), fcmToken).catch(() => { });
     }
 
     res.status(200).json(

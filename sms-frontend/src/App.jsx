@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import GlobalSocketListener from './components/layout/GlobalSocketListener';
+import OfflineBanner from './components/ui/OfflineBanner';
+import PWAPrompt from './components/ui/PWAPrompt';
+import { useFirebaseMessaging } from './hooks/useFirebaseMessaging';
 import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
@@ -31,6 +34,9 @@ function ProtectedRoute({ children, requiredRole }) {
 }
 
 function App() {
+  // Initialize Firebase Cloud Messaging (push notifications)
+  useFirebaseMessaging();
+
   return (
     <div className="relative min-h-screen bg-[#f4f5f7] text-slate-900 overflow-hidden selection:bg-indigo-500/30 font-sans">
       {/* Premium Modern Ambient Background */}
@@ -50,7 +56,10 @@ function App() {
 
       {/* Main Content Area */}
       <div className="relative z-10 min-h-screen flex flex-col">
-        <Toaster position="top-right" />
+        {/* PWA Components */}
+        <OfflineBanner />
+        <PWAPrompt />
+        <Toaster position="top-right" toastOptions={{ style: { marginTop: '8px' } }} />
         <GlobalSocketListener />
         <Routes>
         {/* Default → login */}

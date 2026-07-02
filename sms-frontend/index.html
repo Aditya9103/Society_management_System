@@ -4,20 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- PWA essentials -->
+    <!-- PWA Core -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+
+    <!-- iOS PWA -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Society MS" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+    <!-- iOS Splash Screen (portrait) -->
+    <meta name="apple-touch-startup-image" href="/icons/icon-512x512.png" />
+
+    <!-- Windows Tiles -->
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+    <meta name="msapplication-config" content="none" />
 
     <!-- App meta -->
     <title>Society Management System</title>
-    <meta name="description" content="Society Management System — manage residents, staff, facilities and more." />
+    <meta name="description" content="Society Management System — manage residents, staff, facilities, visitors and more." />
+    <meta name="keywords" content="society management, resident portal, apartment management, housing society" />
+    <meta name="robots" content="noindex, nofollow" />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="Society Management System" />
+    <meta property="og:description" content="Manage your society — residents, staff, facilities, and more." />
+    <meta property="og:image"       content="/icons/icon-512x512.png" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png" />
 
     <!-- Google Fonts — Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

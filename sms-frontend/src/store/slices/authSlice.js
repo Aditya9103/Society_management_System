@@ -45,6 +45,11 @@ export const authSlice = createSlice({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+
+      // Tell Service Worker to clear user-specific API caches
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_USER_CACHES' });
+      }
     },
   },
 });

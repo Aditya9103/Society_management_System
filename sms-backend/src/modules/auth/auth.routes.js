@@ -138,6 +138,16 @@ router.post(
     authController.logoutAll,
 );
 
+/**
+ * POST /api/v1/auth/fcm-token
+ * Register FCM token for push notifications
+ */
+router.post(
+    '/fcm-token',
+    authenticate,
+    authController.registerFcmToken,
+);
+
 // ── Authenticated User Endpoints ──────────────────────────────────────────────
 
 /**

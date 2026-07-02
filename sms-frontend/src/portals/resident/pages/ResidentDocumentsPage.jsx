@@ -112,45 +112,61 @@ export default function ResidentDocumentsPage() {
     });
 
     const renderTable = (data) => (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto mt-4">
-            <table className="w-full text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
-                    <tr>
-                        <th className="p-4 font-semibold">Title</th>
-                        <th className="p-4 font-semibold">Category</th>
-                        <th className="p-4 font-semibold">Type</th>
-                        <th className="p-4 font-semibold">Status</th>
-                        <th className="p-4 font-semibold">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                    {isLoadingDocs && data.length === 0 ? (
-                        <tr><td colSpan="5" className="p-8 text-center">Loading...</td></tr>
-                    ) : data.length === 0 ? (
-                        <tr><td colSpan="5" className="p-8 text-center">No documents found.</td></tr>
-                    ) : data.map(d => (
-                        <tr key={d._id} className="hover:bg-slate-50">
-                            <td className="p-4 font-bold text-slate-800">{d.title}</td>
-                            <td className="p-4"><span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">{d.category}</span></td>
-                            <td className="p-4">{d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType}</td>
-                            <td className="p-4">
-                                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
-                                    ${d.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' :
-                                      d.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
-                                      d.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
-                                    {d.status}
-                                </span>
-                            </td>
-                            <td className="p-4">
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => handleDownload(d._id)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded" title="Download"><Download className="h-4 w-4" /></button>
-                                    <button onClick={() => handleDelete(d._id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Delete"><Trash2 className="h-4 w-4" /></button>
-                                </div>
-                            </td>
+        <div className="rounded-xl border border-slate-200/60 bg-white shadow-sm overflow-hidden mt-4">
+            <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-slate-600">
+                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                        <tr>
+                            <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Document</th>
+                            <th className="hidden sm:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Category</th>
+                            <th className="hidden md:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Type</th>
+                            <th className="hidden sm:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Status</th>
+                            <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-right">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {isLoadingDocs && data.length === 0 ? (
+                            <tr><td colSpan="5" className="p-8 text-center text-slate-500 font-medium">Loading documents...</td></tr>
+                        ) : data.length === 0 ? (
+                            <tr><td colSpan="5" className="p-8 text-center text-slate-500 font-medium">No documents found.</td></tr>
+                        ) : data.map(d => (
+                            <tr key={d._id} className="hover:bg-slate-50 transition-colors duration-150">
+                                <td className="p-4 sm:px-5">
+                                    <p className="font-bold text-slate-800">{d.title}</p>
+                                    <p className="text-xs text-slate-500 mt-1 md:hidden">{d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType}</p>
+                                    <div className="flex sm:hidden items-center gap-2 mt-2">
+                                        <span className="inline-flex items-center rounded-md bg-blue-50 border border-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">{d.category}</span>
+                                        <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold
+                                            ${d.status === 'ACTIVE' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
+                                              d.status === 'PENDING' ? 'bg-amber-50 border-amber-100 text-amber-700' :
+                                              d.status === 'REJECTED' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                            {d.status}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="hidden sm:table-cell p-4 sm:px-5">
+                                    <span className="inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">{d.category}</span>
+                                </td>
+                                <td className="hidden md:table-cell p-4 sm:px-5 font-medium text-slate-600">{d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType}</td>
+                                <td className="hidden sm:table-cell p-4 sm:px-5">
+                                    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-bold tracking-wide uppercase
+                                        ${d.status === 'ACTIVE' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
+                                          d.status === 'PENDING' ? 'bg-amber-50 border-amber-100 text-amber-700' :
+                                          d.status === 'REJECTED' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                                        {d.status}
+                                    </span>
+                                </td>
+                                <td className="p-4 sm:px-5 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <button onClick={() => handleDownload(d._id)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Download"><Download className="h-4 w-4" /></button>
+                                        <button onClick={() => handleDelete(d._id)} className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 

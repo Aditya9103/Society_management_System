@@ -35,7 +35,7 @@ export default function AdminComplaintsPage() {
                 isFetching={isFetching}
                 actions={
                     <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        className="w-full sm:w-auto rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer">
                         <option value="">All Statuses</option>
                         {Object.keys(STATUS_STYLES).map(s => <option key={s} value={s}>{STATUS_STYLES[s]}</option>)}
                     </select>

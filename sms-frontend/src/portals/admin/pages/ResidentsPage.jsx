@@ -60,7 +60,7 @@ export default function ResidentsPage() {
                     <button
                         onClick={refetch}
                         disabled={isFetching}
-                        className="group flex h-12 items-center gap-2 rounded-xl bg-white/10 px-6 font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95 disabled:opacity-50"
+                        className="group flex h-12 w-full md:w-auto justify-center items-center gap-2 rounded-xl bg-white/10 px-6 font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95 disabled:opacity-50"
                     >
                         <RefreshCw className={`h-5 w-5 ${isFetching ? 'animate-spin text-purple-300' : 'text-purple-200 group-hover:rotate-180 transition-transform duration-500'}`} />
                         {isFetching ? 'Refreshing...' : 'Refresh Data'}
@@ -113,7 +113,7 @@ export default function ResidentsPage() {
                             <Table.Head className="bg-slate-50/50">
                                 <Table.HeadCell className="py-4">Resident Profile</Table.HeadCell>
                                 <Table.HeadCell className="py-4 hidden sm:table-cell">Contact Info</Table.HeadCell>
-                                <Table.HeadCell className="py-4">Status</Table.HeadCell>
+                                <Table.HeadCell className="py-4 hidden sm:table-cell">Status</Table.HeadCell>
                                 <Table.HeadCell className="py-4 text-right pr-8 hidden md:table-cell">Joined</Table.HeadCell>
                             </Table.Head>
 
@@ -146,10 +146,11 @@ export default function ResidentsPage() {
                                                                 <span className="block text-xs font-medium text-slate-400 mt-0.5">
                                                                     ID: {r._id.slice(-6).toUpperCase()}
                                                                 </span>
-                                                                {/* Mobile-only contact info */}
-                                                                <div className="mt-2 flex flex-col gap-1 sm:hidden">
-                                                                    <span className="flex items-center gap-1 text-[11px] text-slate-500"><Mail className="w-3 h-3" /> {r.email}</span>
-                                                                    {r.phone && <span className="flex items-center gap-1 text-[11px] text-slate-500"><Phone className="w-3 h-3" /> {r.phone}</span>}
+                                                                {/* Mobile-only contact info & status */}
+                                                                <div className="mt-2 flex flex-col items-start gap-1.5 sm:hidden">
+                                                                    <StatusBadge status={r.registrationStatus} className="mb-1" />
+                                                                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><Mail className="w-3 h-3 text-slate-400" /> {r.email}</span>
+                                                                    {r.phone && <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><Phone className="w-3 h-3 text-slate-400" /> {r.phone}</span>}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -168,7 +169,7 @@ export default function ResidentsPage() {
                                                             )}
                                                         </div>
                                                     </Table.Cell>
-                                                    <Table.Cell className="py-4">
+                                                    <Table.Cell className="py-4 hidden sm:table-cell">
                                                         <StatusBadge status={r.registrationStatus} />
                                                     </Table.Cell>
                                                     <Table.Cell className="py-4 text-right pr-8 text-sm font-medium text-slate-400 hidden md:table-cell">

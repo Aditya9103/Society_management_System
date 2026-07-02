@@ -54,30 +54,30 @@ export default function ComplaintRow({ complaint, staff }) {
             <Card.Body>
                 <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-900 truncate">{complaint.title}</p>
-                        <p className="text-xs text-slate-400 mt-0.5 font-mono">{complaint.complaintNumber}</p>
+                        <p className="text-base font-bold text-slate-800 truncate">{complaint.title}</p>
+                        <p className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider">{complaint.complaintNumber}</p>
                     </div>
                     <StatusBadge status={complaint.status} type={statusType} />
                 </div>
-                <p className="text-sm text-slate-500 line-clamp-1 mb-3">{complaint.description}</p>
-                <div className="flex items-center gap-2 flex-wrap mb-3">
+                <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed mb-4">{complaint.description}</p>
+                <div className="flex items-center gap-2 flex-wrap mb-4">
                     <StatusBadge status={complaint.category === 'OTHER' ? complaint.customCategory || 'OTHER' : complaint.category} type="NEUTRAL" />
                     <StatusBadge status={complaint.priority} type={priorityType} />
-                    <span className="text-xs text-slate-400 ml-auto">{new Date(complaint.createdAt).toLocaleDateString('en-IN')}</span>
+                    <span className="text-xs font-medium text-slate-400 ml-auto bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">{new Date(complaint.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                 </div>
                 {complaint.latestNote && (
-                    <div className="mb-3 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
-                        <span className="font-semibold">Latest Update: </span>{complaint.latestNote}
+                    <div className="mb-4 rounded-xl bg-indigo-50/80 border border-indigo-100/50 px-4 py-3 text-sm text-indigo-800 shadow-sm">
+                        <span className="font-bold mr-1">Latest Update:</span><span className="font-medium text-indigo-700">{complaint.latestNote}</span>
                     </div>
                 )}
 
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 border-t border-slate-100/60 mt-2">
                     {canClose && staff.length > 0 && (
                         <div className="flex items-center gap-2 flex-1">
                             <select
                                 value={selectedStaff}
                                 onChange={e => setSelectedStaff(e.target.value)}
-                                className="flex-1 min-w-0 rounded-lg border border-slate-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                className="flex-1 min-w-0 h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 font-medium shadow-sm transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white hover:border-slate-300"
                             >
                                 <option value="">Assign to staff…</option>
                                 {staff.filter(m => ['FACILITY_MANAGER', 'HELP_DESK', 'COMMITTEE_MEMBER'].includes(m.role)).map(m => (
@@ -88,16 +88,22 @@ export default function ComplaintRow({ complaint, staff }) {
                                 onClick={handleAssign}
                                 disabled={!selectedStaff || assigning}
                                 isLoading={assigning}
-                                className="shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-1.5"
+                                size="sm"
+                                className="h-10 px-5 shrink-0"
                             >
                                 Assign
                             </Button>
                         </div>
                     )}
                     {canClose && (
-                        <button onClick={() => setCloseModal(true)} className="shrink-0 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setCloseModal(true)}
+                            size="sm"
+                            className="h-10 px-5 shrink-0 bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 focus-visible:ring-emerald-500 shadow-sm"
+                        >
                             Resolve
-                        </button>
+                        </Button>
                     )}
                     {complaint.status === 'CLOSED' && (
                         <Button
@@ -105,7 +111,8 @@ export default function ComplaintRow({ complaint, staff }) {
                             isLoading={deleting}
                             disabled={deleting}
                             variant="danger"
-                            className="shrink-0 text-xs py-1.5"
+                            size="sm"
+                            className="h-10 px-5 shrink-0"
                         >
                             Delete
                         </Button>

@@ -16,7 +16,7 @@ import { cn } from './Button';
 
 function Card({ children, className, padding = 'none', as: Tag = 'div' }) {
   return (
-    <Tag className={cn('rounded-2xl bg-white shadow-sm ring-1 ring-slate-100', className)}>
+    <Tag className={cn('rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/60 transition-shadow duration-200 hover:shadow-md', className)}>
       {children}
     </Tag>
   );
@@ -24,10 +24,10 @@ function Card({ children, className, padding = 'none', as: Tag = 'div' }) {
 
 Card.Header = function CardHeader({ title, subtitle, actions, className }) {
   return (
-    <div className={cn('flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6', className)}>
+    <div className={cn('flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 px-5 py-4 sm:px-6', className)}>
       <div className="min-w-0">
-        {title && <p className="text-sm font-semibold text-slate-900">{title}</p>}
-        {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
+        {title && <p className="text-base font-bold text-slate-800">{title}</p>}
+        {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
     </div>
@@ -40,7 +40,7 @@ Card.Body = function CardBody({ children, className }) {
 
 Card.Footer = function CardFooter({ children, className }) {
   return (
-    <div className={cn('border-t border-slate-100 bg-slate-50/50 px-5 py-4 sm:px-6', className)}>
+    <div className={cn('border-t border-slate-200/60 bg-slate-50 px-5 py-4 sm:px-6', className)}>
       {children}
     </div>
   );

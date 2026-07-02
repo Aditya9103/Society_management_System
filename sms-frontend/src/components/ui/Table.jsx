@@ -15,7 +15,7 @@ import { cn } from './Button';
 
 function Table({ children, className, ...props }) {
   return (
-    <div className={cn('overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100', className)} {...props}>
+    <div className={cn('overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/60', className)} {...props}>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           {children}
@@ -27,7 +27,7 @@ function Table({ children, className, ...props }) {
 
 Table.Head = function TableHead({ children, className, ...props }) {
   return (
-    <thead className={cn('border-b border-slate-100 bg-slate-50/70', className)} {...props}>
+    <thead className={cn('border-b border-slate-200 bg-slate-50', className)} {...props}>
       <tr>{children}</tr>
     </thead>
   );
@@ -35,7 +35,7 @@ Table.Head = function TableHead({ children, className, ...props }) {
 
 Table.HeadCell = function TableHeadCell({ children, className, ...props }) {
   return (
-    <th className={cn('px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap', className)} {...props}>
+    <th className={cn('px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-600 whitespace-nowrap', className)} {...props}>
       {children}
     </th>
   );
@@ -43,7 +43,7 @@ Table.HeadCell = function TableHeadCell({ children, className, ...props }) {
 
 Table.Body = function TableBody({ children, className, ...props }) {
   return (
-    <tbody className={cn('divide-y divide-slate-50 bg-white', className)} {...props}>
+    <tbody className={cn('divide-y divide-slate-100 bg-white', className)} {...props}>
       {children}
     </tbody>
   );
@@ -51,7 +51,7 @@ Table.Body = function TableBody({ children, className, ...props }) {
 
 Table.Row = function TableRow({ children, className, ...props }) {
   return (
-    <tr className={cn('transition-colors hover:bg-slate-50/60', className)} {...props}>
+    <tr className={cn('transition-colors duration-150 hover:bg-slate-50', className)} {...props}>
       {children}
     </tr>
   );

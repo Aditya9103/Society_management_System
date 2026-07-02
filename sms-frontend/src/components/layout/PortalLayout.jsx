@@ -40,7 +40,7 @@ export default function PortalLayout({
   const profileRoute = sidebarConfig.profilePath || navItems.find(i => i.to.endsWith('/profile'))?.to || 'profile';
 
   return (
-    <div className="flex min-h-[100dvh]" style={{ backgroundColor: '#f4f5f7' }}>
+    <div className="flex min-h-[100dvh] bg-slate-50 text-slate-900">
 
       {/* ── Sidebar ───────────────────────────────────────────────── */}
       <PortalSidebar

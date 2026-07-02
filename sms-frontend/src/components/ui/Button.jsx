@@ -8,23 +8,23 @@ export function cn(...inputs) {
 
 export const Button = React.forwardRef(({ className, variant = 'primary', size = 'md', isLoading, children, ...props }, ref) => {
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm',
-    secondary: 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 shadow-sm',
-    ghost: 'hover:bg-gray-100 text-gray-700',
-    danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm',
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-indigo-600',
+    secondary: 'bg-white text-slate-800 hover:bg-slate-50 border border-slate-300 shadow-sm hover:shadow active:shadow-none focus-visible:ring-slate-500',
+    ghost: 'hover:bg-slate-100 text-slate-700 hover:text-slate-900 focus-visible:ring-slate-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-red-600',
   };
 
   const sizes = {
-    sm: 'h-8 px-3 text-sm',
-    md: 'h-10 px-4 py-2',
-    lg: 'h-12 px-8 text-lg',
+    sm: 'min-h-[2rem] px-3 py-1.5 text-sm',
+    md: 'min-h-[2.5rem] px-4 py-2',
+    lg: 'min-h-[3rem] px-8 py-3 text-lg',
   };
 
   return (
     <button
       ref={ref}
       className={cn(
-        'inline-flex items-center justify-center cursor-pointer rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50',
+        'inline-flex items-center justify-center text-center leading-tight cursor-pointer rounded-lg font-semibold transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         variants[variant],
         sizes[size],
         className

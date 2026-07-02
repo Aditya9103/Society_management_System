@@ -41,24 +41,24 @@ export default function Modal({ isOpen, onClose, title, description, size = 'md'
     <div className="fixed inset-0 flex items-end justify-center p-4 sm:items-center" style={{ zIndex: 9999 }} role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
       {/* Panel */}
-      <div className={cn('relative z-10 w-full overflow-hidden rounded-2xl bg-white shadow-2xl flex flex-col max-h-[90vh]', SIZES[size], className)}>
+      <div className={cn('relative z-10 w-full overflow-hidden rounded-3xl bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] flex flex-col max-h-[90vh]', SIZES[size], className)}>
         {title && (
-          <div className="flex shrink-0 items-start justify-between border-b border-slate-100 px-6 py-4">
+          <div className="flex shrink-0 items-start justify-between border-b border-slate-100 px-6 py-5">
             <div>
-              <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-              {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
+              <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+              {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
             </div>
             <button
               onClick={onClose}
               aria-label="Close"
-              className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
         )}

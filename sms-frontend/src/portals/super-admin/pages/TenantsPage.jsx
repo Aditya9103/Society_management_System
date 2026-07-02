@@ -75,9 +75,9 @@ export default function TenantsPage() {
                 <Table>
                     <Table.Head>
                         <Table.HeadCell>Organisation</Table.HeadCell>
-                        <Table.HeadCell>Slug</Table.HeadCell>
-                        <Table.HeadCell>Plan</Table.HeadCell>
-                        <Table.HeadCell>Contact</Table.HeadCell>
+                        <Table.HeadCell className="hidden sm:table-cell">Slug</Table.HeadCell>
+                        <Table.HeadCell className="hidden sm:table-cell">Plan</Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">Contact</Table.HeadCell>
                         <Table.HeadCell>Status</Table.HeadCell>
                         <Table.HeadCell>Actions</Table.HeadCell>
                     </Table.Head>
@@ -87,23 +87,33 @@ export default function TenantsPage() {
                         <Table.Body>
                             {tenants.map((t) => (
                                 <Table.Row key={t._id}>
-                                    <Table.Cell>
+                                    <Table.Cell className="whitespace-normal min-w-[200px]">
                                         <p className="font-medium text-slate-900">{t.name}</p>
                                         <p className="text-xs text-slate-400">
                                             {new Date(t.createdAt).toLocaleDateString('en-IN')}
                                         </p>
+                                        {/* Mobile stacked info */}
+                                        <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-1">
+                                            <p><span className="font-semibold">Slug:</span> {t.slug}</p>
+                                            <p><span className="font-semibold">Plan:</span> {t.plan}</p>
+                                            <p><span className="font-semibold">Contact:</span> {t.contactName} ({t.contactEmail})</p>
+                                        </div>
+                                        {/* Tablet stacked info */}
+                                        <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
+                                            <p><span className="font-semibold">Contact:</span> {t.contactName} ({t.contactEmail})</p>
+                                        </div>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden sm:table-cell">
                                         <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">
                                             {t.slug}
                                         </span>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden sm:table-cell">
                                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_COLORS[t.plan] || 'bg-slate-100 text-slate-600'}`}>
                                             {t.plan}
                                         </span>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden md:table-cell">
                                         <p className="text-slate-700">{t.contactName}</p>
                                         <p className="text-xs text-slate-400">{t.contactEmail}</p>
                                     </Table.Cell>

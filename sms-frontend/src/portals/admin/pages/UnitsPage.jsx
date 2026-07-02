@@ -114,10 +114,10 @@ export default function UnitsPage() {
                 <Table>
                     <Table.Head>
                         <Table.HeadCell>Unit</Table.HeadCell>
-                        <Table.HeadCell>Tower / Floor</Table.HeadCell>
-                        <Table.HeadCell>Type</Table.HeadCell>
-                        <Table.HeadCell>Area</Table.HeadCell>
-                        <Table.HeadCell>Maintenance</Table.HeadCell>
+                        <Table.HeadCell className="hidden sm:table-cell">Tower / Floor</Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">Type</Table.HeadCell>
+                        <Table.HeadCell className="hidden lg:table-cell">Area</Table.HeadCell>
+                        <Table.HeadCell className="hidden lg:table-cell">Maintenance</Table.HeadCell>
                         <Table.HeadCell>Status</Table.HeadCell>
                         <Table.HeadCell align="right">Actions</Table.HeadCell>
                     </Table.Head>
@@ -127,19 +127,24 @@ export default function UnitsPage() {
                         <Table.Body>
                             {units.map((unit) => (
                                 <Table.Row key={unit._id}>
-                                    <Table.Cell>
+                                    <Table.Cell className="whitespace-normal min-w-[200px]">
                                         <p className="font-semibold text-slate-900">{unit.unitNumber}</p>
                                         {unit.bhkType && <p className="text-xs text-slate-400">{unit.bhkType}</p>}
+                                        {/* Mobile extra info */}
+                                        <div className="mt-1 sm:hidden text-[11px] text-slate-500 space-y-0.5">
+                                            <p>{unit.towerId?.name ?? '—'} • {unit.floorId?.floorName ?? '—'}</p>
+                                            <p>{unit.unitType}{unit.carpetAreaSqft > 0 ? ` • ${unit.carpetAreaSqft} sqft` : ''}</p>
+                                        </div>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden sm:table-cell">
                                         <p className="text-slate-700">{unit.towerId?.name ?? '—'}</p>
                                         <p className="text-xs text-slate-400">{unit.floorId?.floorName ?? '—'}</p>
                                     </Table.Cell>
-                                    <Table.Cell><StatusBadge status={unit.unitType} /></Table.Cell>
-                                    <Table.Cell className="text-slate-500">
+                                    <Table.Cell className="hidden md:table-cell"><StatusBadge status={unit.unitType} /></Table.Cell>
+                                    <Table.Cell className="text-slate-500 hidden lg:table-cell">
                                         {unit.carpetAreaSqft > 0 ? `${unit.carpetAreaSqft} sqft` : '—'}
                                     </Table.Cell>
-                                    <Table.Cell className="font-medium">
+                                    <Table.Cell className="font-medium hidden lg:table-cell">
                                         {unit.maintenanceAmount > 0 ? `₹${unit.maintenanceAmount.toLocaleString('en-IN')}` : '—'}
                                     </Table.Cell>
                                     <Table.Cell><StatusBadge status={unit.ownershipStatus} /></Table.Cell>

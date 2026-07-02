@@ -13,8 +13,8 @@ export default function StaffCard({ member, onDeactivate, isDeactivating }) {
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white">
                             {initials}
                         </div>
-                        <div>
-                            <p className="font-semibold text-slate-900">{member.firstName} {member.lastName}</p>
+                        <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-slate-900 truncate">{member.firstName} {member.lastName}</p>
                             <StatusBadge status={member.role} className="mt-0.5" />
                         </div>
                     </div>

@@ -20,7 +20,7 @@ const rateLimitHandler = (req, res) => {
  */
 export const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 200,
   standardHeaders: true, // Return RateLimit-* headers (RFC 6585)
   legacyHeaders: false,
   handler: rateLimitHandler,
@@ -28,11 +28,11 @@ export const globalLimiter = rateLimit({
 
 /**
  * authLimiter — Applied to sensitive auth endpoints (login, OTP, forgot password).
- * 15 requests per IP per 15 minutes to slow brute-force attacks.
+ * 30 requests per IP per 15 minutes to slow brute-force attacks.
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 15,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler,
@@ -40,11 +40,11 @@ export const authLimiter = rateLimit({
 
 /**
  * otpLimiter — Applied to OTP send/resend endpoints.
- * 10 requests per IP per hour.
+ * 20 requests per IP per hour.
  */
 export const otpLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler,

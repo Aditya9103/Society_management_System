@@ -16,16 +16,16 @@ export default function NoticeAcknowledgementsModal({ notice, onClose }) {
                     </div>
                 </div>
 
-                <div className="max-h-[400px] overflow-y-auto border border-slate-200 rounded-xl">
+                <div className="max-h-[400px] overflow-auto border border-slate-200 rounded-xl">
                     {isLoading && <div className="p-8 text-center text-slate-500">Loading acknowledgements...</div>}
                     {isError && <div className="p-8 text-center text-red-500">Failed to load data.</div>}
                     {!isLoading && !isError && (!acks || acks.length === 0) && (
                         <div className="p-8 text-center text-slate-500">No residents have acknowledged this notice yet.</div>
                     )}
-                    
+
                     {!isLoading && !isError && acks?.length > 0 && (
                         <table className="w-full text-left text-sm text-slate-600">
-                            <thead className="bg-slate-50 border-b border-slate-200 sticky top-0">
+                            <thead className="bg-slate-50 border-b border-slate-200 sticky top-0 whitespace-nowrap">
                                 <tr>
                                     <th className="px-4 py-3 font-semibold">Resident</th>
                                     <th className="px-4 py-3 font-semibold">Unit</th>

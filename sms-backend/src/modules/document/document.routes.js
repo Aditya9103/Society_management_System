@@ -44,14 +44,14 @@ router.delete('/:id', docController.softDeleteDocument);
 // Restore deleted document (Admin only)
 router.post(
     '/:id/restore',
-    authorize(ROLES.SOCIETY_ADMIN, ROLES.SUPER_ADMIN),
+    authorize(ROLES.SOCIETY_ADMIN, ROLES.SUPER_ADMIN, ROLES.ACCOUNTANT),
     docController.restoreDocument
 );
 
 // Approve/Reject document (Admin/Committee)
 router.post(
     '/:id/approve',
-    authorize(ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER, ROLES.SUPER_ADMIN),
+    authorize(ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER, ROLES.SUPER_ADMIN, ROLES.ACCOUNTANT),
     validate({ body: approveDocumentSchema }),
     docController.approveDocument
 );
@@ -62,7 +62,7 @@ router.get('/:id/versions', docController.getDocumentVersions);
 // Get audit logs (Admin only)
 router.get(
     '/:id/logs',
-    authorize(ROLES.SOCIETY_ADMIN, ROLES.SUPER_ADMIN),
+    authorize(ROLES.SOCIETY_ADMIN, ROLES.SUPER_ADMIN, ROLES.ACCOUNTANT),
     docController.getDocumentAuditLogs
 );
 

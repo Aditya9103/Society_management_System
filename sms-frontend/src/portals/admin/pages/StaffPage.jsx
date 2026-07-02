@@ -59,7 +59,7 @@ export default function StaffPage() {
                 value={search}
                 onChange={(v) => { setSearch(v); setPage(1); }}
                 placeholder="Search by name or email…"
-                className="max-w-xs"
+                className="w-full sm:max-w-xs"
             />
 
             {isLoading ? (

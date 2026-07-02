@@ -80,7 +80,7 @@ router.patch(
  * DELETE /api/v1/facilities/amenities/:id
  * Delete an amenity (Admin only).
  */
-router.delete('/amenities/:id', authorize(ROLES.SOCIETY_ADMIN), facilityController.deleteAmenity);
+router.delete('/amenities/:id', authorize(...CAN_MANAGE), facilityController.deleteAmenity);
 
 // ── Availability ──────────────────────────────────────────────────────────────
 

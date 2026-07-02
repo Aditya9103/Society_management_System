@@ -31,7 +31,16 @@ import {
 const router = Router();
 
 // ── Global auth guard ─────────────────────────────────────────────────────────
-router.use(authenticate, authorize(ROLES.SOCIETY_ADMIN));
+router.use(authenticate);
+
+// Apply role-based access to specific path prefixes
+router.use('/dashboard', authorize(ROLES.SOCIETY_ADMIN));
+router.use('/profile', authorize(ROLES.SOCIETY_ADMIN));
+router.use('/staff', authorize(ROLES.SOCIETY_ADMIN));
+router.use('/residents', authorize(ROLES.SOCIETY_ADMIN, ROLES.HELP_DESK));
+router.use('/resident', authorize(ROLES.SOCIETY_ADMIN, ROLES.HELP_DESK));
+router.use('/towers', authorize(ROLES.SOCIETY_ADMIN));
+router.use('/units', authorize(ROLES.SOCIETY_ADMIN));
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 

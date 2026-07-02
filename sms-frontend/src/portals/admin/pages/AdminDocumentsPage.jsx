@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Download, Check, X, Upload, Folder, User, Car, Clock, Trash2 } from 'lucide-react';
-import { 
-    useGetDocumentsQuery, 
-    useUploadDocumentMutation, 
-    useApproveDocumentMutation, 
+import {
+    useGetDocumentsQuery,
+    useUploadDocumentMutation,
+    useApproveDocumentMutation,
     useLazyDownloadDocumentQuery,
     useDeleteDocumentMutation
 } from '../../../store/api/documentApi';
@@ -23,7 +23,7 @@ export default function AdminDocumentsPage() {
 
     const [activeTab, setActiveTab] = useState('SOCIETY');
     const [uploadModalVisible, setUploadModalVisible] = useState(false);
-    
+
     // form state
     const [fileList, setFileList] = useState([]);
     const [title, setTitle] = useState('');
@@ -100,7 +100,7 @@ export default function AdminDocumentsPage() {
             console.error(error);
             toast.error('Failed to delete document');
         }
-    }; 
+    };
 
     // Filter documents based on active tab
     const getFilteredDocs = () => {
@@ -115,18 +115,18 @@ export default function AdminDocumentsPage() {
         }
         return documents;
     };
-    
+
     const filteredDocs = getFilteredDocs();
 
     // Helper for rendering Expiry visually
     const renderExpiry = (dateStr) => {
         if (!dateStr) return <span className="text-slate-400">-</span>;
-        
+
         const expDate = new Date(dateStr);
         const today = new Date();
         const diffTime = expDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays < 0) return <span className="text-red-600 font-semibold flex items-center gap-1"><Clock className="h-3 w-3" /> Expired</span>;
         if (diffDays <= 30) return <span className="text-amber-600 font-semibold flex items-center gap-1"><Clock className="h-3 w-3" /> Expiring Soon</span>;
         return <span className="text-slate-600">{expDate.toLocaleDateString()}</span>;
@@ -158,16 +158,16 @@ export default function AdminDocumentsPage() {
                 </button>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
                 <table className="w-full text-left text-sm text-slate-600">
-                    <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                    <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
                         <tr>
                             <th className="p-4 font-semibold">Title</th>
                             {activeTab === 'RESIDENTS' && <th className="p-4 font-semibold">Resident</th>}
                             {activeTab === 'VEHICLES' && <th className="p-4 font-semibold">Vehicle</th>}
-                            <th className="p-4 font-semibold">Type</th>
+                            <th className="p-4 font-semibold hidden sm:table-cell">Type</th>
                             <th className="p-4 font-semibold">Status</th>
-                            <th className="p-4 font-semibold">Expiry</th>
+                            <th className="p-4 font-semibold hidden md:table-cell">Expiry</th>
                             <th className="p-4 font-semibold">Actions</th>
                         </tr>
                     </thead>
@@ -181,8 +181,14 @@ export default function AdminDocumentsPage() {
                                 <td className="p-4">
                                     <div className="font-bold text-slate-800">{d.title}</div>
                                     <div className="text-xs text-slate-500 mt-1">By: {d.uploadedBy ? d.uploadedBy.name : 'Unknown'}</div>
+                                    <div className="text-xs text-slate-500 mt-0.5 sm:hidden">
+                                        Type: {d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType.replace(/_/g, ' ')}
+                                    </div>
+                                    <div className="text-xs text-slate-500 mt-0.5 md:hidden">
+                                        Expires: {d.expiryDate ? new Date(d.expiryDate).toLocaleDateString() : 'N/A'}
+                                    </div>
                                 </td>
-                                
+
                                 {activeTab === 'RESIDENTS' && (
                                     <td className="p-4 font-medium text-slate-700">
                                         {d.ownerId?.name || (d.uploadedBy ? d.uploadedBy.name : 'Unknown')}
@@ -195,22 +201,22 @@ export default function AdminDocumentsPage() {
                                     </td>
                                 )}
 
-                                <td className="p-4">
+                                <td className="p-4 hidden sm:table-cell">
                                     <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200">
                                         {d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType.replace(/_/g, ' ')}
                                     </span>
                                 </td>
-                                
+
                                 <td className="p-4">
                                     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
                                         ${d.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' :
-                                          d.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
-                                          d.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
+                                            d.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
+                                                d.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
                                         {d.status}
                                     </span>
                                 </td>
-                                
-                                <td className="p-4">
+
+                                <td className="p-4 hidden md:table-cell">
                                     {renderExpiry(d.expiryDate)}
                                 </td>
 

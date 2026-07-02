@@ -51,8 +51,8 @@ export default function SocietiesPage() {
                 <Table>
                     <Table.Head>
                         <Table.HeadCell>Society</Table.HeadCell>
-                        <Table.HeadCell>Location</Table.HeadCell>
-                        <Table.HeadCell>Units</Table.HeadCell>
+                        <Table.HeadCell className="hidden sm:table-cell">Location</Table.HeadCell>
+                        <Table.HeadCell className="hidden md:table-cell">Units</Table.HeadCell>
                         <Table.HeadCell>Status</Table.HeadCell>
                         <Table.HeadCell>Actions</Table.HeadCell>
                     </Table.Head>
@@ -62,17 +62,26 @@ export default function SocietiesPage() {
                         <Table.Body>
                             {societies.map((s) => (
                                 <Table.Row key={s._id}>
-                                    <Table.Cell>
+                                    <Table.Cell className="whitespace-normal min-w-[200px]">
                                         <p className="font-medium text-slate-900">{s.name}</p>
                                         {s.registrationNumber && (
                                             <p className="text-xs text-slate-400">Reg: {s.registrationNumber}</p>
                                         )}
+                                        {/* Mobile stacked info */}
+                                        <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-0.5">
+                                            <p>{s.city}, {s.state} {s.pincode}</p>
+                                            <p>{s.totalUnits} units total</p>
+                                        </div>
+                                        {/* Tablet stacked info */}
+                                        <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
+                                            <p>{s.totalUnits} units total</p>
+                                        </div>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden sm:table-cell">
                                         <p>{s.city}, {s.state}</p>
                                         <p className="text-xs text-slate-400">{s.pincode}</p>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell className="hidden md:table-cell">
                                         <span className="font-medium">{s.totalUnits}</span>
                                         <span className="text-slate-400"> total</span>
                                     </Table.Cell>

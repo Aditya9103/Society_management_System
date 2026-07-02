@@ -26,16 +26,16 @@ export default function DashboardPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="min-w-0">
+                    <h1 className="text-2xl font-bold text-slate-900 truncate">
                         {s?.societyName ?? 'Society Dashboard'}
                     </h1>
                     <p className="mt-1 text-sm text-slate-500">
                         Overview of your society's current status
                     </p>
                 </div>
-                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                <span className="shrink-0 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
                     Society Admin
                 </span>
             </div>

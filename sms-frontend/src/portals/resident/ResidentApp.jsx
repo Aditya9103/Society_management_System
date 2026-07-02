@@ -42,6 +42,7 @@ const SIDEBAR_CONFIG = {
         { to: '/resident/documents', label: 'Documents', Icon: FileText },
         { to: '/resident/amenities', label: 'Amenities', Icon: Building2 },
     ],
+    bottomNavRoutes: ['/resident', '/resident/visitors', '/resident/complaints', '/resident/notices'],
 };
 
 export default function ResidentApp() {

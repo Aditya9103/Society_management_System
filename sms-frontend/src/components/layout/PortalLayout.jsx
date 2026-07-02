@@ -24,6 +24,7 @@ import { Menu } from 'lucide-react';
 import PortalSidebar from './PortalSidebar';
 import { cn } from '../ui/Button';
 import NotificationDropdown from './NotificationDropdown';
+import PortalBottomNav from './PortalBottomNav';
 
 export default function PortalLayout({
   sidebarConfig,
@@ -74,7 +75,7 @@ export default function PortalLayout({
           {/* User avatar & Notifications */}
           <div className="flex items-center gap-3">
             <NotificationDropdown />
-            <div 
+            <div
               onClick={() => navigate(profileRoute)}
               className={cn('relative overflow-hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white shadow cursor-pointer ring-2 ring-transparent hover:ring-slate-300 transition-all', accentFrom, accentTo)}
             >
@@ -88,11 +89,15 @@ export default function PortalLayout({
         </header>
 
         {/* ── Main content ───────────────────────────────────────── */}
-        <main className="flex-1 overflow-x-hidden">
+        {/* pb-20 ensures content isn't hidden behind the bottom navigation bar on mobile */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-20 lg:pb-0">
           <div className={cn('mx-auto px-4 py-6 sm:px-6 lg:px-8', maxWidth)}>
             {children}
           </div>
         </main>
+
+        {/* ── Mobile Bottom Navigation ─────────────────────────────── */}
+        <PortalBottomNav config={sidebarConfig} />
       </div>
     </div>
   );

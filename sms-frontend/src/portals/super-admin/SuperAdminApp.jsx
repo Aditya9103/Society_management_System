@@ -21,6 +21,7 @@ const SIDEBAR_CONFIG = {
     { to: '/super-admin/tenants', label: 'Tenants', Icon: Users2 },
     { to: '/super-admin/societies', label: 'Societies', Icon: Building2 },
   ],
+  bottomNavRoutes: ['/super-admin', '/super-admin/tenants', '/super-admin/societies'],
 };
 
 export default function SuperAdminApp() {

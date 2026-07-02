@@ -324,12 +324,12 @@ function BookingTable() {
             ) : (
                 <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
                     <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase">
+                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">
                             <tr>
-                                <th className="px-4 py-3 text-left">Booking #</th>
+                                <th className="px-4 py-3 text-left hidden sm:table-cell">Booking #</th>
                                 <th className="px-4 py-3 text-left">Amenity</th>
-                                <th className="px-4 py-3 text-left">Resident</th>
-                                <th className="px-4 py-3 text-left">Date & Time</th>
+                                <th className="px-4 py-3 text-left hidden sm:table-cell">Resident</th>
+                                <th className="px-4 py-3 text-left hidden md:table-cell">Date & Time</th>
                                 <th className="px-4 py-3 text-left">Status</th>
                                 <th className="px-4 py-3 text-left">Actions</th>
                             </tr>
@@ -339,18 +339,28 @@ function BookingTable() {
                                 const s = STATUS_CONFIG[b.status] ?? { label: b.status, color: 'bg-slate-100 text-slate-600 border-slate-200' };
                                 return (
                                     <tr key={b._id} className="hover:bg-slate-50 transition">
-                                        <td className="px-4 py-3 font-mono text-xs text-slate-500">{b.bookingNumber}</td>
+                                        <td className="px-4 py-3 font-mono text-xs text-slate-500 hidden sm:table-cell">{b.bookingNumber}</td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
                                                 <span>{FACILITY_ICONS[b.amenityId?.facilityType] ?? '🏢'}</span>
                                                 <span className="font-semibold text-slate-800">{b.amenityId?.name ?? '—'}</span>
                                             </div>
+                                            {/* Mobile extra info */}
+                                            <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-0.5">
+                                                <p>#{b.bookingNumber}</p>
+                                                <p>{b.residentId?.residentCode ?? '—'} {b.unitId?.unitNumber ? `(${b.unitId.unitNumber})` : ''}</p>
+                                                <p>{fmt(b.bookingDate)} | {b.startTime}–{b.endTime}</p>
+                                            </div>
+                                            {/* Tablet extra info (Date & Time hidden on md) */}
+                                            <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
+                                                <p>{fmt(b.bookingDate)} | {b.startTime}–{b.endTime}</p>
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 hidden sm:table-cell">
                                             <p className="text-slate-700">{b.residentId?.residentCode ?? '—'}</p>
                                             <p className="text-xs text-slate-400">{b.unitId?.unitNumber ?? ''}</p>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 hidden md:table-cell">
                                             <p className="text-slate-700">{fmt(b.bookingDate)}</p>
                                             <p className="text-xs text-slate-400">{b.startTime}–{b.endTime}</p>
                                         </td>

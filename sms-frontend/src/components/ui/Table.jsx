@@ -17,7 +17,7 @@ function Table({ children, className, ...props }) {
   return (
     <div className={cn('overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100', className)} {...props}>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-max text-left text-sm">
+        <table className="w-full text-left text-sm">
           {children}
         </table>
       </div>
@@ -35,7 +35,7 @@ Table.Head = function TableHead({ children, className, ...props }) {
 
 Table.HeadCell = function TableHeadCell({ children, className, ...props }) {
   return (
-    <th className={cn('px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500', className)} {...props}>
+    <th className={cn('px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap', className)} {...props}>
       {children}
     </th>
   );
@@ -59,7 +59,7 @@ Table.Row = function TableRow({ children, className, ...props }) {
 
 Table.Cell = function TableCell({ children, className, ...props }) {
   return (
-    <td className={cn('px-5 py-3.5', className)} {...props}>
+    <td className={cn('px-5 py-3.5 whitespace-nowrap', className)} {...props}>
       {children}
     </td>
   );

@@ -123,9 +123,9 @@ export default function AdminVehiclePage() {
             </div>
 
             {activeTab === 'VEHICLES' && (
-                <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
                     <table className="w-full text-left text-sm text-slate-600">
-                        <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                        <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
                             <tr>
                                 <th className="p-4 font-semibold">Vehicle</th>
                                 <th className="p-4 font-semibold">Resident</th>
@@ -177,9 +177,9 @@ export default function AdminVehiclePage() {
             )}
 
             {activeTab === 'LOGS' && (
-                <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
                     <table className="w-full text-left text-sm text-slate-600">
-                        <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                        <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
                             <tr>
                                 <th className="p-4 font-semibold">Vehicle No.</th>
                                 <th className="p-4 font-semibold">Event Type</th>

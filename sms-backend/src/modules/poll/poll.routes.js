@@ -13,38 +13,38 @@ router.use(authenticate);
 // --- ADMIN ROUTES ---
 router.post(
     '/',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     validate(createPollSchema),
     pollController.createPoll
 );
 
 router.get(
     '/admin/all',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     pollController.getAdminPolls
 );
 
 router.get(
     '/admin/:id',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     pollController.getAdminPollById
 );
 
 router.post(
     '/admin/:id/publish',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     pollController.publishPoll
 );
 
 router.post(
     '/admin/:id/close',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     pollController.closePoll
 );
 
 router.delete(
     '/admin/:id',
-    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN),
+    authorize(ROLES.SUPER_ADMIN, ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER),
     pollController.deletePoll
 );
 

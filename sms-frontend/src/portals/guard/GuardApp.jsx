@@ -31,6 +31,7 @@ const SIDEBAR_CONFIG = {
         { to: '/guard/society', label: 'Emergency Contacts', Icon: Building2 },
         { to: '/guard/profile', label: 'My Profile', Icon: User },
     ],
+    bottomNavRoutes: ['/guard', '/guard/visitors', '/guard/vehicles', '/guard/verify-id'],
 };
 
 export default function GuardApp() {

@@ -112,9 +112,9 @@ export default function ResidentDocumentsPage() {
     });
 
     const renderTable = (data) => (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden mt-4">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto mt-4">
             <table className="w-full text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 whitespace-nowrap">
                     <tr>
                         <th className="p-4 font-semibold">Title</th>
                         <th className="p-4 font-semibold">Category</th>

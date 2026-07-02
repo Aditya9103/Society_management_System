@@ -16,10 +16,10 @@ import ResidentDetailsModal from '../components/residents/ResidentDetailsModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const STATUS_TABS = [
-    { value: 'APPROVED',        label: 'Approved' },
+    { value: 'APPROVED', label: 'Approved' },
     { value: 'PENDING_APPROVAL', label: 'Pending' },
-    { value: 'REJECTED',        label: 'Rejected' },
-    { value: '',                label: 'All' },
+    { value: 'REJECTED', label: 'Rejected' },
+    { value: '', label: 'All' },
 ];
 
 export default function ResidentsPage() {
@@ -42,7 +42,7 @@ export default function ResidentsPage() {
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-950 p-8 shadow-xl">
                 <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-40 w-40 rounded-full bg-purple-500/10 blur-2xl" />
-                
+
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-purple-200 backdrop-blur-md">
@@ -56,8 +56,8 @@ export default function ResidentsPage() {
                             Manage approvals, view documents, and oversee all resident accounts in your society with ease.
                         </p>
                     </div>
-                    
-                    <button 
+
+                    <button
                         onClick={refetch}
                         disabled={isFetching}
                         className="group flex h-12 items-center gap-2 rounded-xl bg-white/10 px-6 font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95 disabled:opacity-50"
@@ -104,19 +104,19 @@ export default function ResidentsPage() {
                         />
                     </motion.div>
                 ) : (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }} 
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="rounded-3xl bg-white shadow-xl shadow-slate-200/40 ring-1 ring-slate-100/60 overflow-hidden backdrop-blur-xl"
                     >
                         <Table className="border-0 shadow-none ring-0">
                             <Table.Head className="bg-slate-50/50">
                                 <Table.HeadCell className="py-4">Resident Profile</Table.HeadCell>
-                                <Table.HeadCell className="py-4">Contact Info</Table.HeadCell>
+                                <Table.HeadCell className="py-4 hidden sm:table-cell">Contact Info</Table.HeadCell>
                                 <Table.HeadCell className="py-4">Status</Table.HeadCell>
-                                <Table.HeadCell className="py-4 text-right pr-8">Joined</Table.HeadCell>
+                                <Table.HeadCell className="py-4 text-right pr-8 hidden md:table-cell">Joined</Table.HeadCell>
                             </Table.Head>
-                            
+
                             {isLoading ? (
                                 <Table.Loader rows={6} cols={4} />
                             ) : (
@@ -134,7 +134,7 @@ export default function ResidentsPage() {
                                                     onClick={() => setSelectedResidentId(r._id)}
                                                     className="group cursor-pointer border-b border-slate-50 transition-all hover:bg-indigo-50/40"
                                                 >
-                                                    <Table.Cell className="py-4">
+                                                    <Table.Cell className="py-4 whitespace-normal min-w-[200px]">
                                                         <div className="flex items-center gap-4">
                                                             <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white shadow-md shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
                                                                 {initials}
@@ -146,10 +146,15 @@ export default function ResidentsPage() {
                                                                 <span className="block text-xs font-medium text-slate-400 mt-0.5">
                                                                     ID: {r._id.slice(-6).toUpperCase()}
                                                                 </span>
+                                                                {/* Mobile-only contact info */}
+                                                                <div className="mt-2 flex flex-col gap-1 sm:hidden">
+                                                                    <span className="flex items-center gap-1 text-[11px] text-slate-500"><Mail className="w-3 h-3" /> {r.email}</span>
+                                                                    {r.phone && <span className="flex items-center gap-1 text-[11px] text-slate-500"><Phone className="w-3 h-3" /> {r.phone}</span>}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </Table.Cell>
-                                                    <Table.Cell className="py-4">
+                                                    <Table.Cell className="py-4 hidden sm:table-cell">
                                                         <div className="space-y-1.5">
                                                             <div className="flex items-center gap-2 text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
                                                                 <Mail className="h-4 w-4 text-indigo-400" />
@@ -166,7 +171,7 @@ export default function ResidentsPage() {
                                                     <Table.Cell className="py-4">
                                                         <StatusBadge status={r.registrationStatus} />
                                                     </Table.Cell>
-                                                    <Table.Cell className="py-4 text-right pr-8 text-sm font-medium text-slate-400">
+                                                    <Table.Cell className="py-4 text-right pr-8 text-sm font-medium text-slate-400 hidden md:table-cell">
                                                         {new Date(r.createdAt).toLocaleDateString('en-IN', {
                                                             day: 'numeric',
                                                             month: 'short',
@@ -187,7 +192,7 @@ export default function ResidentsPage() {
             <div className="flex justify-end pt-4">
                 <Pagination pagination={pagination} page={page} onPageChange={setPage} />
             </div>
-            
+
             <ResidentDetailsModal residentId={selectedResidentId} onClose={() => setSelectedResidentId(null)} />
         </div>
     );

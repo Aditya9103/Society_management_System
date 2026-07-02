@@ -49,6 +49,7 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/documents', label: 'Documents', Icon: FileText },
     { to: '/admin/amenities', label: 'Amenities', Icon: Building2 },
   ],
+  bottomNavRoutes: ['/admin', '/admin/residents', '/admin/complaints', '/admin/emergencies', '/admin/notices', '/admin/amenities', '/admin/polls', '/admin/documents', '/admin/invoices'],
 };
 
 export default function AdminApp() {

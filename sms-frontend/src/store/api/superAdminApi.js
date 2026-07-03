@@ -133,6 +133,14 @@ export const superAdminApi = createApi({
         params
       }),
     }),
+    deleteAuditLogs: builder.mutation({
+      query: (days) => ({
+        url: '/admin/audit-logs',
+        method: 'DELETE',
+        params: { days }
+      }),
+      invalidatesTags: ['AuditLog']
+    }),
   }),
 });
 
@@ -146,4 +154,5 @@ export const {
   useCreateSocietyAdminMutation,
   useListSocietiesForSelectQuery,
   useListAuditLogsQuery,
+  useDeleteAuditLogsMutation,
 } = superAdminApi;

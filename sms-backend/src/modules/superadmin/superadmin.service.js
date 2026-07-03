@@ -23,7 +23,7 @@ import AuditLog from '../../shared/models/AuditLog.js';
 
 // ── Audit Logging Helper ──────────────────────────────────────────────────────
 
-const logAudit = async (action, entityType, entityId, entityName, performedBy, ipAddress, userAgent, details = {}) => {
+export const logAudit = async (action, entityType, entityId, entityName, performedBy, ipAddress, userAgent, details = {}) => {
     try {
         await AuditLog.create({
             action,
@@ -406,4 +406,22 @@ export const listAuditLogs = async (query) => {
     ]);
 
     return { data, pagination: buildPaginationMeta(page, limit, total) };
+};
+
+/**
+ * Delete audit logs by time interval
+ *
+ * @param {number} days - Number of days to keep. 0 means delete all.
+ * @returns {Promise<number>} - Number of deleted logs
+ */
+export const deleteAuditLogs = async (days) => {
+    let filter = {};
+    if (days > 0) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        filter.createdAt = { $lt: cutoffDate };
+    }
+    
+    const result = await AuditLog.deleteMany(filter);
+    return result.deletedCount;
 };

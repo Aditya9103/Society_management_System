@@ -105,4 +105,13 @@ router.get(
     superAdminController.getAuditLogs,
 );
 
+/**
+ * DELETE /api/v1/admin/audit-logs
+ * Delete audit logs based on time criteria
+ */
+router.delete(
+    '/audit-logs',
+    superAdminController.deleteAuditLogs,
+);
+
 export default router;

@@ -107,3 +107,23 @@ export const getAuditLogs = asyncHandler(async (req, res) => {
         new ApiResponse(200, data, 'Audit logs fetched successfully', pagination),
     );
 });
+/**
+ * DELETE /api/v1/admin/audit-logs
+ * Delete audit logs by time interval
+ */
+export const deleteAuditLogs = asyncHandler(async (req, res) => {
+    // default to 0 (delete all) if not provided
+    const days = parseInt(req.query.days) || 0;
+    const deletedCount = await superAdminService.deleteAuditLogs(days);
+    
+    // Log the deletion action itself!
+    await superAdminService.logAudit(
+        'DELETE', 'AUDIT_LOGS', null, 
+        days === 0 ? 'All logs deleted' : `Logs older than ${days} days deleted`, 
+        req.user.sub, req.ip, req.headers['user-agent']
+    );
+
+    res.status(200).json(
+        new ApiResponse(200, { deletedCount }, `Successfully deleted ${deletedCount} audit logs`)
+    );
+});

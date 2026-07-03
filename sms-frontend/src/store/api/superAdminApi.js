@@ -93,10 +93,9 @@ export const superAdminApi = createApi({
         url: `/admin/societies/${id}/toggle`,
         method: 'PATCH'
       }),
-      invalidatesTags: (_result, _error, id) => [{
-        type: 'Society',
-        id
-      },
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Society', id: 'LIST' },
+        { type: 'Society', id },
         'DashboardStats'
       ],
     }),

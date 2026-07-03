@@ -1,6 +1,13 @@
 import * as residentService from './resident.service.js';
 import ApiResponse from '../../utils/ApiResponse.js';
 import asyncHandler from '../../utils/asyncHandler.js';
+import { generateAccessToken, generateRefreshToken } from '../auth/strategies/refresh.strategy.js';
+
+const getDeviceInfo = (req) => ({
+    ipAddress: req.ip || req.connection.remoteAddress,
+    userAgent: req.headers['user-agent'],
+    deviceFingerprint: req.headers['x-device-fingerprint'] || 'unknown',
+});
 
 /**
  * POST /api/v1/residents/profile
@@ -19,8 +26,12 @@ export const completeProfile = asyncHandler(async (req, res) => {
 
     const { profile, user: updatedUser } = await residentService.completeResidentProfile(userId, profileData);
 
+    // Issue fresh tokens now that societyId is bound to the user
+    const accessToken = generateAccessToken(updatedUser);
+    const { rawToken: refreshToken } = await generateRefreshToken(updatedUser._id.toString(), getDeviceInfo(req));
+
     res.status(201).json(
-        new ApiResponse(201, { profile, user: updatedUser }, 'Profile completed successfully. Pending admin approval.'),
+        new ApiResponse(201, { profile, user: updatedUser, accessToken, refreshToken }, 'Profile completed successfully. Pending admin approval.'),
     );
 });
 

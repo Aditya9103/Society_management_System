@@ -43,19 +43,38 @@ export const completeResidentProfile = async (userId, profileData) => {
         uploadedDocuments: [profileData.aadhaarUrl, profileData.agreementUrl].filter(Boolean),
     });
 
-    // Upload profile photo if provided
-    let profilePhotoUrl = user.profilePhotoUrl;
-    if (profileData.profilePhotoBuffer) {
-        const uploadResult = await uploadToCloudinary(profileData.profilePhotoBuffer, 'avatars');
-        profilePhotoUrl = uploadResult.secure_url;
-    }
-
-    // Update user status to PENDING_APPROVAL and bind societyId
+    // Update user status to PENDING_APPROVAL and bind societyId immediately for fast response
     const updatedUser = await userRepo.updateUser(userId, {
         registrationStatus: 'PENDING_APPROVAL',
         societyId: unit.societyId,
-        ...(profilePhotoUrl && { profilePhotoUrl })
     });
+
+    // Upload profile photo asynchronously in the background if provided
+    if (profileData.profilePhotoBuffer) {
+        uploadToCloudinary(profileData.profilePhotoBuffer, 'avatars')
+            .then(uploadResult => {
+                userRepo.updateUser(userId, { profilePhotoUrl: uploadResult.secure_url })
+                    .catch(err => console.error('Failed to update user with profile photo URL:', err));
+            })
+            .catch(err => console.error('Failed to upload profile photo to Cloudinary:', err));
+    }
+
+    // Fetch society admins to notify
+    const admins = await userRepo.findByRoleInSociety(unit.societyId, ['SOCIETY_ADMIN']);
+    if (admins.length > 0) {
+        import('../../services/notification.service.js').then(({ sendNotification }) => {
+            sendNotification({
+                users: admins,
+                societyId: unit.societyId,
+                type: 'RESIDENT_APPROVAL_PENDING',
+                title: 'New Resident Registration',
+                message: `${user.firstName} ${user.lastName} has applied to join Unit ${unit.unitNumber}. Pending approval.`,
+                priority: 'HIGH',
+                referenceType: 'USER',
+                referenceId: user._id,
+            }).catch(err => console.error('Failed to notify admins of resident reg:', err));
+        });
+    }
 
     return { profile, user: updatedUser };
 };
@@ -70,12 +89,12 @@ export const completeResidentProfile = async (userId, profileData) => {
 export const getMyResidentProfile = async (userId) => {
     const profile = await residentRepo.findByUserId(userId);
     if (!profile) return null; // Resident hasn't completed step 3 yet
-    
+
     // Populate references
     await profile.populate('unitId', 'unitNumber bhkType unitType ownershipStatus');
     await profile.populate('societyId', 'name address city state emergencyContacts logoUrl');
     await profile.populate('userId', 'firstName lastName email phone registrationStatus');
-    
+
     return profile;
 };
 
@@ -95,7 +114,7 @@ export const updateMyProfile = async (userId, data) => {
 
 export const updateMyAvatar = async (userId, imageBuffer) => {
     const uploadResult = await uploadFile(imageBuffer, { folder: 'resident_avatars' });
-    
+
     // Save photo to User document
     const updatedUser = await userRepo.updateUser(userId, { profilePhotoUrl: uploadResult.secure_url });
     const profile = await residentRepo.findByUserId(userId);

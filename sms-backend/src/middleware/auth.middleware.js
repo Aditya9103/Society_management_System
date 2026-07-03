@@ -52,6 +52,42 @@ export const authenticate = async (req, res, next) => {
         // Verify and decode — throws ApiError on failure
         const payload = await verifyAccessToken(token);
 
+        // Enforce active society and tenant check for all society-bound roles in real-time
+        if (payload.role !== 'SUPER_ADMIN') {
+            let societyIdToCheck = payload.societyId;
+
+            // Fallback for stale tokens (e.g. resident just completed profile but token hasn't refreshed)
+            if (!societyIdToCheck && ['RESIDENT', 'SOCIETY_ADMIN', 'SECURITY_GUARD', 'STAFF'].includes(payload.role)) {
+                const User = (await import('../modules/auth/user.model.js')).default;
+                const user = await User.findById(payload.sub).select('societyId').lean();
+                societyIdToCheck = user?.societyId;
+            }
+
+            if (societyIdToCheck) {
+                const Society = (await import('../modules/society/society.model.js')).default;
+                const society = await Society.findById(societyIdToCheck).select('isActive tenantId').lean();
+                if (society) {
+                    if (!society.isActive) {
+                        return next(ApiError.forbidden('Your society has been deactivated by the Super Admin. Access is temporarily suspended.'));
+                    }
+                    if (society.tenantId) {
+                        const Tenant = (await import('../shared/models/Tenant.js')).default;
+                        const tenant = await Tenant.findById(society.tenantId).select('isActive').lean();
+                        if (tenant && !tenant.isActive) {
+                            return next(ApiError.forbidden('Your tenant account has been deactivated by the Super Admin. Access is temporarily suspended.'));
+                        }
+                    }
+                }
+            }
+            if (payload.tenantId) {
+                const Tenant = (await import('../shared/models/Tenant.js')).default;
+                const tenant = await Tenant.findById(payload.tenantId).select('isActive').lean();
+                if (tenant && !tenant.isActive) {
+                    return next(ApiError.forbidden('Your tenant account has been deactivated by the Super Admin. Access is temporarily suspended.'));
+                }
+            }
+        }
+
         // Attach user context to request for downstream middleware/controllers
         req.user = payload;
 

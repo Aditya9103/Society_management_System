@@ -152,8 +152,8 @@ export default function RegisterPage() {
             if (res?.data?.user) {
                 dispatch(setCredentials({
                     user: res.data.user,
-                    accessToken: accessToken,
-                    refreshToken: refreshToken
+                    accessToken: res.data.accessToken || accessToken,
+                    refreshToken: res.data.refreshToken || refreshToken
                 }));
             }
 

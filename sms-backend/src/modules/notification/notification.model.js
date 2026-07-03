@@ -60,6 +60,7 @@ const notificationSchema = new mongoose.Schema(
                 'EMERGENCY_BROADCAST',
                 'ID_CARD_GENERATED',
                 'POLL_STARTED',
+                'RESIDENT_APPROVAL_PENDING',
                 'RESIDENT_APPROVED',
                 'RESIDENT_REJECTED',
                 'VEHICLE_REGISTERED',
@@ -78,7 +79,7 @@ const notificationSchema = new mongoose.Schema(
             type: String,
             enum: [
                 'VISITOR', 'COMPLAINT', 'INVOICE', 'PAYMENT',
-                'NOTICE', 'BOOKING', 'EMERGENCY', 'POLL', 'RESIDENT', 'VEHICLE', null,
+                'NOTICE', 'BOOKING', 'EMERGENCY', 'POLL', 'RESIDENT', 'VEHICLE', 'USER', null,
             ],
             default: null,
         },

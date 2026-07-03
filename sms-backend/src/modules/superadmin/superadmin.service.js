@@ -26,11 +26,11 @@ const logAudit = async (action, entityType, entityId, performedBy, ipAddress, de
     try {
         await AuditLog.create({
             action,
-            entityType,
-            entityId,
-            performedBy,
+            resourceType: entityType,
+            resourceId: entityId,
+            actorId: performedBy,
             ipAddress,
-            details
+            afterState: details // Mongoose schema uses afterState/beforeState instead of details
         });
     } catch (error) {
         console.error('AuditLog Error:', error);
@@ -236,6 +236,29 @@ export const toggleTenantStatus = async (tenantId, adminId, ipAddress) => {
         newStatus: updated.isActive
     });
 
+    // Notify the tenant contact
+    const action = updated.isActive ? 'activated' : 'deactivated';
+    sendEmail({
+        to: tenant.contactEmail,
+        subject: `Tenant Account ${action === 'activated' ? 'Activated' : 'Deactivated'}`,
+        html: `<h3>Hello ${tenant.contactName || 'Tenant'},</h3><p>Your tenant account <strong>${tenant.name}</strong> has been <strong>${action}</strong> by the Super Admin.</p>`,
+    }).catch(err => console.error(`Failed to email tenant ${tenant.contactEmail}:`, err));
+
+    // Instantly lock out all connected clients for this tenant if deactivated
+    if (!updated.isActive) {
+        import('../../socket/socket.server.js').then(async ({ getIO }) => {
+            try {
+                const io = getIO();
+                const societies = await societyRepo.findAll({ tenantId }, { limit: 1000 });
+                societies.forEach(soc => {
+                    io.to(`society_${soc._id.toString()}`).emit('ACCOUNT_SUSPENDED');
+                });
+            } catch (err) {
+                console.error('Failed to emit ACCOUNT_SUSPENDED socket event for tenant', err);
+            }
+        });
+    }
+
     return updated;
 };
 
@@ -256,6 +279,46 @@ export const toggleSocietyStatus = async (societyId, adminId, ipAddress) => {
     await logAudit('STATUS_CHANGE', 'SOCIETY', societyId, adminId, ipAddress, {
         newStatus: updated.isActive
     });
+
+    // Notify all SOCIETY_ADMIN users of this society
+    const admins = await userRepo.findByRoleInSociety(societyId, ['SOCIETY_ADMIN']);
+    if (admins.length > 0) {
+        const action = updated.isActive ? 'activated' : 'deactivated';
+
+        // Send emails
+        for (const admin of admins) {
+            sendEmail({
+                to: admin.email,
+                subject: `Society ${action === 'activated' ? 'Activated' : 'Deactivated'}`,
+                html: `<h3>Hello ${admin.firstName},</h3><p>Your society <strong>${society.name}</strong> has been <strong>${action}</strong> by the Super Admin.</p>`,
+            }).catch(err => console.error(`Failed to email admin ${admin.email}:`, err));
+        }
+
+        // Send push notifications
+        import('../../services/notification.service.js').then(({ sendNotification }) => {
+            sendNotification({
+                users: admins,
+                societyId: societyId,
+                type: 'GENERAL',
+                title: `Society ${action === 'activated' ? 'Activated' : 'Deactivated'}`,
+                message: `Your society has been ${action} by the Super Admin.`,
+                priority: 'HIGH'
+            }).catch(err => console.error('Failed to send push notification:', err));
+        });
+    }
+
+    // Instantly lock out all connected clients if deactivated
+    if (!updated.isActive) {
+        import('../../socket/socket.server.js').then(({ getIO }) => {
+            try {
+                const io = getIO();
+                // Assumes ROOMS.SOCIETY(id) matches `society_${id}`
+                io.to(`society_${societyId}`).emit('ACCOUNT_SUSPENDED');
+            } catch (err) {
+                console.error('Failed to emit ACCOUNT_SUSPENDED socket event', err);
+            }
+        });
+    }
 
     return updated;
 };

@@ -5,6 +5,7 @@ import { getSocket } from '../../socket/socketClient';
 import { vehicleApi } from '../../store/api/vehicleApi';
 import { pollApi } from '../../store/api/pollApi';
 import { facilityApi } from '../../store/api/facilityApi';
+import { setSuspended } from '../../store/slices/authSlice';
 
 import UrgentNoticeToast from './UrgentNoticeToast';
 
@@ -176,12 +177,18 @@ export default function GlobalSocketListener() {
             dispatch(facilityApi.util.invalidateTags(['Booking', 'Amenity']));
         };
 
+        const handleAccountSuspended = () => {
+            console.log('🛑 Account suspended via socket');
+            dispatch(setSuspended(true));
+        };
+
         socket.on('EMERGENCY_ALARM', handleEmergencyAlarm);
         socket.on('EMERGENCY_UPDATED', handleEmergencyUpdated);
         socket.on('POLL_CREATED', handlePollEvent);
         socket.on('POLL_UPDATED', handlePollEvent);
         socket.on('POLL_CLOSED', handlePollEvent);
         socket.on('AMENITY_UPDATED', handleAmenityUpdated);
+        socket.on('ACCOUNT_SUSPENDED', handleAccountSuspended);
 
         return () => {
             socket.off('URGENT_NOTICE', handleUrgentNotice);
@@ -192,6 +199,7 @@ export default function GlobalSocketListener() {
             socket.off('POLL_UPDATED', handlePollEvent);
             socket.off('POLL_CLOSED', handlePollEvent);
             socket.off('AMENITY_UPDATED', handleAmenityUpdated);
+            socket.off('ACCOUNT_SUSPENDED', handleAccountSuspended);
         };
     }, [isAuthenticated]);
 

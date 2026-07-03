@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setCredentials, logout } from '../slices/authSlice';
+import { setCredentials, setSuspended, logout } from '../slices/authSlice';
 import { updateSocketToken } from '../../socket/socketClient';
 
 // Standard Axios instance
@@ -45,6 +45,15 @@ export const setupResponseInterceptor = (dispatch) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+
+      // Catch 403 Forbidden specifically for account/society deactivation
+      if (error.response?.status === 403) {
+        const msg = error.response?.data?.message || '';
+        if (msg.toLowerCase().includes('deactivated')) {
+          dispatch(setSuspended(true));
+          return Promise.reject(error);
+        }
+      }
 
       // Catch 401 Unauthorized errors (excluding the refresh endpoint itself to prevent loops)
       if (

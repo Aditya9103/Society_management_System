@@ -229,6 +229,19 @@ export const approveResident = async (residentUserId, adminUserId, adminComments
         to: user.email,
         subject: 'Your Registration Has Been Approved',
         html: `<h3>Hello ${user.firstName},</h3><p>Your resident registration has been <strong>approved</strong>!</p><p>You can now log into the portal. Your Digital ID Card is being generated and will be available in your profile shortly.</p>`,
+    }).catch(err => console.error(`Failed to send approval email to ${user.email}:`, err));
+
+    import('../../services/notification.service.js').then(({ sendNotification }) => {
+        sendNotification({
+            users: [user],
+            societyId: user.societyId,
+            type: 'RESIDENT_APPROVED',
+            title: 'Registration Approved 🎉',
+            message: 'Your registration has been approved! You can now access all resident features.',
+            priority: 'HIGH',
+            referenceType: 'USER',
+            referenceId: user._id,
+        }).catch(err => console.error('Failed to notify resident of approval:', err));
     });
 
     return user;

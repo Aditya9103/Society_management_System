@@ -52,9 +52,28 @@ export const initSocket = (httpServer) => {
         socket.join(ROOMS.USER(userId));
         socket.join(ROOMS.GLOBAL);
 
-        // Join Society room
-        if (socket.user.societyId) {
-            socket.join(ROOMS.SOCIETY(socket.user.societyId));
+        // Fallback for stale tokens missing societyId
+        let userSocietyId = socket.user.societyId;
+        if (!userSocietyId && ['RESIDENT', 'SOCIETY_ADMIN', 'SECURITY_GUARD', 'STAFF'].includes(socket.user.role?.toUpperCase())) {
+            import('../modules/auth/user.model.js').then(({ default: User }) => {
+                User.findById(userId).select('societyId').lean().then(user => {
+                    if (user?.societyId) {
+                        socket.join(ROOMS.SOCIETY(user.societyId.toString()));
+                        socket.user.societyId = user.societyId.toString();
+                        
+                        // Join Role-specific rooms that need societyId
+                        const role = socket.user.role?.toUpperCase();
+                        if (role === 'ADMIN' || role === 'SOCIETY_ADMIN' || role === 'SUPER_ADMIN') {
+                            socket.join(ROOMS.SOCIETY_ADMIN(user.societyId.toString()));
+                        }
+                    }
+                }).catch(err => logger.error(`Socket society fallback error: ${err.message}`));
+            });
+        }
+
+        // Join Society room (if already in token)
+        if (userSocietyId) {
+            socket.join(ROOMS.SOCIETY(userSocietyId));
         }
 
         // Join Role-specific rooms

@@ -15,6 +15,7 @@ const initialState = {
   accessToken: localStorage.getItem('accessToken') || null,
   refreshToken: localStorage.getItem('refreshToken') || null,
   isAuthenticated: !!localStorage.getItem('accessToken'),
+  isSuspended: localStorage.getItem('isSuspended') === 'true',
 };
 
 export const authSlice = createSlice({
@@ -36,15 +37,25 @@ export const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(user));
       }
     },
+    setSuspended: (state, action) => {
+      state.isSuspended = action.payload;
+      if (action.payload) {
+        localStorage.setItem('isSuspended', 'true');
+      } else {
+        localStorage.removeItem('isSuspended');
+      }
+    },
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
+      state.isSuspended = false;
 
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('isSuspended');
 
       // Tell Service Worker to clear user-specific API caches
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -54,6 +65,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, setSuspended, logout } = authSlice.actions;
 
 export default authSlice.reducer;

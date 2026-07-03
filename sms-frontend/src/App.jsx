@@ -13,6 +13,7 @@ import AdminApp from './portals/admin/AdminApp';
 import ResidentApp from './portals/resident/ResidentApp';
 import StaffApp from './portals/staff/StaffApp';
 import GuardApp from './portals/guard/GuardApp';
+import SuspendedPage from './components/common/SuspendedPage';
 
 // ── Role sets ─────────────────────────────────────────────────────────────────
 // Staff portal: committee, accountant, facility, help desk
@@ -36,6 +37,12 @@ function ProtectedRoute({ children, requiredRole }) {
 function App() {
   // Initialize Firebase Cloud Messaging (push notifications)
   useFirebaseMessaging();
+
+  const { isSuspended } = useSelector((state) => state.auth);
+
+  if (isSuspended) {
+    return <SuspendedPage />;
+  }
 
   return (
     <div className="relative min-h-screen bg-[#f4f5f7] text-slate-900 overflow-hidden selection:bg-indigo-500/30 font-sans">
@@ -69,6 +76,7 @@ function App() {
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/suspended" element={<SuspendedPage />} />
 
         {/* ── Super Admin Portal ────────────────────────────────────── */}
         <Route

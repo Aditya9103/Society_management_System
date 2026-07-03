@@ -15,7 +15,7 @@ export const initializeJobs = () => {
 
     // Mount schedules
     // scheduleInvoiceGenerator();
-    initializeDocumentExpiryJob();
+    //initializeDocumentExpiryJob();
     logger.info('Scheduled jobs initialized');
     scheduleNoticeSender();
     scheduleQrExpiry();

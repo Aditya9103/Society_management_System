@@ -14,6 +14,7 @@ import { authenticate } from '../../middleware/auth.middleware.js';
 import { authorize } from '../../middleware/rbac.middleware.js';
 import { ROLES } from '../../config/constants.js';
 import validate from '../../middleware/validate.middleware.js';
+import { auditLog } from '../../middleware/audit.middleware.js';
 import { createNoticeSchema, updateNoticeScheduleSchema } from './notice.validator.js';
 
 const router = Router();
@@ -27,7 +28,7 @@ const CAN_READ = [ROLES.SOCIETY_ADMIN, ROLES.COMMITTEE_MEMBER, ROLES.HELP_DESK, 
  * POST /api/v1/notices
  * Create a new notice.
  */
-router.post('/', authorize(...CAN_PUBLISH), validate(createNoticeSchema), noticeController.createNotice);
+router.post('/', authorize(...CAN_PUBLISH), validate(createNoticeSchema), auditLog('CREATE', 'NOTICE'), noticeController.createNotice);
 
 /**
  * GET /api/v1/notices
@@ -45,31 +46,31 @@ router.get('/:id', authorize(...CAN_READ), noticeController.getNoticeById);
  * PATCH /api/v1/notices/:id/publish
  * Publish a DRAFT notice.
  */
-router.patch('/:id/publish', authorize(...CAN_PUBLISH), noticeController.publishNotice);
+router.patch('/:id/publish', authorize(...CAN_PUBLISH), auditLog('PUBLISH', 'NOTICE'), noticeController.publishNotice);
 
 /**
  * PATCH /api/v1/notices/:id/schedule
  * Update schedule for a DRAFT or SCHEDULED notice.
  */
-router.patch('/:id/schedule', authorize(...CAN_PUBLISH), validate(updateNoticeScheduleSchema), noticeController.updateNoticeSchedule);
+router.patch('/:id/schedule', authorize(...CAN_PUBLISH), validate(updateNoticeScheduleSchema), auditLog('UPDATE_SCHEDULE', 'NOTICE'), noticeController.updateNoticeSchedule);
 
 /**
  * PATCH /api/v1/notices/:id/archive
  * Archive a notice.
  */
-router.patch('/:id/archive', authorize(...CAN_PUBLISH), noticeController.archiveNotice);
+router.patch('/:id/archive', authorize(...CAN_PUBLISH), auditLog('ARCHIVE', 'NOTICE'), noticeController.archiveNotice);
 
 /**
  * DELETE /api/v1/notices/:id
  * Delete a notice.
  */
-router.delete('/:id', authorize(...CAN_PUBLISH), noticeController.deleteNotice);
+router.delete('/:id', authorize(...CAN_PUBLISH), auditLog('DELETE', 'NOTICE'), noticeController.deleteNotice);
 
 /**
  * POST /api/v1/notices/:id/acknowledge
  * Acknowledge a notice (RESIDENT only).
  */
-router.post('/:id/acknowledge', authorize(ROLES.RESIDENT), noticeController.acknowledgeNotice);
+router.post('/:id/acknowledge', authorize(ROLES.RESIDENT), auditLog('ACKNOWLEDGE', 'NOTICE'), noticeController.acknowledgeNotice);
 
 /**
  * GET /api/v1/notices/:id/acknowledgements

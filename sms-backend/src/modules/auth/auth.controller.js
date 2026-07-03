@@ -13,6 +13,7 @@ import * as authService from './auth.service.js';
 import ApiResponse from '../../utils/ApiResponse.js';
 import ApiError from '../../utils/ApiError.js';
 import asyncHandler from '../../utils/asyncHandler.js';
+import { auditLogin, auditLogout } from '../../middleware/audit.middleware.js';
 
 // ── Helper: extract device context from the request ───────────────────────────
 const getDeviceInfo = (req) => ({
@@ -75,6 +76,17 @@ export const loginWithOtp = asyncHandler(async (req, res) => {
         // Fire-and-forget — don't block the login response
         authService.registerFcmToken?.(user._id.toString(), fcmToken).catch(() => { });
     }
+    
+    // Audit log
+    auditLogin({
+        userId: user._id.toString(),
+        role: user.role,
+        societyId: user.societyId?.toString(),
+        tenantId: user.tenantId?.toString(),
+        ipAddress: deviceInfo.ipAddress,
+        userAgent: deviceInfo.userAgent,
+        jti: null // For OTP login, jti may not be available immediately in controller if it's packed in token payload, but we can decode or just leave null
+    });
 
     res.status(200).json(
         new ApiResponse(200, { accessToken, refreshToken, user }, 'Login successful'),
@@ -94,6 +106,17 @@ export const loginWithPassword = asyncHandler(async (req, res) => {
         password,
         deviceInfo,
     );
+
+    // Audit log
+    auditLogin({
+        userId: user._id.toString(),
+        role: user.role,
+        societyId: user.societyId?.toString(),
+        tenantId: user.tenantId?.toString(),
+        ipAddress: deviceInfo.ipAddress,
+        userAgent: deviceInfo.userAgent,
+        jti: null // We'll rely on IP/UA
+    });
 
     res.status(200).json(
         new ApiResponse(200, { accessToken, refreshToken, user }, 'Login successful'),
@@ -137,6 +160,17 @@ export const logout = asyncHandler(async (req, res) => {
     const tokenExpiresAt = new Date(exp * 1000);
 
     await authService.logout(userId, jti, tokenExpiresAt, rawRefreshToken);
+    
+    // Audit log
+    auditLogout({
+        userId,
+        role: req.user.role,
+        societyId: req.user.societyId,
+        tenantId: req.user.tenantId,
+        jti,
+        ipAddress: req.ip || req.headers['x-forwarded-for'],
+        userAgent: req.headers['user-agent']
+    });
 
     res.status(200).json(
         new ApiResponse(200, null, 'Logged out successfully'),
@@ -154,6 +188,17 @@ export const logoutAll = asyncHandler(async (req, res) => {
     const tokenExpiresAt = new Date(exp * 1000);
 
     await authService.logoutAll(userId, jti, tokenExpiresAt);
+    
+    // Audit log
+    auditLogout({
+        userId,
+        role: req.user.role,
+        societyId: req.user.societyId,
+        tenantId: req.user.tenantId,
+        jti,
+        ipAddress: req.ip || req.headers['x-forwarded-for'],
+        userAgent: req.headers['user-agent']
+    });
 
     res.status(200).json(
         new ApiResponse(200, null, 'Logged out from all devices successfully'),
@@ -202,6 +247,14 @@ export const updateMyAvatar = asyncHandler(async (req, res) => {
     const userId = req.user.sub;
     if (!req.file) throw ApiError.badRequest('Avatar image is required');
     const user = await authService.updateMyAvatar(userId, req.file.buffer);
+    
+    // Audit profile update
+    const { auditLog } = await import('../../middleware/audit.middleware.js');
+    await auditLog('UPDATE', 'USER_PROFILE')({
+        user: req.user, ip: req.ip, headers: req.headers, 
+        auditResourceId: userId
+    }, { on: (event, cb) => cb(), statusCode: 200 }, () => {}); // Mocking req/res for manual invocation
+
     res.status(200).json(new ApiResponse(200, { user }, 'Avatar updated successfully'));
 });
 
@@ -217,6 +270,13 @@ export const changePassword = asyncHandler(async (req, res) => {
     const userId = req.user.sub;
 
     await authService.changePassword(userId, oldPassword, newPassword);
+
+    // Audit profile update
+    const { auditLog } = await import('../../middleware/audit.middleware.js');
+    await auditLog('CHANGE_PASSWORD', 'USER_PROFILE')({
+        user: req.user, ip: req.ip, headers: req.headers, 
+        auditResourceId: userId
+    }, { on: (event, cb) => cb(), statusCode: 200 }, () => {}); // Mocking req/res for manual invocation
 
     res.status(200).json(
         new ApiResponse(200, null, 'Password changed successfully. Please log in again.'),

@@ -21,6 +21,7 @@ import {
     changeStatusSchema,
 } from './complaint.validator.js';
 import { uploadMultiple } from '../../middleware/upload.middleware.js';
+import { auditLog } from '../../middleware/audit.middleware.js';
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.post(
     authorize(...CAN_CREATE),
     uploadMultiple('images', 3, 'complaints', 'image'),
     validate(raiseComplaintSchema),
+    auditLog('CREATE', 'COMPLAINT'),
     complaintController.raiseComplaint
 );
 
@@ -82,6 +84,7 @@ router.patch(
     '/:id/status',
     authorize(...CAN_CREATE),
     validate(changeStatusSchema),
+    auditLog('UPDATE_STATUS', 'COMPLAINT'),
     complaintController.changeStatus,
 );
 
@@ -89,6 +92,6 @@ router.patch(
  * DELETE /api/v1/complaints/:id
  * Delete a closed complaint (admin only).
  */
-router.delete('/:id', authorize(ROLES.SOCIETY_ADMIN), complaintController.deleteComplaint);
+router.delete('/:id', authorize(ROLES.SOCIETY_ADMIN), auditLog('DELETE', 'COMPLAINT'), complaintController.deleteComplaint);
 
 export default router;

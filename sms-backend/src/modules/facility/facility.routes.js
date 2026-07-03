@@ -26,6 +26,7 @@ import {
     approveBookingSchema,
     feedbackSchema,
 } from './facility.validator.js';
+import { auditLog } from '../../middleware/audit.middleware.js';
 
 const router = Router();
 
@@ -56,6 +57,7 @@ router.post(
     '/amenities',
     authorize(...CAN_MANAGE),
     validate(createAmenitySchema),
+    auditLog('CREATE', 'AMENITY'),
     facilityController.createAmenity,
 );
 
@@ -73,6 +75,7 @@ router.patch(
     '/amenities/:id',
     authorize(...CAN_MANAGE),
     validate(updateAmenitySchema),
+    auditLog('UPDATE', 'AMENITY'),
     facilityController.updateAmenity,
 );
 
@@ -80,7 +83,7 @@ router.patch(
  * DELETE /api/v1/facilities/amenities/:id
  * Delete an amenity (Admin only).
  */
-router.delete('/amenities/:id', authorize(...CAN_MANAGE), facilityController.deleteAmenity);
+router.delete('/amenities/:id', authorize(...CAN_MANAGE), auditLog('DELETE', 'AMENITY'), facilityController.deleteAmenity);
 
 // ── Availability ──────────────────────────────────────────────────────────────
 
@@ -111,6 +114,7 @@ router.post(
     '/bookings',
     authorize(ROLES.RESIDENT),
     validate(createBookingSchema),
+    auditLog('CREATE_BOOKING', 'FACILITY'),
     facilityController.createBooking,
 );
 
@@ -128,6 +132,7 @@ router.patch(
     '/bookings/:id/approve',
     authorize(...CAN_APPROVE),
     validate(approveBookingSchema),
+    auditLog('APPROVE_BOOKING', 'FACILITY'),
     facilityController.approveBooking,
 );
 
@@ -139,6 +144,7 @@ router.patch(
     '/bookings/:id/reject',
     authorize(...CAN_APPROVE),
     validate(rejectBookingSchema),
+    auditLog('REJECT_BOOKING', 'FACILITY'),
     facilityController.rejectBooking,
 );
 
@@ -152,6 +158,7 @@ router.patch(
     '/bookings/:id/cancel',
     authorize(ROLES.RESIDENT, ...CAN_CANCEL_ADMIN),
     validate(cancelBookingSchema),
+    auditLog('CANCEL_BOOKING', 'FACILITY'),
     facilityController.cancelBooking,
 );
 
@@ -159,13 +166,13 @@ router.patch(
  * PATCH /api/v1/facilities/bookings/:id/complete
  * Mark a booking as completed (Admin / FM).
  */
-router.patch('/bookings/:id/complete', authorize(...CAN_MANAGE), facilityController.markCompleted);
+router.patch('/bookings/:id/complete', authorize(...CAN_MANAGE), auditLog('COMPLETE_BOOKING', 'FACILITY'), facilityController.markCompleted);
 
 /**
  * PATCH /api/v1/facilities/bookings/:id/no-show
  * Mark a booking as no-show (Admin / FM).
  */
-router.patch('/bookings/:id/no-show', authorize(...CAN_MANAGE), facilityController.markNoShow);
+router.patch('/bookings/:id/no-show', authorize(...CAN_MANAGE), auditLog('MARK_NO_SHOW', 'FACILITY'), facilityController.markNoShow);
 
 /**
  * PATCH /api/v1/facilities/bookings/:id/feedback

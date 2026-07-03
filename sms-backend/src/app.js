@@ -21,6 +21,7 @@ const NODE_ENV = env.nodeEnv;
 
 // ── App ──────────────────────────────────────────────────────────────────────
 const app = express();
+app.set('trust proxy', 1); // Enable trusting the reverse proxy for express-rate-limit
 
 // ── Security Headers ─────────────────────────────────────────────────────────
 app.use(helmet());

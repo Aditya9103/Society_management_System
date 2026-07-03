@@ -9,13 +9,13 @@ import AuditLogsTable from '../components/audit-logs/AuditLogsTable';
 import { useListAuditLogsQuery } from '../../../store/api/superAdminApi';
 
 export default function AuditLogsPage() {
-    const [actionFilter, setActionFilter] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
 
     const { data, isLoading, isFetching, isError, refetch } = useListAuditLogsQuery({
         page,
         limit: 20,
-        action: actionFilter || undefined
+        search: searchTerm || undefined
     });
 
     const logs = data?.data ?? [];
@@ -34,9 +34,9 @@ export default function AuditLogsPage() {
 
             <div className="flex flex-col sm:flex-row gap-4">
                 <SearchInput
-                    value={actionFilter}
-                    onChange={(v) => { setActionFilter(v); setPage(1); }}
-                    placeholder="Filter by action (e.g. LOGIN, PROVISION)..."
+                    value={searchTerm}
+                    onChange={(v) => { setSearchTerm(v); setPage(1); }}
+                    placeholder="Search logs by action or resource name..."
                     className="max-w-sm"
                 />
             </div>

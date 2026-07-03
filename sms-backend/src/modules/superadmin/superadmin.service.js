@@ -16,20 +16,23 @@ import { ROLES, ACCOUNT_SECURITY } from '../../config/constants.js';
 import { parsePagination, buildPaginationMeta } from '../../utils/pagination.js';
 
 import * as userRepo from '../auth/user.repository.js';
+import User from '../auth/user.model.js';
 import * as tenantRepo from '../../shared/repositories/tenant.repository.js';
 import * as societyRepo from '../society/society.repository.js';
 import AuditLog from '../../shared/models/AuditLog.js';
 
 // ── Audit Logging Helper ──────────────────────────────────────────────────────
 
-const logAudit = async (action, entityType, entityId, performedBy, ipAddress, details = {}) => {
+const logAudit = async (action, entityType, entityId, entityName, performedBy, ipAddress, userAgent, details = {}) => {
     try {
         await AuditLog.create({
             action,
             resourceType: entityType,
             resourceId: entityId,
+            resourceName: entityName,
             actorId: performedBy,
             ipAddress,
+            userAgent,
             afterState: details // Mongoose schema uses afterState/beforeState instead of details
         });
     } catch (error) {
@@ -45,9 +48,10 @@ const logAudit = async (action, entityType, entityId, performedBy, ipAddress, de
  * @param {object} data
  * @param {string} adminId
  * @param {string} ipAddress
+ * @param {string} userAgent
  * @returns {Promise<{ tenant, society }>}
  */
-export const createTenantWithSociety = async (data, adminId, ipAddress) => {
+export const createTenantWithSociety = async (data, adminId, ipAddress, userAgent) => {
     const {
         tenantName, tenantSlug, contactName, contactEmail, contactPhone, plan,
         societyName, addressLine1, addressLine2, city, state, pincode, country, logoBuffer
@@ -95,7 +99,7 @@ export const createTenantWithSociety = async (data, adminId, ipAddress) => {
         ...(logoUrl && { logoUrl }),
     });
 
-    await logAudit('PROVISION', 'TENANT', tenant._id, adminId, ipAddress, {
+    await logAudit('PROVISION', 'TENANT', tenant._id, tenantName, adminId, ipAddress, userAgent, {
         tenantName,
         societyName,
         plan
@@ -114,7 +118,7 @@ export const createTenantWithSociety = async (data, adminId, ipAddress) => {
  * @param {string} ipAddress
  * @returns {Promise<UserDocument>}
  */
-export const createSocietyAdmin = async ({ firstName, lastName, email, phone, societyId }, superAdminId, ipAddress) => {
+export const createSocietyAdmin = async ({ firstName, lastName, email, phone, societyId }, superAdminId, ipAddress, userAgent) => {
     const society = await societyRepo.findById(societyId);
     if (!society) throw ApiError.notFound('Society not found.');
 
@@ -145,9 +149,10 @@ export const createSocietyAdmin = async ({ firstName, lastName, email, phone, so
         html: `<h3>Hello ${firstName},</h3><p>You have been provisioned as a <strong>Society Admin</strong> for <strong>${society.name}</strong>.</p><p><strong>Login:</strong> ${email}<br><strong>Temporary Password:</strong> ${generatedPassword}</p><p>Please log in and change your password immediately.</p><br><p>Regards,<br>SMS Platform</p>`,
     });
 
-    await logAudit('PROVISION', 'USER', user._id, superAdminId, ipAddress, {
-        societyId,
-        adminEmail: email
+    const userName = `${user.firstName} ${user.lastName}`;
+    await logAudit('PROVISION', 'USER', user._id, userName, superAdminId, ipAddress, userAgent, {
+        role: user.role,
+        societyId: society._id,
     });
 
     return user;
@@ -226,14 +231,15 @@ export const listSocieties = async (query) => {
  * @param {string} ipAddress
  * @returns {Promise<TenantDocument>}
  */
-export const toggleTenantStatus = async (tenantId, adminId, ipAddress) => {
+export const toggleTenantStatus = async (tenantId, adminId, ipAddress, userAgent) => {
     const tenant = await tenantRepo.findById(tenantId);
     if (!tenant) throw ApiError.notFound('Tenant not found.');
 
     const updated = await tenantRepo.updateTenant(tenantId, { isActive: !tenant.isActive });
 
-    await logAudit('STATUS_CHANGE', 'TENANT', tenantId, adminId, ipAddress, {
-        newStatus: updated.isActive
+    await logAudit('STATUS_CHANGE', 'TENANT', tenantId, tenant.name, adminId, ipAddress, userAgent, {
+        newStatus: updated.isActive,
+        previousStatus: tenant.isActive
     });
 
     // Notify the tenant contact
@@ -270,14 +276,15 @@ export const toggleTenantStatus = async (tenantId, adminId, ipAddress) => {
  * @param {string} ipAddress
  * @returns {Promise<SocietyDocument>}
  */
-export const toggleSocietyStatus = async (societyId, adminId, ipAddress) => {
+export const toggleSocietyStatus = async (societyId, adminId, ipAddress, userAgent) => {
     const society = await societyRepo.findById(societyId);
     if (!society) throw ApiError.notFound('Society not found.');
 
     const updated = await societyRepo.updateSociety(societyId, { isActive: !society.isActive });
 
-    await logAudit('STATUS_CHANGE', 'SOCIETY', societyId, adminId, ipAddress, {
-        newStatus: updated.isActive
+    await logAudit('STATUS_CHANGE', 'SOCIETY', societyId, society.name, adminId, ipAddress, userAgent, {
+        newStatus: updated.isActive,
+        previousStatus: society.isActive
     });
 
     // Notify all SOCIETY_ADMIN users of this society
@@ -358,18 +365,42 @@ export const getDashboardStats = async () => {
  */
 export const listAuditLogs = async (query) => {
     const { page, limit, skip } = parsePagination(query);
-    const { action, entityType } = query;
+    const { search, entityType } = query;
 
     const filter = {};
-    if (action) filter.action = action;
-    if (entityType) filter.entityType = entityType;
+    if (search) {
+        // Find matching actors to allow searching by Performed By (Name, Email, Role)
+        const matchingUsers = await User.find({
+            $or: [
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { role: { $regex: search, $options: 'i' } }
+            ]
+        }).select('_id').lean();
+        
+        const actorIds = matchingUsers.map(u => u._id);
+
+        filter.$or = [
+            { action: { $regex: search, $options: 'i' } },
+            { resourceType: { $regex: search, $options: 'i' } },
+            { resourceName: { $regex: search, $options: 'i' } },
+            { ipAddress: { $regex: search, $options: 'i' } },
+            { userAgent: { $regex: search, $options: 'i' } }
+        ];
+
+        if (actorIds.length > 0) {
+            filter.$or.push({ actorId: { $in: actorIds } });
+        }
+    }
+    if (entityType) filter.resourceType = entityType;
 
     const [data, total] = await Promise.all([
         AuditLog.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .populate('performedBy', 'firstName lastName email role')
+            .populate('actorId', 'firstName lastName email role')
             .lean(),
         AuditLog.countDocuments(filter)
     ]);

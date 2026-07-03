@@ -50,6 +50,11 @@ const auditLogSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             default: null,
         },
+        // Human-readable resource name (snapshot at the time of log)
+        resourceName: {
+            type: String,
+            default: null,
+        },
         // Before state
         beforeState: {
             type: mongoose.Schema.Types.Mixed,

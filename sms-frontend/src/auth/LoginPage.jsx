@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     useSendOtpMutation,
     useLoginWithOtpMutation,
@@ -20,6 +20,17 @@ export default function LoginPage() {
     const [errorMsg, setErrorMsg] = useState(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            if (user.role === 'SUPER_ADMIN') navigate('/super-admin');
+            else if (user.role === 'SOCIETY_ADMIN') navigate('/admin');
+            else if (user.role === 'RESIDENT') navigate('/resident');
+            else if (user.role === 'SECURITY_GUARD') navigate('/guard');
+            else navigate('/staff');
+        }
+    }, [isAuthenticated, user, navigate]);
 
     const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
     const [loginWithPassword, { isLoading: isLoggingInWithPassword }] = useLoginWithPasswordMutation();

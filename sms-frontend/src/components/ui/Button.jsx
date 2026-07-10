@@ -5,14 +5,15 @@ import { twMerge } from 'tailwind-merge';
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
-
+const variants = {
+  primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-indigo-600',
+  secondary: 'bg-white text-slate-800 hover:bg-slate-50 border border-slate-300 shadow-sm hover:shadow active:shadow-none focus-visible:ring-slate-500',
+  ghost: 'hover:bg-slate-100 text-slate-700 hover:text-slate-900 focus-visible:ring-slate-500',
+  danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-red-600',
+};
+// 
 export const Button = React.forwardRef(({ className, variant = 'primary', size = 'md', isLoading, children, ...props }, ref) => {
-  const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-indigo-600',
-    secondary: 'bg-white text-slate-800 hover:bg-slate-50 border border-slate-300 shadow-sm hover:shadow active:shadow-none focus-visible:ring-slate-500',
-    ghost: 'hover:bg-slate-100 text-slate-700 hover:text-slate-900 focus-visible:ring-slate-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow active:shadow-none focus-visible:ring-red-600',
-  };
+
 
   const sizes = {
     sm: 'min-h-[2rem] px-3 py-1.5 text-sm',

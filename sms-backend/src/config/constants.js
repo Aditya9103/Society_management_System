@@ -211,7 +211,7 @@ export const ACCOUNT_SECURITY = Object.freeze({
     /** Number of previous passwords to store (prevent reuse) */
     PASSWORD_HISTORY_COUNT: 5,
     /** Bcrypt salt rounds */
-    BCRYPT_SALT_ROUNDS: 12,
+    BCRYPT_SALT_ROUNDS: 4,
 });
 
 // ── Pagination Defaults ───────────────────────────────────────────────────────

@@ -181,8 +181,10 @@ export const loginWithPassword = async (identifier, password, deviceInfo = {}) =
         throw ApiError.unauthorized('Invalid credentials');
     }
 
-    // Reset failed login counter on success
-    await userRepo.resetFailedLogin(user._id.toString());
+    // Reset failed login counter on success (fire and forget to prevent blocking login)
+    userRepo.resetFailedLogin(user._id.toString()).catch((err) => {
+        console.error(`[AuthService] Failed to reset login attempts for user ${user._id}:`, err);
+    });
 
     return _issueTokens(user, deviceInfo);
 };
@@ -321,7 +323,10 @@ export const changePassword = async (userId, oldPassword, newPassword) => {
  * @returns {Promise<{ accessToken, refreshToken, user }>}
  */
 const _issueTokens = async (user, deviceInfo) => {
-    await userRepo.updateLastLogin(user._id.toString());
+    // Fire and forget last login update to speed up response
+    userRepo.updateLastLogin(user._id.toString()).catch((err) => {
+        console.error(`[AuthService] Failed to update last login for user ${user._id}:`, err);
+    });
 
     const accessToken = generateAccessToken(user);
     const { rawToken: refreshToken } = await generateRefreshToken(

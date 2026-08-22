@@ -22,7 +22,7 @@ export default defineConfig({
             throwMaximumFileSizeToCacheInBytes: false,
 
             devOptions: {
-                enabled: true,
+                enabled: false,
                 type: 'module',
             },
 

@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -39,6 +40,16 @@ function ProtectedRoute({ children, requiredRole }) {
 function App() {
   // Initialize Firebase Cloud Messaging (push notifications)
   useFirebaseMessaging();
+
+  useEffect(() => {
+    // Silent wake-up call to spin up backend on Render
+    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const baseUrl = url.replace(/\/v1\/?$/, ''); // Remove /v1 if present
+    fetch(`${baseUrl}/wakeup`)
+      .then(res => res.json())
+      .then(data => console.log('Wake-up call successful:', data))
+      .catch((err) => console.log('Wake-up call failed/ignored:', err)); // Fire and forget
+  }, []);
 
   const { isSuspended, isAuthenticated, user } = useSelector((state) => state.auth);
 

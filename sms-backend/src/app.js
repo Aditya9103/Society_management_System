@@ -54,6 +54,7 @@ if (NODE_ENV !== 'test') {
 }
 
 // ── API Routes (versioned) ───────────────────────────────────────────────────
+app.get('/api/wakeup', (req, res) => res.status(200).json({ success: true, message: 'Server is awake' }));
 app.use('/api/v1', routes);
 
 // ── 404 — catch unmatched routes before error handler ───────────────────────

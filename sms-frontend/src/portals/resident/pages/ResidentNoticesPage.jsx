@@ -1,60 +1,271 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useGetMyNoticesQuery } from '../../../store/api/residentApi';
-import { Bell } from 'lucide-react';
-import PageHeader from '../../../components/ui/PageHeader';
-import Alert from '../../../components/ui/Alert';
-import EmptyState from '../../../components/ui/EmptyState';
+import { Search, Filter, Calendar, Bell, AlertTriangle, Clock, Pin, ChevronRight, Menu, Activity, RefreshCw } from 'lucide-react';
 import { NoticeCard } from '../components/notices/NoticeCard';
 
 export default function ResidentNoticesPage() {
-    const { data, isLoading, isError, refetch, isFetching } = useGetMyNoticesQuery();
+    const { data, isLoading, isError, refetch } = useGetMyNoticesQuery();
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('All');
+
     const rawData = data?.data;
     const notices = Array.isArray(rawData?.data) ? rawData.data : (Array.isArray(rawData) ? rawData : []);
-    const pinned = notices.filter(n => n.isPinned);
-    const regular = notices.filter(n => !n.isPinned);
+
+    // Derived Stats
+    const totalNotices = notices.length;
+    const unreadNotices = notices.filter(n => !n.hasAcknowledged && n.requiresAcknowledgement).length;
+    const highPriority = notices.filter(n => n.priority === 'HIGH' || n.priority === 'URGENT').length;
+    const thisMonth = notices.filter(n => {
+        if (!n.publishedAt) return false;
+        const pubDate = new Date(n.publishedAt);
+        const now = new Date();
+        return pubDate.getMonth() === now.getMonth() && pubDate.getFullYear() === now.getFullYear();
+    }).length;
+
+    // Categories available
+    const categories = ['All', 'General', 'Urgent', 'Maintenance', 'Events', 'Updates'];
+
+    // Category Counts
+    const categoryCounts = {
+        'All': totalNotices,
+        'General': notices.filter(n => n.noticeType === 'GENERAL').length,
+        'Urgent': notices.filter(n => n.priority === 'URGENT' || n.priority === 'HIGH').length,
+        'Maintenance': notices.filter(n => n.noticeType === 'MAINTENANCE').length,
+        'Events': notices.filter(n => n.noticeType === 'EVENT' || n.noticeType === 'MEETING').length,
+        'Updates': notices.filter(n => !['GENERAL', 'MAINTENANCE', 'EVENT', 'MEETING'].includes(n.noticeType) && !['URGENT', 'HIGH'].includes(n.priority)).length
+    };
+
+    // Filter notices
+    const filteredNotices = useMemo(() => {
+        return notices.filter(n => {
+            const matchesSearch = n.title?.toLowerCase().includes(searchQuery.toLowerCase()) || n.content?.toLowerCase().includes(searchQuery.toLowerCase());
+
+            let matchesTab = true;
+            if (activeTab !== 'All') {
+                if (activeTab === 'Urgent') {
+                    matchesTab = n.priority === 'URGENT' || n.priority === 'HIGH';
+                } else if (activeTab === 'Maintenance') {
+                    matchesTab = n.noticeType === 'MAINTENANCE';
+                } else if (activeTab === 'Events') {
+                    matchesTab = n.noticeType === 'EVENT' || n.noticeType === 'MEETING';
+                } else if (activeTab === 'General') {
+                    matchesTab = n.noticeType === 'GENERAL';
+                } else if (activeTab === 'Updates') {
+                    matchesTab = !['MAINTENANCE', 'EVENT', 'GENERAL', 'MEETING'].includes(n.noticeType) && !['URGENT', 'HIGH'].includes(n.priority);
+                }
+            }
+
+            return matchesSearch && matchesTab;
+        });
+    }, [notices, searchQuery, activeTab]);
+
+    const pinnedNotice = notices.find(n => n.isPinned);
 
     return (
-        <div className="space-y-5">
-            <PageHeader
-                title="Notice Board"
-                subtitle="Society announcements and updates"
-                onRefresh={refetch}
-                isFetching={isFetching}
-            />
-
-            {isError && (
-                <Alert type="error">
-                    Failed to load notices.{' '}
-                    <button onClick={refetch} className="underline ml-1">Retry</button>
-                </Alert>
-            )}
-
-            {isLoading ? (
-                <div className="space-y-3">
-                    {[...Array(4)].map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-200" />)}
+        <div className="min-h-screen bg-[#0a0b12] text-white p-4 lg:p-8 font-sans">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Notice Board</h1>
+                    <p className="text-sm text-slate-400">Stay informed with important announcements & updates from your society</p>
                 </div>
-            ) : !isError && notices.length === 0 ? (
-                <EmptyState
-                    icon={Bell}
-                    title="No notices yet"
-                    description="Society notices will appear here."
-                />
-            ) : (
-                <>
-                    {pinned.length > 0 && (
-                        <div>
-                            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-indigo-500">📌 Pinned</p>
-                            <div className="space-y-3">{pinned.map(n => <NoticeCard key={n._id} notice={n} />)}</div>
+
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Search notices..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-[#12131c] border border-slate-800 rounded-full py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 w-full md:w-64 transition-all"
+                        />
+                    </div>
+                    <button className="h-10 w-10 flex items-center justify-center rounded-full bg-[#12131c] border border-slate-800 hover:border-purple-500/30 hover:bg-purple-500/10 transition-colors shrink-0">
+                        <Filter className="h-4 w-4 text-slate-300" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Top Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {/* Total */}
+                <div className="bg-[#0f111a] border border-slate-800/80 rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-[14px] bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shrink-0">
+                        <Calendar className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-400 mb-0.5">Total Notices</p>
+                        <p className="text-xl font-bold text-white">{totalNotices}</p>
+                        <p className="text-[10px] text-slate-500">All time</p>
+                    </div>
+                </div>
+
+                {/* Unread */}
+                <div className="bg-[#0f111a] border border-slate-800/80 rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-[14px] bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shrink-0">
+                        <Bell className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-400 mb-0.5">Unread</p>
+                        <p className="text-xl font-bold text-white">{unreadNotices}</p>
+                        <p className="text-[10px] text-slate-500">Need your attention</p>
+                    </div>
+                </div>
+
+                {/* High Priority */}
+                <div className="bg-[#0f111a] border border-slate-800/80 rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-[14px] bg-red-500/10 flex items-center justify-center border border-red-500/20 shrink-0">
+                        <AlertTriangle className="h-5 w-5 text-red-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-400 mb-0.5">High Priority</p>
+                        <p className="text-xl font-bold text-white">{highPriority}</p>
+                        <p className="text-[10px] text-slate-500">Important alerts</p>
+                    </div>
+                </div>
+
+                {/* This Month */}
+                <div className="bg-[#0f111a] border border-slate-800/80 rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-[14px] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shrink-0">
+                        <Clock className="h-5 w-5 text-emerald-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-400 mb-0.5">This Month</p>
+                        <p className="text-xl font-bold text-white">{thisMonth}</p>
+                        <p className="text-[10px] text-slate-500">New announcements</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                {/* Left Column (Notices List) */}
+                <div className="lg:col-span-8">
+
+                    {/* Category Tabs */}
+                    <div className="flex items-center overflow-x-auto gap-2 md:gap-3 mb-6 md:mb-8 snap-x pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveTab(cat)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[12px] md:text-[13px] font-bold whitespace-nowrap transition-all snap-start ${activeTab === cat ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)] border border-purple-500' : 'bg-[#0f111a] text-slate-400 border border-slate-800 hover:bg-slate-800/50 hover:text-slate-200'}`}
+                            >
+                                {cat}
+                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] flex items-center justify-center ${activeTab === cat ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-500'}`}>
+                                    {categoryCounts[cat]}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Notices Stream */}
+                    <div className="space-y-6">
+                        {isLoading ? (
+                            <div className="space-y-4">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="h-40 rounded-[20px] bg-slate-800/40 animate-pulse border border-slate-800/80"></div>
+                                ))}
+                            </div>
+                        ) : filteredNotices.length > 0 ? (
+                            filteredNotices.map(notice => (
+                                <NoticeCard key={notice._id} notice={notice} />
+                            ))
+                        ) : (
+                            <div className="text-center py-16 bg-[#0f111a] rounded-[24px] border border-slate-800">
+                                <Bell className="h-10 w-10 text-slate-600 mx-auto mb-3" />
+                                <h3 className="text-lg font-bold text-white mb-1">No notices found</h3>
+                                <p className="text-sm text-slate-400">Try adjusting your filters or search query.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right Column (Widgets) */}
+                <div className="lg:col-span-4 space-y-6 hidden lg:block">
+
+                    {/* Pinned Notice Widget */}
+                    {pinnedNotice && (
+                        <div className="bg-gradient-to-br from-[#1c113b] to-[#0f0b20] border border-purple-500/30 rounded-[24px] p-5 relative overflow-hidden group shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+                            <div className="flex items-center justify-between mb-4 relative z-10">
+                                <div className="flex items-center gap-2">
+                                    <Pin className="h-4 w-4 text-purple-400" />
+                                    <span className="text-[13px] font-bold text-white">Pinned Notice</span>
+                                </div>
+                                <span className="text-[10px] text-purple-400/80 uppercase font-bold tracking-wider">View All</span>
+                            </div>
+
+                            <div className="relative z-10">
+                                <h3 className="text-[17px] font-bold text-white mb-2 leading-tight">{pinnedNotice.title}</h3>
+                                <p className="text-[13px] text-slate-300 line-clamp-2 leading-relaxed mb-4">{pinnedNotice.content}</p>
+                                <p className="text-[11px] text-purple-300 font-medium">
+                                    {pinnedNotice.publishedAt ? new Date(pinnedNotice.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Recently updated'}
+                                </p>
+                            </div>
+
+                            {/* Decorative Clock / Background */}
+                            <div className="absolute right-0 bottom-0 opacity-20 transform translate-x-1/4 translate-y-1/4 pointer-events-none">
+                                <Clock className="h-40 w-40 text-purple-500" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0b20] via-transparent to-transparent pointer-events-none z-0"></div>
                         </div>
                     )}
-                    {regular.length > 0 && (
-                        <div>
-                            {pinned.length > 0 && <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Recent</p>}
-                            <div className="space-y-3">{regular.map(n => <NoticeCard key={n._id} notice={n} />)}</div>
+
+                    {/* Notice Categories */}
+                    <div className="bg-[#0f111a] border border-slate-800/80 rounded-[24px] p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-[15px] font-bold text-white">Notice Categories</h3>
+                            <span className="text-[10px] text-purple-400 uppercase font-bold tracking-wider">View All</span>
                         </div>
-                    )}
-                </>
-            )}
+
+                        <div className="space-y-2">
+                            {[
+                                { icon: Calendar, label: 'General', count: notices.filter(n => n.noticeType === 'GENERAL').length, color: 'text-purple-400' },
+                                { icon: AlertTriangle, label: 'Maintenance', count: notices.filter(n => n.noticeType === 'MAINTENANCE').length, color: 'text-orange-400' },
+                                { icon: Bell, label: 'Events', count: notices.filter(n => n.noticeType === 'EVENT' || n.noticeType === 'MEETING').length, color: 'text-blue-400' },
+                                { icon: Activity, label: 'Urgent', count: notices.filter(n => n.priority === 'URGENT' || n.priority === 'HIGH').length, color: 'text-red-400' },
+                                { icon: RefreshCw, label: 'Updates', count: notices.filter(n => !['GENERAL', 'MAINTENANCE', 'EVENT', 'MEETING'].includes(n.noticeType) && !['URGENT', 'HIGH'].includes(n.priority)).length, color: 'text-emerald-400' },
+                            ].map((cat, idx) => (
+                                <div key={idx} className="flex items-center justify-between py-2 cursor-pointer group">
+                                    <div className="flex items-center gap-3">
+                                        <cat.icon className={`h-4 w-4 ${cat.color}`} />
+                                        <span className="text-[13px] font-semibold text-slate-300 group-hover:text-white transition-colors">{cat.label}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-bold text-slate-500">{cat.count}</span>
+                                        <ChevronRight className="h-3 w-3 text-slate-600 group-hover:text-purple-400 transition-colors" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div className="bg-[#0f111a] border border-slate-800/80 rounded-[24px] p-5">
+                        <h3 className="text-[15px] font-bold text-white mb-4">Recent Activity</h3>
+                        <div className="space-y-4">
+                            {notices.slice(0, 3).map((n, i) => (
+                                <div key={n._id || i} className="flex gap-3 relative">
+                                    {i !== 2 && <div className="absolute left-[3px] top-3 bottom-[-16px] w-[2px] bg-slate-800"></div>}
+                                    <div className={`h-2 w-2 rounded-full mt-1.5 shrink-0 z-10 ${n.priority === 'URGENT' || n.priority === 'HIGH' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : n.noticeType === 'MAINTENANCE' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]'}`}></div>
+                                    <div>
+                                        <p className="text-[11px] font-semibold text-slate-400 mb-0.5">
+                                            {n.noticeType === 'EVENT' ? 'New event scheduled' : n.noticeType === 'MAINTENANCE' ? 'Maintenance alert' : 'New notice posted'}
+                                        </p>
+                                        <p className="text-[13px] font-bold text-white line-clamp-1">{n.title}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="w-full py-2.5 mt-5 rounded-[12px] bg-slate-800/50 hover:bg-slate-800 text-xs font-bold text-slate-300 transition-colors border border-slate-700/50">
+                            View All Activity
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
     );
 }

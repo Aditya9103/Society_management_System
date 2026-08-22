@@ -28,7 +28,7 @@ export default function PortalBottomNav({ config }) {
     return (
         <nav 
             className={cn(
-                "fixed bottom-0 left-0 right-0 flex items-center border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] backdrop-blur-md lg:hidden",
+                "fixed bottom-0 left-0 right-0 flex items-center border-t border-slate-800/60 bg-[#0b0c10]/95 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-2px_10px_rgba(0,0,0,0.5)] backdrop-blur-md lg:hidden",
                 isScrollable ? "justify-start overflow-x-auto snap-x snap-mandatory scrollbar-hide" : "justify-around"
             )}
             style={{ zIndex: 40 }}
@@ -41,21 +41,18 @@ export default function PortalBottomNav({ config }) {
                     className={({ isActive }) =>
                         cn(
                             'group flex w-[25vw] shrink-0 snap-start flex-col items-center justify-center gap-1 py-1.5 transition-colors',
-                            isActive ? 'text-indigo-700' : 'text-slate-700 hover:text-slate-900'
+                            isActive ? 'text-purple-500' : 'text-slate-400 hover:text-slate-200'
                         )
                     }
                 >
                     {({ isActive }) => (
                         <>
                             <div
-                                className={cn(
-                                    'relative flex h-8 w-16 shrink-0 items-center justify-center rounded-full transition-all duration-200',
-                                    isActive ? 'bg-indigo-100' : 'bg-transparent'
-                                )}
+                                className="relative flex h-8 w-16 shrink-0 items-center justify-center transition-all duration-200"
                             >
-                                <item.Icon className={cn('h-6 w-6', isActive ? 'text-indigo-700' : 'text-slate-500')} strokeWidth={isActive ? 2.5 : 2} />
+                                <item.Icon className={cn('h-6 w-6 relative z-10 transition-colors', isActive ? 'text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-slate-500')} strokeWidth={isActive ? 2.5 : 2} />
                             </div>
-                            <span className={cn('text-[11px] leading-tight whitespace-nowrap', isActive ? 'font-bold' : 'font-medium')}>
+                            <span className={cn('text-[11px] leading-tight whitespace-nowrap transition-colors', isActive ? 'font-bold text-purple-400' : 'font-medium text-slate-500')}>
                                 {item.label}
                             </span>
                         </>

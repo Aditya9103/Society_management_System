@@ -18,8 +18,7 @@ import { setCredentials } from '../../../store/slices/authSlice';
 import { residentApi } from '../../../store/api/residentApi';
 import { useEmailIdCardMutation } from '../../../store/api/idCardApi';
 import {
-    User, Phone, Mail, Home, Building2, Edit2, Plus, Trash2,
-    CheckCircle2, X, Save, Users, RefreshCw, AlertCircle, Briefcase, QrCode, Download
+    User, Home, Edit2, Plus, Users, RefreshCw, AlertCircle, Briefcase, FileText, Settings, MoreHorizontal, ChevronLeft
 } from 'lucide-react';
 
 import { FamilyMemberCard } from '../components/profile/FamilyMemberCard';
@@ -28,7 +27,12 @@ import { DomesticStaffCard } from '../components/profile/DomesticStaffCard';
 import { AddDomesticStaffModal } from '../components/profile/AddDomesticStaffModal';
 import { AddEmergencyContactModal } from '../components/profile/AddEmergencyContactModal';
 import { EmergencyContactCard } from '../components/profile/EmergencyContactCard';
-import { DigitalIdCard } from '../components/profile/DigitalIdCard';
+
+// Components
+import { ProfileHeader } from '../components/profile/ProfileHeader';
+import { PersonalInfoTab } from '../components/profile/PersonalInfoTab';
+import { UnitInfoTab } from '../components/profile/UnitInfoTab';
+import { MobileBottomNav } from '../components/profile/MobileBottomNav';
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ResidentProfilePage() {
@@ -60,6 +64,8 @@ export default function ResidentProfilePage() {
     const [showAddContact, setShowAddContact] = useState(false);
     const [showAddStaff, setShowAddStaff] = useState(false);
 
+    const [activeTab, setActiveTab] = useState('personal');
+
     const startEdit = () => {
         setForm({ firstName: user?.firstName ?? '', lastName: user?.lastName ?? '', phone: user?.phone ?? '' });
         setEditing(true);
@@ -69,7 +75,6 @@ export default function ResidentProfilePage() {
     const handleSave = async () => {
         try {
             const res = await updateMyProfile(form).unwrap();
-            // Update local auth state so header reflects new name immediately
             dispatch(setCredentials({ user: { ...user, ...form }, accessToken: localStorage.getItem('accessToken') }));
             setEditing(false);
             setSaveMsg('Profile saved!');
@@ -79,61 +84,38 @@ export default function ResidentProfilePage() {
         }
     };
 
-    const handleAddMember = async (memberData) => {
-        await addFamilyMember(memberData).unwrap();
-    };
-
-    const handleDeleteMember = async (memberId) => {
-        await deleteFamilyMember(memberId).unwrap();
-    };
-
-    const handleAddContact = async (contactData) => {
-        await addEmergencyContact(contactData).unwrap();
-    };
-
-    const handleDeleteContact = async (contactId) => {
-        await deleteEmergencyContact(contactId).unwrap();
-    };
-
+    const handleAddMember = async (memberData) => { await addFamilyMember(memberData).unwrap(); };
+    const handleDeleteMember = async (memberId) => { await deleteFamilyMember(memberId).unwrap(); };
+    const handleAddContact = async (contactData) => { await addEmergencyContact(contactData).unwrap(); };
+    const handleDeleteContact = async (contactId) => { await deleteEmergencyContact(contactId).unwrap(); };
     const handleAddStaff = async (staffInfo) => {
         const formData = new FormData();
         formData.append('name', staffInfo.name);
         formData.append('role', staffInfo.role);
         if (staffInfo.phone) formData.append('phone', staffInfo.phone);
         if (staffInfo.photoFile) formData.append('photo', staffInfo.photoFile);
-
         await addDomesticStaff(formData).unwrap();
     };
-
-    const handleDeleteStaff = async (staffId) => {
-        await removeDomesticStaff(staffId).unwrap();
-    };
-
+    const handleDeleteStaff = async (staffId) => { await removeDomesticStaff(staffId).unwrap(); };
     const handleEmailIdCard = async () => {
         try {
             await emailIdCard().unwrap();
             toast.success('ID Card sent to your email successfully!');
         } catch (error) {
-            console.error(error);
             toast.error('Failed to send ID Card to email.');
         }
     };
-
     const handleAvatarChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         try {
             const formData = new FormData();
             formData.append('avatar', file);
             const res = await updateMyAvatar(formData).unwrap();
-            
-            // Instantly update Redux auth state so the header navigation image also updates!
             if (res?.data?.user) {
                 dispatch(setCredentials({ user: res.data.user, accessToken: localStorage.getItem('accessToken') }));
             }
         } catch (error) {
-            console.error('Failed to update avatar:', error);
             toast.error('Failed to update avatar.');
         }
     };
@@ -142,201 +124,201 @@ export default function ResidentProfilePage() {
         return <div className="flex min-h-[60vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-indigo-400" /></div>;
     }
 
+    const tabs = [
+        { id: 'personal', label: 'Personal Info', icon: User },
+        { id: 'unit', label: 'My Unit', icon: Home },
+        { id: 'family', label: 'Family Members', icon: Users },
+        { id: 'docs', label: 'Documents', icon: FileText },
+        { id: 'emergency', label: 'Emergency Contacts', icon: AlertCircle },
+        { id: 'preferences', label: 'Preferences', icon: Settings },
+    ];
+    
+    const mobileTabs = [
+        { id: 'personal', label: 'Personal Info', icon: User },
+        { id: 'unit', label: 'My Unit', icon: Home },
+        { id: 'family', label: 'Family', icon: Users },
+        { id: 'docs', label: 'Docs', icon: FileText },
+        { id: 'emergency', label: 'More', icon: MoreHorizontal },
+    ];
+
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-6 text-white shadow-lg">
-                <div className="relative z-10 flex items-center gap-4">
-                    <div className="relative group flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white text-2xl font-bold overflow-hidden cursor-pointer">
-                        {user?.profilePhotoUrl ? (
-                            <img src={user.profilePhotoUrl} alt="Avatar" className="h-full w-full object-cover" />
-                        ) : (
-                            <>{user?.firstName?.[0]}{user?.lastName?.[0]}</>
-                        )}
-                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <Plus className="h-6 w-6 text-white" />
-                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} disabled={isUpdatingAvatar} />
-                        </label>
-                        {isUpdatingAvatar && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                                <RefreshCw className="h-5 w-5 animate-spin text-white" />
-                            </div>
-                        )}
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2 text-indigo-200 text-xs mb-1">
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Verified Resident
-                        </div>
-                        <h1 className="text-xl font-bold">{user?.firstName} {user?.lastName}</h1>
-                        <p className="text-sm text-indigo-200">{user?.email}</p>
-                    </div>
-                </div>
-                <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
+        <div className="pb-24 lg:pb-8 text-white relative z-10"> 
+            {/* Mobile Header (Sticky) */}
+            <div className="lg:hidden flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-[#0a0b12]/95 backdrop-blur-md mb-2">
+                <button className="text-white hover:text-slate-300 transition-colors"><ChevronLeft size={24} /></button>
+                <h1 className="text-[17px] font-bold text-white tracking-wide">My Profile</h1>
+                <button className="text-white hover:text-slate-300 transition-colors">
+                    <Settings size={22} />
+                </button>
             </div>
 
-            {saveMsg && (
-                <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 ring-1 ring-emerald-200">
-                    <CheckCircle2 className="h-4 w-4" /> {saveMsg}
+            {/* Desktop Header Text */}
+            <div className="hidden lg:flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-white mb-1">My Profile</h1>
+                    <p className="text-sm text-slate-400">Manage your account, personal details and preferences.</p>
                 </div>
-            )}
-
-            {/* Personal Info */}
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-                <div className="flex items-center justify-between mb-5">
-                    <h2 className="font-bold text-slate-800 flex items-center gap-2"><User className="h-5 w-5 text-indigo-500" /> Personal Info</h2>
-                    {!editing
-                        ? <button onClick={startEdit} className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition">
-                            <Edit2 className="h-3.5 w-3.5" /> Edit
-                        </button>
-                        : <div className="flex gap-2">
-                            <button onClick={() => setEditing(false)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
-                            <button onClick={handleSave} disabled={isSaving}
-                                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-60">
-                                {isSaving ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
-                            </button>
-                        </div>
-                    }
-                </div>
-
-                {editing ? (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        {[['firstName', 'First Name'], ['lastName', 'Last Name']].map(([key, label]) => (
-                            <div key={key}>
-                                <label className="block text-xs font-semibold text-slate-500 mb-1">{label}</label>
-                                <input value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                            </div>
-                        ))}
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-500 mb-1">Phone</label>
-                            <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                        </div>
-                    </div>
-                ) : (
-                    <div className="grid gap-4 sm:grid-cols-2 text-sm">
-                        <div className="flex items-center gap-2 text-slate-600"><Mail className="h-4 w-4 text-slate-400 shrink-0" />{user?.email}</div>
-                        {user?.phone && <div className="flex items-center gap-2 text-slate-600"><Phone className="h-4 w-4 text-slate-400 shrink-0" />{user?.phone}</div>}
-                        <div className="flex items-center gap-2 text-slate-600"><User className="h-4 w-4 text-slate-400 shrink-0" /><span className="font-mono">{profile?.residentCode ?? '—'}</span></div>
-                        <div className="flex items-center gap-2 text-slate-600">
-                            <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${profile?.ownershipType === 'OWNER' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                                {profile?.ownershipType ?? '—'}
-                            </span>
-                        </div>
-                    </div>
-                )}
+                <button className="flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-5 py-2.5 text-sm font-bold text-white transition-colors shadow-lg shadow-purple-600/30">
+                    <Edit2 size={16} /> Edit Profile
+                </button>
             </div>
 
-            {/* Unit & Society (read-only) */}
-            {unit && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                        <div className="flex items-center gap-2 mb-3"><Home className="h-5 w-5 text-violet-500" /><p className="font-semibold text-slate-800">My Unit</p></div>
-                        <p className="text-2xl font-bold text-slate-900">{unit.unitNumber}</p>
-                        <p className="text-sm text-slate-500 mt-1">{unit.bhkType} · {unit.unitType}</p>
-                    </div>
-                    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                        <div className="flex items-center gap-2 mb-3"><Building2 className="h-5 w-5 text-blue-500" /><p className="font-semibold text-slate-800">Society</p></div>
-                        <p className="font-semibold text-slate-900">{society?.name}</p>
-                        <p className="text-sm text-slate-500 mt-1">{society?.city}, {society?.state}</p>
-                    </div>
-                </div>
-            )}
-
-            {/* Digital ID Card */}
-            <DigitalIdCard
-                user={user}
-                profile={profile}
-                society={society}
-                unit={unit}
-                onEmail={handleEmailIdCard}
-                isEmailing={isEmailingIdCard}
-                onUploadSuccess={() => window.location.reload()}
+            {/* Main Profile Header Card */}
+            <ProfileHeader 
+                user={user} 
+                profile={profile} 
+                isUpdatingAvatar={isUpdatingAvatar} 
+                handleAvatarChange={handleAvatarChange} 
             />
 
-            {/* Family Members */}
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-                <div className="flex items-center justify-between mb-5">
-                    <h2 className="font-bold text-slate-800 flex items-center gap-2"><Users className="h-5 w-5 text-indigo-500" /> Family Members <span className="text-xs font-normal text-slate-400">({familyMembers.length})</span></h2>
-                    <button onClick={() => setShowAddMember(true)}
-                        className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition">
-                        <Plus className="h-3.5 w-3.5" /> Add Member
+            {/* Desktop Tabs */}
+            <div className="hidden lg:flex items-center gap-8 border-b border-slate-800/80 mb-6">
+                {tabs.map(tab => (
+                    <button 
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 pb-4 text-sm font-bold transition-colors relative ${activeTab === tab.id ? 'text-purple-400' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                        <tab.icon size={18} />
+                        {tab.label}
+                        {activeTab === tab.id && (
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-purple-500 rounded-t-full shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                        )}
                     </button>
-                </div>
-
-                {familyMembers.length === 0 ? (
-                    <p className="text-center text-sm text-slate-400 py-6">No family members added yet.</p>
-                ) : (
-                    <div className="space-y-2">
-                        {familyMembers.filter(m => m.isActive !== false).map(m => (
-                            <FamilyMemberCard key={m._id} member={m} onDelete={handleDeleteMember} />
-                        ))}
-                    </div>
-                )}
+                ))}
             </div>
 
-            {showAddMember && (
-                <AddMemberModal onClose={() => setShowAddMember(false)} onAdd={handleAddMember} />
-            )}
-
-            {/* Emergency Contacts */}
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-                <div className="flex items-center justify-between mb-5">
-                    <h2 className="font-bold text-slate-800 flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-red-500" /> Emergency Contacts
-                        <span className="text-xs font-normal text-slate-400">({emergencyContacts.length}/10)</span>
-                    </h2>
-                    {emergencyContacts.length < 10 && (
-                        <button onClick={() => setShowAddContact(true)}
-                            className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 transition">
-                            <Plus className="h-3.5 w-3.5" /> Add Contact
+            {/* Mobile Tabs */}
+            <div className="lg:hidden w-full overflow-hidden mb-6">
+                <div className="flex items-center overflow-x-auto no-scrollbar gap-2 px-4 pb-2">
+                    {mobileTabs.map(tab => (
+                        <button 
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex flex-col items-center justify-center gap-1.5 min-w-[70px] flex-1 py-3 rounded-[18px] transition-all border ${activeTab === tab.id ? 'bg-gradient-to-br from-[#1a1147]/50 to-transparent border-purple-500/30' : 'bg-[#0a0b12] border-slate-700/80 hover:bg-slate-800/50'}`}
+                        >
+                            <tab.icon size={20} className={activeTab === tab.id ? 'text-purple-400' : 'text-slate-300'} />
+                            <span className={`text-[11px] font-bold ${activeTab === tab.id ? 'text-purple-400' : 'text-slate-300'}`}>{tab.label}</span>
+                            {activeTab === tab.id && (
+                                <div className="w-8 h-[2px] bg-purple-500 rounded-full shadow-[0_0_5px_rgba(168,85,247,0.5)] mt-1"></div>
+                            )}
                         </button>
-                    )}
+                    ))}
                 </div>
-
-                {emergencyContacts.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center">
-                        <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-                        <p className="text-sm font-semibold text-slate-600">No emergency contacts</p>
-                        <p className="mt-1 text-xs text-slate-400">Add family members to receive SOS alerts via email & phone.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        {emergencyContacts.map(c => (
-                            <EmergencyContactCard key={c._id} contact={c} onDelete={handleDeleteContact} />
-                        ))}
-                    </div>
-                )}
             </div>
 
-            {showAddContact && (
-                <AddEmergencyContactModal onClose={() => setShowAddContact(false)} onAdd={handleAddContact} />
-            )}
+            {/* Tab Content Wrapper */}
+            <div className="px-4 lg:px-0">
+                {activeTab === 'personal' && (
+                    <PersonalInfoTab 
+                        user={user}
+                        profile={profile}
+                        society={society}
+                        unit={unit}
+                        editing={editing}
+                        setEditing={setEditing}
+                        startEdit={startEdit}
+                        form={form}
+                        setForm={setForm}
+                        handleSave={handleSave}
+                        isSaving={isSaving}
+                        onEmail={handleEmailIdCard}
+                        isEmailing={isEmailingIdCard}
+                    />
+                )}
 
-            {/* Domestic Staff */}
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-                <div className="flex items-center justify-between mb-5">
-                    <h2 className="font-bold text-slate-800 flex items-center gap-2"><Briefcase className="h-5 w-5 text-emerald-500" /> Domestic Staff <span className="text-xs font-normal text-slate-400">({domesticStaffList.length})</span></h2>
-                    <button onClick={() => setShowAddStaff(true)}
-                        className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition">
-                        <Plus className="h-3.5 w-3.5" /> Add Staff
-                    </button>
-                </div>
+                {activeTab === 'unit' && (
+                    <UnitInfoTab unit={unit} society={society} />
+                )}
 
-                {domesticStaffList.length === 0 ? (
-                    <p className="text-center text-sm text-slate-400 py-6">No domestic staff added yet.</p>
-                ) : (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        {domesticStaffList.map(s => (
-                            <DomesticStaffCard key={s._id} staff={s} onDelete={handleDeleteStaff} />
-                        ))}
+                {activeTab === 'family' && (
+                    <div className="rounded-[20px] bg-[#0a0b12] p-5 shadow-sm border border-slate-800/80">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="font-bold text-white flex items-center gap-2"><Users className="h-5 w-5 text-indigo-500" /> Family Members <span className="text-xs font-normal text-slate-400">({familyMembers.length})</span></h2>
+                            <button onClick={() => setShowAddMember(true)}
+                                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                                <Plus className="h-3.5 w-3.5" /> Add
+                            </button>
+                        </div>
+                        {familyMembers.length === 0 ? (
+                            <p className="text-center text-sm text-slate-400 py-6">No family members added yet.</p>
+                        ) : (
+                            <div className="space-y-2">
+                                {familyMembers.filter(m => m.isActive !== false).map(m => (
+                                    <FamilyMemberCard key={m._id} member={m} onDelete={handleDeleteMember} />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
-            </div>
 
-            {showAddStaff && (
-                <AddDomesticStaffModal onClose={() => setShowAddStaff(false)} onAdd={handleAddStaff} />
-            )}
+                {(activeTab === 'emergency' || activeTab === 'more') && (
+                    <div className="space-y-4">
+                        <div className="rounded-[20px] bg-[#0a0b12] p-5 shadow-sm border border-slate-800/80">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="font-bold text-white flex items-center gap-2">
+                                    <AlertCircle className="h-5 w-5 text-red-500" /> Emergency Contacts
+                                </h2>
+                                {emergencyContacts.length < 10 && (
+                                    <button onClick={() => setShowAddContact(true)}
+                                        className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 transition shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                                        <Plus className="h-3.5 w-3.5" /> Add
+                                    </button>
+                                )}
+                            </div>
+                            {emergencyContacts.length === 0 ? (
+                                <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-6 text-center">
+                                    <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-500" />
+                                    <p className="text-sm font-semibold text-slate-300">No emergency contacts</p>
+                                    <p className="mt-1 text-xs text-slate-500">Add family members to receive SOS alerts.</p>
+                                </div>
+                            ) : (
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                    {emergencyContacts.map(c => (
+                                        <EmergencyContactCard key={c._id} contact={c} onDelete={handleDeleteContact} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="rounded-[20px] bg-[#0a0b12] p-5 shadow-sm border border-slate-800/80">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="font-bold text-white flex items-center gap-2"><Briefcase className="h-5 w-5 text-emerald-500" /> Domestic Staff</h2>
+                                <button onClick={() => setShowAddStaff(true)}
+                                    className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                                    <Plus className="h-3.5 w-3.5" /> Add
+                                </button>
+                            </div>
+                            {domesticStaffList.length === 0 ? (
+                                <p className="text-center text-sm text-slate-400 py-6">No domestic staff added yet.</p>
+                            ) : (
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    {domesticStaffList.map(s => (
+                                        <DomesticStaffCard key={s._id} staff={s} onDelete={handleDeleteStaff} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                
+                {(activeTab === 'docs' || activeTab === 'preferences') && (
+                    <div className="rounded-[20px] bg-[#0a0b12] p-10 shadow-sm border border-slate-800/80 text-center">
+                        <FileText className="mx-auto h-10 w-10 text-slate-600 mb-3" />
+                        <h2 className="font-bold text-white text-lg">Coming Soon</h2>
+                        <p className="text-sm text-slate-400 mt-1">This section is currently under development.</p>
+                    </div>
+                )}
+
+            </div>
+            
+            {/* Mobile Bottom Navigation (Sticky) */}
+            <MobileBottomNav />
+
+            {/* Modals */}
+            {showAddMember && <AddMemberModal onClose={() => setShowAddMember(false)} onAdd={handleAddMember} />}
+            {showAddContact && <AddEmergencyContactModal onClose={() => setShowAddContact(false)} onAdd={handleAddContact} />}
+            {showAddStaff && <AddDomesticStaffModal onClose={() => setShowAddStaff(false)} onAdd={handleAddStaff} />}
         </div>
     );
 }

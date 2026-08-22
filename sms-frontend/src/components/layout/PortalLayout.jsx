@@ -40,7 +40,16 @@ export default function PortalLayout({
   const profileRoute = sidebarConfig.profilePath || navItems.find(i => i.to.endsWith('/profile'))?.to || 'profile';
 
   return (
-    <div className="flex min-h-[100dvh] bg-slate-50 text-slate-900">
+    <div className="flex min-h-[100dvh] bg-[#07080f] text-slate-100 selection:bg-indigo-500/30 relative overflow-hidden">
+      {/* Reduced Top-Right Skyline Background Masked */}
+      <div 
+          className="fixed top-0 right-0 w-[600px] h-[400px] bg-cover bg-right-top opacity-30 mix-blend-screen pointer-events-none"
+          style={{ 
+              backgroundImage: "url('https://images.unsplash.com/photo-1505322022379-7c3353ee6291?q=80&w=1200&auto=format&fit=crop')",
+              maskImage: "radial-gradient(ellipse at top right, black 0%, transparent 70%)",
+              WebkitMaskImage: "radial-gradient(ellipse at top right, black 0%, transparent 70%)"
+          }}
+      ></div>
 
       {/* ── Sidebar ───────────────────────────────────────────────── */}
       <PortalSidebar
@@ -53,13 +62,13 @@ export default function PortalLayout({
       <div className="flex min-h-[100dvh] flex-1 flex-col lg:ml-64">
 
         {/* ── Mobile top header ──────────────────────────────────── */}
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-sm backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-800/60 bg-[#0b0c10]/80 px-4 shadow-sm backdrop-blur-md lg:hidden">
           <div className="flex items-center gap-3">
             {/* Hamburger */}
             <button
               onClick={() => setDrawerOpen(true)}
               aria-label="Open menu"
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-100 active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-800 hover:text-white active:scale-95"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -69,7 +78,7 @@ export default function PortalLayout({
                 <BrandIcon className="h-4 w-4 text-white" />
               </div>
             )}
-            <span className="text-base font-bold text-slate-900">{brand?.title}</span>
+            <span className="text-base font-bold text-white">{brand?.title}</span>
           </div>
 
           {/* User avatar & Notifications */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Mail, ShieldCheck, RefreshCw, FileText } from 'lucide-react';
+import { Download, Mail, ShieldCheck, RefreshCw, FileText, ChevronRight, AlertCircle } from 'lucide-react';
 
 export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
     if (!profile?.idCardUrl) return null;
@@ -8,7 +8,6 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
     // We can use this to show a high-quality image preview instead of an iframe which is buggy on mobile
     const getImageUrl = (url) => {
         if (!url) return '';
-        // If it's a cloudinary URL and ends in .pdf, change it to .png for preview
         if (url.includes('cloudinary.com') && url.endsWith('.pdf')) {
             return url.replace('.pdf', '.png');
         }
@@ -18,75 +17,78 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
     const previewUrl = getImageUrl(profile.idCardUrl);
 
     return (
-        <div className="flex flex-col md:flex-row gap-8 items-start rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-            {/* The ID Card Visual Preview (Using Cloudinary URL) */}
-            <div className="relative shrink-0 w-[240px] h-[380px] rounded-2xl bg-slate-50 shadow-md ring-1 ring-slate-900/5 overflow-hidden flex flex-col mx-auto md:mx-0 group">
-                <div className="absolute inset-0 flex items-center justify-center text-slate-400 z-0">
-                    <RefreshCw className="h-6 w-6 animate-spin opacity-50" />
+        <div className="rounded-[20px] bg-[#0a0b12] p-6 shadow-sm border border-slate-800/80 mt-4">
+            <div className="flex items-center gap-3 mb-6">
+                <div className="h-8 w-8 rounded-[10px] bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-600/20">
+                    <ShieldCheck className="h-4 w-4 text-white" />
                 </div>
-                
-                <img 
-                    src={previewUrl} 
-                    alt="Digital ID Card Preview" 
-                    className="absolute inset-0 w-full h-full object-contain z-10 bg-white"
-                />
-                
-                {/* Overlay for interaction prevention on the image (stops dragging) */}
-                <div className="absolute inset-0 z-20 bg-transparent"></div>
+                <h2 className="text-[17px] font-bold text-white tracking-wide">Your Digital Identity</h2>
             </div>
+            
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+                {/* The ID Card Visual Preview */}
+                <div className="relative shrink-0 w-full max-w-[320px] rounded-[16px] bg-[#1a1147] shadow-[0_0_20px_rgba(168,85,247,0.15)] ring-1 ring-purple-500/30 overflow-hidden flex flex-col mx-auto md:mx-0 group">
+                    <div className="absolute inset-0 flex items-center justify-center text-slate-400 z-0">
+                        <RefreshCw className="h-6 w-6 animate-spin opacity-50 text-purple-500" />
+                    </div>
+                    
+                    <img 
+                        src={previewUrl} 
+                        alt="Digital ID Card Preview" 
+                        className="relative w-full h-auto object-contain z-10"
+                    />
+                </div>
 
-            {/* Actions and Info */}
-            <div className="flex-1 space-y-6">
-                <div>
-                    <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2 mb-2">
-                        <ShieldCheck className="h-6 w-6 text-indigo-500" />
-                        Your Digital Identity
-                    </h2>
-                    <p className="text-sm text-slate-500 leading-relaxed max-w-lg">
+                {/* Actions and Info */}
+                <div className="flex-1 space-y-4">
+                    <p className="text-[13px] text-slate-400 leading-relaxed max-w-lg mb-2">
                         This is your official society digital ID card. You can use it to verify your identity at the main gate, access clubhouse facilities, and authenticate yourself within the society premises.
                     </p>
-                </div>
 
-                <div className="flex flex-col gap-3 max-w-sm">
-                    <a
-                        href={profile.idCardUrl}
-                        download={`ID_Card_${user?.firstName}_${user?.lastName}.pdf`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 hover:shadow-md transition-all duration-300 w-full text-left bg-white"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                <Download className="h-5 w-5" />
+                    <div className="flex flex-col gap-3">
+                        <a
+                            href={profile.idCardUrl}
+                            download={`ID_Card_${user?.firstName}_${user?.lastName}.pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="group flex items-center justify-between p-4 rounded-[16px] border border-slate-800/80 bg-[#12131c] hover:border-blue-500/30 hover:bg-blue-500/10 transition-all duration-300 w-full text-left shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors border border-blue-500/20">
+                                    <Download className="h-5 w-5" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-sm font-bold text-white">Download PDF</p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Save to your device for offline use</p>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="text-sm font-bold text-slate-800">Download PDF</p>
-                                <p className="text-xs text-slate-500">Save to your device for offline use</p>
-                            </div>
-                        </div>
-                    </a>
+                            <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                        </a>
 
-                    <button
-                        onClick={onEmail}
-                        disabled={isEmailing}
-                        className="group flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-violet-300 hover:bg-violet-50/50 hover:shadow-md transition-all duration-300 w-full text-left bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-violet-100 flex items-center justify-center text-violet-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
-                                {isEmailing ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}
+                        <button
+                            onClick={onEmail}
+                            disabled={isEmailing}
+                            className="group flex items-center justify-between p-4 rounded-[16px] border border-slate-800/80 bg-[#12131c] hover:border-purple-500/30 hover:bg-purple-500/10 transition-all duration-300 w-full text-left shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors border border-purple-500/20">
+                                    {isEmailing ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-sm font-bold text-white">Email ID Card</p>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">Send a copy to {user?.email}</p>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="text-sm font-bold text-slate-800">Email ID Card</p>
-                                <p className="text-xs text-slate-500">Send a copy to {user?.email}</p>
-                            </div>
-                        </div>
-                    </button>
-                </div>
+                            <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-purple-400 transition-colors" />
+                        </button>
+                    </div>
 
-                <div className="bg-amber-50 p-4 rounded-xl border border-amber-100/50 mt-4">
-                    <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                        <strong className="font-bold">Note:</strong> Your physical ID card PDF contains an encrypted secure QR code. Guards scanning it will instantly verify your active residency status. Do not share your ID card on public platforms.
-                    </p>
+                    <div className="bg-orange-500/10 p-3 rounded-xl border border-orange-500/20 mt-4 flex gap-3">
+                        <AlertCircle className="h-5 w-5 text-orange-500 shrink-0" />
+                        <p className="text-[11px] text-orange-200/80 leading-relaxed">
+                            <span className="font-bold text-orange-400">Note:</span> Your physical ID card PDF contains an encrypted secure QR code. Guards scanning it will instantly verify your active residency status. Do not share your ID card on public platforms.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

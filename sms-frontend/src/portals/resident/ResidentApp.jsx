@@ -5,7 +5,7 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, User, MessageSquareWarning,
-    Bell, UserCheck, Receipt, Home, ShieldAlert, Car, Users, BarChart2, Building2
+    Bell, UserCheck, Receipt, ShieldAlert, Car, BarChart2, Building2, Leaf, Crown
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import PortalLayout from '../../components/layout/PortalLayout';
@@ -24,25 +24,25 @@ import ResidentWalkInListener from './components/ResidentWalkInListener';
 import { PendingApprovalScreen } from './components/dashboard/PendingApprovalScreen';
 import { RejectedScreen } from './components/dashboard/RejectedScreen';
 import { FileText } from 'lucide-react';
-
 const SIDEBAR_CONFIG = {
-    brand: { title: 'Resident Portal', subtitle: 'My Home Hub', Icon: Home },
-    accentFrom: 'from-indigo-600',
-    accentTo: 'to-violet-600',
+    brand: { title: 'Green Valley', subtitle: 'Apartment', Icon: Leaf },
+    accentFrom: 'from-purple-600',
+    accentTo: 'to-indigo-600',
+    userSubtitle: 'RES-702110-301',
     navItems: [
-        { to: '/resident', label: 'My Home', Icon: LayoutDashboard, end: true },
-        { to: '/resident/notices', label: 'Notices', Icon: Bell },
+        { to: '/resident', label: 'Dashboard', Icon: LayoutDashboard, end: true },
+        { to: '/resident/notices', label: 'Notices', Icon: Bell, badge: 3 },
         { to: '/resident/profile', label: 'My Profile', Icon: User },
         { to: '/resident/complaints', label: 'Complaints', Icon: MessageSquareWarning },
-        { to: '/resident/emergency', label: 'Emergency (SOS)', Icon: ShieldAlert },
-        { to: '/resident/vehicles', label: 'Vehicles & Parking', Icon: Car },
         { to: '/resident/visitors', label: 'Visitor Passes', Icon: UserCheck },
-        { to: '/resident/polls', label: 'Polls & Voting', Icon: BarChart2 },
-        { to: '/resident/invoices', label: 'Invoices & Bills', Icon: Receipt },
-        { to: '/resident/documents', label: 'Documents', Icon: FileText },
+        { to: '/resident/vehicles', label: 'Vehicles & Parking', Icon: Car },
         { to: '/resident/amenities', label: 'Amenities', Icon: Building2 },
+        { to: '/resident/invoices', label: 'Invoices & Billing', Icon: Receipt },
+        { to: '/resident/documents', label: 'Documents', Icon: FileText },
+        { to: '/resident/polls', label: 'Polls & Voting', Icon: BarChart2 },
+        { to: '/resident/emergency', label: 'Emergency (SOS)', Icon: ShieldAlert, isEmergency: true },
     ],
-    bottomNavRoutes: ['/resident', '/resident/visitors', '/resident/complaints', '/resident/notices'],
+    bottomNavRoutes: ['/resident', '/resident/notices', '/resident/complaints', '/resident/profile'],
 };
 
 export default function ResidentApp() {

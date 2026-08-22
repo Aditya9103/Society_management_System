@@ -1,21 +1,21 @@
 export const STATUS_STYLES = {
-    DRAFT:           { cls: 'bg-gray-100 text-gray-700',     label: 'Draft' },
-    OPEN:            { cls: 'bg-amber-100 text-amber-700',   label: 'Open' },
-    ASSIGNED:        { cls: 'bg-blue-100 text-blue-700',     label: 'Assigned' },
-    IN_PROGRESS:     { cls: 'bg-indigo-100 text-indigo-700', label: 'In Progress' },
-    PENDING_RESIDENT:{ cls: 'bg-pink-100 text-pink-700',     label: 'Needs Info' },
-    RESOLVED:        { cls: 'bg-emerald-100 text-emerald-700', label: 'Resolved' },
-    CLOSED:          { cls: 'bg-slate-100 text-slate-600',   label: 'Closed' },
-    ESCALATED:       { cls: 'bg-red-100 text-red-700',       label: 'Escalated' },
-    REJECTED:        { cls: 'bg-red-100 text-red-700',       label: 'Rejected' },
-    REOPENED:        { cls: 'bg-purple-100 text-purple-700', label: 'Reopened' },
+    DRAFT:           { cls: 'bg-slate-500/20 text-slate-400 border border-slate-500/30 shadow-[0_0_8px_rgba(100,116,139,0.3)]',     label: 'Draft' },
+    OPEN:            { cls: 'bg-red-500/10 text-red-400 border border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.2)]',   label: 'Open' },
+    ASSIGNED:        { cls: 'bg-blue-500/10 text-blue-400 border border-blue-500/30 shadow-[0_0_10px_rgba(96,165,250,0.2)]',     label: 'Assigned' },
+    IN_PROGRESS:     { cls: 'bg-orange-500/10 text-orange-400 border border-orange-500/30 shadow-[0_0_10px_rgba(251,146,60,0.2)]', label: 'In Progress' },
+    PENDING_RESIDENT:{ cls: 'bg-pink-500/10 text-pink-400 border border-pink-500/30 shadow-[0_0_10px_rgba(244,114,182,0.2)]',     label: 'Needs Info' },
+    RESOLVED:        { cls: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(52,211,153,0.2)]', label: 'Resolved' },
+    CLOSED:          { cls: 'bg-slate-800/80 text-slate-400 border border-slate-700 shadow-[0_0_10px_rgba(148,163,184,0.1)]',   label: 'Closed' },
+    ESCALATED:       { cls: 'bg-rose-500/10 text-rose-400 border border-rose-500/30 shadow-[0_0_10px_rgba(251,113,133,0.2)]',       label: 'Escalated' },
+    REJECTED:        { cls: 'bg-rose-500/10 text-rose-400 border border-rose-500/30 shadow-[0_0_10px_rgba(251,113,133,0.2)]',       label: 'Rejected' },
+    REOPENED:        { cls: 'bg-purple-500/10 text-purple-400 border border-purple-500/30 shadow-[0_0_10px_rgba(192,132,252,0.2)]', label: 'Reopened' },
 };
 
 export const PRIORITY_STYLES = {
-    LOW:    'bg-slate-100 text-slate-500',
-    MEDIUM: 'bg-yellow-100 text-yellow-700',
-    HIGH:   'bg-orange-100 text-orange-700',
-    URGENT: 'bg-red-100 text-red-700',
+    LOW:    'text-emerald-400',
+    MEDIUM: 'text-orange-400',
+    HIGH:   'text-red-400',
+    URGENT: 'text-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]',
 };
 
 export const COMPLAINT_CATEGORIES = {

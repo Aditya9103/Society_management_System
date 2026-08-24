@@ -176,9 +176,9 @@ export const OTP_CONFIG = Object.freeze({
     /** OTP validity in minutes */
     EXPIRES_IN_MINUTES: 10,
     /** Max verification attempts before OTP is invalidated */
-    MAX_ATTEMPTS: 5,
+    MAX_ATTEMPTS: 10,
     /** Max resend requests per OTP session */
-    MAX_RESENDS: 5,
+    MAX_RESENDS: 10,
     /** Purpose enum values */
     PURPOSES: Object.freeze({
         LOGIN: 'LOGIN',
@@ -205,13 +205,13 @@ export const JWT_CONFIG = Object.freeze({
 // ── Account Security ──────────────────────────────────────────────────────────
 export const ACCOUNT_SECURITY = Object.freeze({
     /** Max consecutive failed logins before account lockout */
-    MAX_FAILED_LOGINS: 5,
+    MAX_FAILED_LOGINS: 10,
     /** Lock duration in minutes */
     LOCK_DURATION_MINUTES: 15,
     /** Number of previous passwords to store (prevent reuse) */
     PASSWORD_HISTORY_COUNT: 5,
     /** Bcrypt salt rounds */
-    BCRYPT_SALT_ROUNDS: 4,
+    BCRYPT_SALT_ROUNDS: 2,
 });
 
 // ── Pagination Defaults ───────────────────────────────────────────────────────

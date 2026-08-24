@@ -5,6 +5,7 @@ import { updateSocketToken } from '../../socket/socketClient';
 // Standard Axios instance
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000, // Stop getting stuck on "Signing in..." if server is offline
   headers: {
     'Content-Type': 'application/json',
   },
@@ -55,11 +56,12 @@ export const setupResponseInterceptor = (dispatch) => {
         }
       }
 
-      // Catch 401 Unauthorized errors (excluding the refresh endpoint itself to prevent loops)
+      // Catch 401 Unauthorized errors (excluding login/refresh endpoints to prevent loops)
       if (
         error.response?.status === 401 &&
         !originalRequest._retry &&
-        !originalRequest.url?.includes('/auth/refresh')
+        !originalRequest.url?.includes('/auth/refresh') &&
+        !originalRequest.url?.includes('/auth/login')
       ) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
@@ -80,7 +82,7 @@ export const setupResponseInterceptor = (dispatch) => {
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) {
           dispatch(logout()); // Clean Redux + LocalStorage
-          window.location.href = '/login';
+          window.location.href = '/auth/login';
           return Promise.reject(error);
         }
 
@@ -134,7 +136,7 @@ export const setupResponseInterceptor = (dispatch) => {
         } catch (err) {
           processQueue(err, null);
           dispatch(logout()); // Clean Redux + LocalStorage
-          window.location.href = '/login';
+          window.location.href = '/auth/login';
           return Promise.reject(err);
         } finally {
           isRefreshing = false;

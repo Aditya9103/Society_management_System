@@ -142,9 +142,9 @@ export default function ResidentProfilePage() {
     ];
 
     return (
-        <div className="pb-24 lg:pb-8 text-white relative z-10"> 
+        <div className="pb-24 lg:pb-8 text-white relative z-10 max-w-full overflow-hidden w-full overflow-y-auto"> 
             {/* Mobile Header (Sticky) */}
-            <div className="lg:hidden flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-[#0a0b12]/95 backdrop-blur-md mb-2">
+            <div className="lg:hidden flex items-center justify-between py-4 sticky top-0 z-50 bg-[#0a0b12]/95 backdrop-blur-md mb-2">
                 <button className="text-white hover:text-slate-300 transition-colors"><ChevronLeft size={24} /></button>
                 <h1 className="text-[17px] font-bold text-white tracking-wide">My Profile</h1>
                 <button className="text-white hover:text-slate-300 transition-colors">
@@ -193,7 +193,7 @@ export default function ResidentProfilePage() {
 
             {/* Mobile Tabs */}
             <div className="lg:hidden w-full overflow-hidden mb-6">
-                <div className="flex items-center overflow-x-auto no-scrollbar gap-2 px-4 pb-2">
+                <div className="flex items-center overflow-x-auto no-scrollbar gap-2 pb-2">
                     {mobileTabs.map(tab => (
                         <button 
                             key={tab.id}
@@ -211,7 +211,7 @@ export default function ResidentProfilePage() {
             </div>
 
             {/* Tab Content Wrapper */}
-            <div className="px-4 lg:px-0">
+            <div className="w-full">
                 {activeTab === 'personal' && (
                     <PersonalInfoTab 
                         user={user}

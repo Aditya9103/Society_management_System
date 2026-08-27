@@ -15,7 +15,7 @@ class ApiResponse {
    * @param {string} message     - Human-readable message
    * @param {object} [pagination]- Optional pagination meta
    */
-  constructor(statusCode, data = null, message = 'Success', pagination = null) {
+  constructor(statusCode, data = null, message = 'Success', pagination = null, stats = null) {
     this.success = statusCode < 400;
     this.statusCode = statusCode;
     this.message = message;
@@ -23,6 +23,9 @@ class ApiResponse {
 
     if (pagination) {
       this.pagination = pagination;
+    }
+    if (stats) {
+      this.stats = stats;
     }
   }
 

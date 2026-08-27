@@ -40,7 +40,7 @@ export default function PortalLayout({
   const profileRoute = sidebarConfig.profilePath || navItems.find(i => i.to.endsWith('/profile'))?.to || 'profile';
 
   return (
-    <div className="flex min-h-[100dvh] bg-[#07080f] text-slate-100 selection:bg-indigo-500/30 relative overflow-hidden">
+    <div className="flex min-h-[100dvh] w-full overflow-x-hidden bg-[#07080f] text-slate-100 selection:bg-indigo-500/30 relative">
       {/* Reduced Top-Right Skyline Background Masked */}
       <div 
           className="fixed top-0 right-0 w-[600px] h-[400px] bg-cover bg-right-top opacity-30 mix-blend-screen pointer-events-none"
@@ -59,10 +59,10 @@ export default function PortalLayout({
       />
 
       {/* ── Page wrapper ─────────────────────────────────────────── */}
-      <div className="flex min-h-[100dvh] flex-1 flex-col lg:ml-64">
+      <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col lg:ml-64">
 
         {/* ── Mobile top header ──────────────────────────────────── */}
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-800/60 bg-[#0b0c10]/80 px-4 shadow-sm backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-20 flex w-full h-14 items-center justify-between border-b border-slate-800/60 bg-[#0b0c10]/80 px-4 shadow-sm backdrop-blur-md lg:hidden">
           <div className="flex items-center gap-3">
             {/* Hamburger */}
             <button
@@ -78,11 +78,11 @@ export default function PortalLayout({
                 <BrandIcon className="h-4 w-4 text-white" />
               </div>
             )}
-            <span className="text-base font-bold text-white">{brand?.title}</span>
+            <span className="text-base font-bold text-white truncate max-w-[120px]">{brand?.title}</span>
           </div>
 
           {/* User avatar & Notifications */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <NotificationDropdown />
             <div
               onClick={() => navigate(profileRoute)}
@@ -99,8 +99,8 @@ export default function PortalLayout({
 
         {/* ── Main content ───────────────────────────────────────── */}
         {/* pb-28 ensures content isn't hidden behind the bottom navigation bar on mobile */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-28 lg:pb-0">
-          <div className={cn('mx-auto px-4 py-6 sm:px-6 lg:px-8', maxWidth)}>
+        <main className="flex-1 w-full overflow-y-auto overflow-x-hidden pb-28 lg:pb-0 min-w-0">
+          <div className={cn('mx-auto px-4 py-6 sm:px-6 lg:px-8 w-full box-border', maxWidth)}>
             {children}
           </div>
         </main>

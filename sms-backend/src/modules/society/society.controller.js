@@ -273,8 +273,8 @@ export const deleteFloor = asyncHandler(async (req, res) => {
  */
 export const listUnits = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
-    const { data, pagination } = await societyService.listUnits(societyId, req.query);
-    res.status(200).json(new ApiResponse(200, data, 'Units fetched successfully', pagination));
+    const { data, pagination, stats } = await societyService.listUnits(societyId, req.query);
+    res.status(200).json(new ApiResponse(200, data, 'Units fetched successfully', pagination, stats));
 });
 
 /**

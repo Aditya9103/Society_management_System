@@ -14,8 +14,8 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
             
             <div className="grid gap-4 lg:grid-cols-12">
                 {/* Left Column: Personal Information */}
-                <div className="lg:col-span-7 rounded-[20px] bg-[#0a0b12] p-6 shadow-sm border border-slate-800/80 hover:border-slate-700 transition-colors">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="lg:col-span-7 rounded-[20px] bg-[#0a0b12] p-6 shadow-sm border border-slate-800/80 hover:border-slate-700 transition-colors max-w-full box-border overflow-hidden">
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 mb-6">
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-[10px] bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
                                 <User className="h-4 w-4 text-white" />

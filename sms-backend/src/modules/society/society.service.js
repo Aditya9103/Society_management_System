@@ -22,7 +22,13 @@ import * as unitRepo from '../../shared/repositories/unit.repository.js';
 import { ROLES } from '../../config/constants.js';
 import User from '../auth/user.model.js';
 import Resident from '../resident/resident.model.js';
+import Complaint from '../complaint/complaint.model.js';
+import Notice from '../notice/notice.model.js';
+import VisitorLog from '../visitor/visitorLog.model.js';
+import VehicleLog from '../vehicle/vehicleLog.model.js';
+import Invoice from '../payment/invoice.model.js';
 import { uploadFile } from '../../services/storage.service.js';
+import Unit from '../../shared/models/Unit.js';
 
 // ── Society Profile ───────────────────────────────────────────────────────────
 
@@ -578,6 +584,31 @@ export const listUnits = async (societyId, query = {}) => {
         unitRepo.countDocuments(filter),
     ]);
 
+    // Aggregate stats dynamically
+    const statsAgg = await Unit.aggregate([
+        { $match: { societyId: filter.societyId } },
+        { 
+            $group: { 
+                _id: "$ownershipStatus", 
+                count: { $sum: 1 } 
+            } 
+        }
+    ]);
+
+    const stats = {
+        total,
+        ownerOccupied: 0,
+        rented: 0,
+        vacant: 0,
+        maintenance: 0 // Mocked since it's not in enum
+    };
+
+    statsAgg.forEach(s => {
+        if (s._id === 'OWNER_OCCUPIED') stats.ownerOccupied = s.count;
+        if (s._id === 'RENTED') stats.rented = s.count;
+        if (s._id === 'VACANT') stats.vacant = s.count;
+    });
+
     return {
         data,
         pagination: {
@@ -586,6 +617,7 @@ export const listUnits = async (societyId, query = {}) => {
             total,
             totalPages: Math.ceil(total / Number(limit)),
         },
+        stats
     };
 };
 
@@ -667,21 +699,72 @@ export const deleteUnit = async (unitId, societyId) => {
 /**
  * Get summary stats for the society admin dashboard.
  */
+
 export const getDashboardStats = async (societyId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59, 999);
+
     const [
         society,
         towerCount,
         unitStats,
         pendingResidents,
         totalResidents,
+        lastMonthResidents,
         staffCount,
+        openComplaints,
+        inProgressComplaints,
+        resolvedComplaints,
+        closedComplaints,
+        escalatedComplaints,
+        recentNotices,
+        pendingApprovalsList,
+        visitorsToday,
+        vehiclesToday,
+        unpaidInvoices,
+        collectedThisMonth,
+        expectedThisMonth
     ] = await Promise.all([
         societyRepo.findById(societyId),
         towerRepo.findBySociety(societyId).then((t) => t.length),
         unitRepo.countDocuments({ societyId }),
+        
+        // Residents & Staff
         User.countDocuments({ societyId, role: ROLES.RESIDENT, registrationStatus: 'PENDING_APPROVAL' }),
         User.countDocuments({ societyId, role: ROLES.RESIDENT, registrationStatus: 'APPROVED' }),
+        User.countDocuments({ societyId, role: ROLES.RESIDENT, registrationStatus: 'APPROVED', createdAt: { $lte: endOfLastMonth } }),
         User.countDocuments({ societyId, role: { $in: ALLOWED_STAFF_ROLES }, isActive: true }),
+        
+        // Complaints
+        Complaint.countDocuments({ societyId, status: 'OPEN' }),
+        Complaint.countDocuments({ societyId, status: 'IN_PROGRESS' }),
+        Complaint.countDocuments({ societyId, status: 'RESOLVED' }),
+        Complaint.countDocuments({ societyId, status: 'CLOSED' }),
+        Complaint.countDocuments({ societyId, status: { $in: ['OPEN', 'IN_PROGRESS'] }, priority: 'HIGH' }), // escalated mock
+        
+        // Lists
+        Notice.find({ societyId }).sort({ createdAt: -1 }).limit(3).lean(),
+        Resident.find({ societyId, approvalStatus: 'PENDING' }).populate('userId', 'firstName lastName profilePhotoUrl').populate('unitId', 'unitNumber').limit(3).lean(),
+        
+        // Snapshot
+        VisitorLog.countDocuments({ societyId, entryTime: { $gte: today } }),
+        VehicleLog.countDocuments({ societyId, entryTime: { $gte: today } }),
+        Invoice.countDocuments({ societyId, status: 'PENDING' }),
+        
+        // Payments
+        Invoice.aggregate([
+            { $match: { societyId, status: 'PAID', createdAt: { $gte: startOfMonth } } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]).then(res => res[0]?.total || 0),
+        
+        Invoice.aggregate([
+            { $match: { societyId, createdAt: { $gte: startOfMonth } } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]).then(res => res[0]?.total || 0)
     ]);
 
     return {
@@ -692,7 +775,27 @@ export const getDashboardStats = async (societyId) => {
         vacantUnits: (society?.totalUnits ?? 0) - (society?.occupiedUnits ?? 0),
         pendingResidents,
         totalResidents,
+        residentsLastMonth: lastMonthResidents,
         totalStaff: staffCount,
+        complaints: {
+            open: openComplaints,
+            inProgress: inProgressComplaints,
+            resolved: resolvedComplaints,
+            closed: closedComplaints,
+            escalated: escalatedComplaints
+        },
+        recentNotices,
+        pendingApprovalsList,
+        snapshot: {
+            visitorsToday,
+            vehiclesToday,
+            unpaidInvoices,
+            serviceRequests: openComplaints + inProgressComplaints
+        },
+        payment: {
+            collectedThisMonth,
+            expectedThisMonth
+        }
     };
 };
 

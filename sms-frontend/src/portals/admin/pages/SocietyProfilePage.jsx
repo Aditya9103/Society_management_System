@@ -1,38 +1,17 @@
-/**
- * SocietyProfilePage.jsx — Society settings & profile editor.
- *
- * Allows Society Admin to update:
- *   - Basic info (name, registration, year, currency)
- *   - Address
- *   - Contact details
- *   - Billing & finance settings
- *   - Visitor & resident settings
- *   - Emergency contacts (add / remove / edit inline)
- *
- * Uses global components: Input, Select, Button, Alert, PageHeader, Card.
- */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
-import { Save, Trash2, Plus, Camera, Loader2, RefreshCw } from 'lucide-react';
+import { Save, Trash2, Plus, Camera, Loader2, RefreshCw, Calendar, FileText, IndianRupee, MapPin, Phone, CreditCard, Users, Edit3 } from 'lucide-react';
 import { setCredentials } from '../../../store/slices/authSlice';
 import {
     useGetSocietyProfileQuery,
     useUpdateSocietyProfileMutation,
     useUpdateSocietyLogoMutation,
-    useUpdateMyAvatarMutation,
 } from '../../../store/api/societyAdminApi';
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
-import { Select } from '../../../components/ui/Select';
-import Alert from '../../../components/ui/Alert';
-import PageHeader from '../../../components/ui/PageHeader';
-import Section from '../components/profile/Section';
-import Field from '../components/profile/Field';
+import { cn } from '../../../components/ui/Button';
 
 const EMERGENCY_TYPES = ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AGENCY', 'OTHER'];
-
 
 export default function SocietyProfilePage() {
     const { user } = useSelector(s => s.auth);
@@ -40,67 +19,39 @@ export default function SocietyProfilePage() {
     const { data, isLoading } = useGetSocietyProfileQuery();
     const [updateProfile, { isLoading: isSaving }] = useUpdateSocietyProfileMutation();
     const [updateLogo, { isLoading: isUpdatingLogo }] = useUpdateSocietyLogoMutation();
-    const [updateMyAvatar, { isLoading: isUpdatingAvatar }] = useUpdateMyAvatarMutation();
-    const [saveSuccess, setSaveSuccess] = useState(false);
-    const [saveError, setSaveError] = useState('');
     const [emergencyContacts, setEmergencyContacts] = useState([]);
     const [contactsInit, setContactsInit] = useState(false);
 
     const society = data?.data?.society;
-    const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
 
     const { register, handleSubmit, reset } = useForm();
 
-    // Populate form fields properly when data loads or updates
-    React.useEffect(() => {
+    useEffect(() => {
         if (society) {
             reset(society);
         }
     }, [society, reset]);
+
+    if (society && !contactsInit) {
+        setEmergencyContacts(society.emergencyContacts ?? []);
+        setContactsInit(true);
+    }
 
     const handleLogoChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         try {
-            setSaveError('');
             const formData = new FormData();
             formData.append('logo', file);
             await updateLogo(formData).unwrap();
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 3000);
+            toast.success('Logo updated successfully!');
         } catch (err) {
-            setSaveError(err?.message || err?.data?.message || 'Failed to update logo.');
+            toast.error(err?.message || err?.data?.message || 'Failed to update logo.');
         }
     };
-
-    const handleAvatarChange = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        try {
-            const formData = new FormData();
-            formData.append('avatar', file);
-            const res = await updateMyAvatar(formData).unwrap();
-            
-            // Instantly update Redux auth state
-            if (res?.data?.user) {
-                dispatch(setCredentials({ user: res.data.user, accessToken: localStorage.getItem('accessToken') }));
-            }
-        } catch (error) {
-            console.error('Failed to update avatar:', error);
-            toast.error('Failed to update avatar.');
-        }
-    };
-
-    // Initialize emergency contacts once data arrives
-    if (society && !contactsInit) {
-        setEmergencyContacts(society.emergencyContacts ?? []);
-        setContactsInit(true);
-    }
 
     const onSubmit = async (formData) => {
-        setSaveError('');
-        setSaveSuccess(false);
         try {
             const processedEmergencyContacts = emergencyContacts.map(c => {
                 const copy = { ...c };
@@ -132,276 +83,416 @@ export default function SocietyProfilePage() {
                     visitorApprovalMode: formData.visitorApprovalMode || undefined,
                     maxVehiclesPerUnit: formData.maxVehiclesPerUnit ? Number(formData.maxVehiclesPerUnit) : undefined,
                     maintenanceTaxPercentage: formData.maintenanceTaxPercentage ? Number(formData.maintenanceTaxPercentage) : undefined,
-                    allowResidentDirectoryView: formData.allowResidentDirectoryView === 'true',
+                    allowResidentDirectoryView: formData.allowResidentDirectoryView === 'true' || formData.allowResidentDirectoryView === true,
                     currency: formData.currency || undefined,
                 },
                 emergencyContacts: processedEmergencyContacts,
             };
+            
             await updateProfile(payload).unwrap();
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 3000);
+            toast.success('Changes saved successfully!');
         } catch (err) {
-            setSaveError(err?.message || err?.data?.message || 'Failed to save. Please try again.');
+            toast.error(err?.message || err?.data?.message || 'Failed to save. Please try again.');
         }
     };
 
-    const addEmergencyContact = () =>
-        setEmergencyContacts((prev) => [...prev, { name: '', phone: '', type: 'POLICE', customContactType: '' }]);
-
-    const removeEmergencyContact = (i) =>
-        setEmergencyContacts((prev) => prev.filter((_, idx) => idx !== i));
-
-    const updateContact = (i, field, value) =>
-        setEmergencyContacts((prev) =>
-            prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c)),
-        );
+    const addEmergencyContact = () => setEmergencyContacts((prev) => [...prev, { name: '', phone: '', type: 'POLICE', customContactType: '' }]);
+    const removeEmergencyContact = (i) => setEmergencyContacts((prev) => prev.filter((_, idx) => idx !== i));
+    const updateContact = (i, field, value) => setEmergencyContacts((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c)));
 
     if (isLoading) {
         return (
-            <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-48 animate-pulse rounded-xl bg-gray-100" />
-                ))}
+            <div className="flex items-center justify-center min-h-[50vh]">
+                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
             </div>
         );
     }
 
-    const s = society;
+    const inputClasses = "w-full bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
+    const selectClasses = "w-full bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer appearance-none";
+    const labelClasses = "block text-[11px] uppercase tracking-wider text-gray-400 mb-1.5 font-medium";
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <PageHeader
-                title="Society Profile"
-                subtitle="Update your society's information and configuration"
-                actions={
-                    <Button type="submit" isLoading={isSaving} className="gap-2">
-                        <Save className="h-4 w-4" /> Save Changes
-                    </Button>
-                }
-            />
+        <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 space-y-4 lg:space-y-6 font-sans relative pb-10">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                <div>
+                    <h1 className="text-2xl font-bold text-white">Society Profile</h1>
+                    <p className="text-gray-400 text-sm mt-1">Update your society's information and configuration</p>
+                </div>
+                <button 
+                    type="submit" 
+                    disabled={isSaving}
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
+                >
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Changes
+                </button>
+            </div>
 
-            {saveSuccess && <Alert type="success">Changes saved successfully!</Alert>}
-            {saveError && <Alert type="error">{saveError}</Alert>}
+            {/* Hero Banner */}
+            <div className="relative w-full rounded-2xl overflow-hidden border border-white/5 bg-[#13151a] p-5 lg:p-6 flex flex-col lg:flex-row gap-5 lg:gap-6 items-center lg:items-center group">
+                <div className="absolute inset-0 bg-gradient-to-r from-violet-900/40 via-[#13151a] to-[#13151a] opacity-80 pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
 
-            {/* Admin Personal Profile */}
-            <Section title="My Admin Account" description="Manage your personal profile and avatar">
-                <div className="flex items-center gap-5">
-                    <div className="relative group flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-2xl font-bold text-white shadow-lg overflow-hidden cursor-pointer">
-                        {user?.profilePhotoUrl ? (
-                            <img src={user.profilePhotoUrl} alt="Avatar" className="h-full w-full object-cover" />
+                <div className="relative shrink-0">
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/10 bg-[#0b0c10] shadow-2xl relative">
+                        {society?.logoUrl ? (
+                            <img src={society.logoUrl} alt="Logo" className="w-full h-full object-cover" />
                         ) : (
-                            <>{initials}</>
+                            <div className="w-full h-full flex items-center justify-center text-gray-500 bg-[#0b0c10]">
+                                <Camera className="w-6 h-6 opacity-50" />
+                            </div>
                         )}
-                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <Plus className="h-6 w-6 text-white" />
-                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} disabled={isUpdatingAvatar} />
+                        <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                            <Camera className="w-5 h-5 text-white" />
+                            <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" disabled={isUpdatingLogo} />
                         </label>
-                        {isUpdatingAvatar && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                                <RefreshCw className="h-5 w-5 animate-spin text-white" />
-                            </div>
-                        )}
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-bold text-slate-900">{user?.firstName} {user?.lastName}</h4>
-                        <p className="text-sm text-slate-500">{user?.email}</p>
-                        <p className="text-xs font-semibold text-indigo-600 mt-1 uppercase tracking-wider">{user?.role?.replace('_', ' ')}</p>
-                    </div>
-                </div>
-            </Section>
-
-            {/* Basic Info */}
-            <Section title="Basic Information" description="General details about your society">
-                {/* Logo Upload */}
-                <div className="mb-6 flex items-center gap-6">
-                    <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md">
-                        {s?.logoUrl ? (
-                            <img src={s.logoUrl} alt="Society Logo" className="h-full w-full object-cover" />
-                        ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
-                                <Camera className="h-8 w-8 opacity-50" />
-                            </div>
-                        )}
                         {isUpdatingLogo && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                <Loader2 className="h-6 w-6 animate-spin text-white" />
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                <Loader2 className="w-5 h-5 animate-spin text-white" />
                             </div>
                         )}
                     </div>
-                    <div>
-                        <h4 className="text-sm font-medium text-slate-900">Society Logo</h4>
-                        <p className="mt-1 text-xs text-slate-500">
-                            Square image recommended. Max 5MB.
-                        </p>
-                        <div className="mt-3 relative">
-                            <input
-                                type="file"
-                                id="logo-upload"
-                                className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
-                                accept="image/*"
-                                onChange={handleLogoChange}
-                                disabled={isUpdatingLogo}
-                            />
-                            <Button type="button" variant="outline" size="sm" className="pointer-events-none gap-2">
-                                <Camera className="h-4 w-4" /> Change Logo
-                            </Button>
-                        </div>
+                </div>
+
+                <div className="flex-1 relative z-10 text-center lg:text-left flex flex-col items-center lg:items-start w-full">
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-4">
+                        <input 
+                            {...register('name')}
+                            className="text-2xl font-bold text-white bg-transparent border-b border-transparent focus:border-white/20 focus:outline-none focus:ring-0 px-0 py-1 text-center lg:text-left min-w-[280px]"
+                            placeholder="Society Name"
+                            defaultValue={society?.name}
+                        />
+                        <span className="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-medium border border-indigo-500/30 whitespace-nowrap">
+                            Registered Society
+                        </span>
                     </div>
-                </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="Society Name">
-                        <Input defaultValue={s?.name} {...register('name')} placeholder="Society name" />
-                    </Field>
-                    <Field label="Registration Number">
-                        <Input defaultValue={s?.registrationNumber} {...register('registrationNumber')} placeholder="Reg. number (optional)" />
-                    </Field>
-                    <Field label="Establishment Year">
-                        <Input type="number" defaultValue={s?.establishmentYear} {...register('establishmentYear')} placeholder="e.g. 2010" />
-                    </Field>
-                    <Field label="Currency">
-                        <Select defaultValue={s?.settings?.currency ?? 'INR'} {...register('currency')}>
-                            <option value="INR">INR — Indian Rupee</option>
-                            <option value="USD">USD — US Dollar</option>
-                            <option value="EUR">EUR — Euro</option>
-                        </Select>
-                    </Field>
-                </div>
-            </Section>
-
-            {/* Address */}
-            <Section title="Address" description="Society's physical location">
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                        <Field label="Address Line 1">
-                            <Input defaultValue={s?.addressLine1} {...register('addressLine1')} placeholder="Street / Locality" />
-                        </Field>
-                    </div>
-                    <Field label="Address Line 2">
-                        <Input defaultValue={s?.addressLine2} {...register('addressLine2')} placeholder="Area / Landmark (optional)" />
-                    </Field>
-                    <Field label="City">
-                        <Input defaultValue={s?.city} {...register('city')} placeholder="City" />
-                    </Field>
-                    <Field label="State">
-                        <Input defaultValue={s?.state} {...register('state')} placeholder="State" />
-                    </Field>
-                    <Field label="Pincode">
-                        <Input defaultValue={s?.pincode} {...register('pincode')} placeholder="6-digit pincode" maxLength={6} />
-                    </Field>
-                </div>
-            </Section>
-
-            {/* Contact */}
-            <Section title="Contact Details" description="How residents and visitors can reach the society office">
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <Field label="Contact Email">
-                        <Input type="email" defaultValue={s?.contactEmail} {...register('contactEmail')} placeholder="office@society.com" />
-                    </Field>
-                    <Field label="Contact Phone">
-                        <Input defaultValue={s?.contactPhone} {...register('contactPhone')} placeholder="+91 XXXXXXXXXX" />
-                    </Field>
-                </div>
-            </Section>
-
-            {/* Billing Settings */}
-            <Section title="Billing & Finance Settings" description="Configure billing cycles, late fees, and maintenance">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <Field label="Billing Date (day of month)">
-                        <Input type="number" min={1} max={28} defaultValue={s?.settings?.billingDate ?? 1} {...register('billingDate')} />
-                    </Field>
-                    <Field label="Grace Period (days)">
-                        <Input type="number" min={0} defaultValue={s?.settings?.gracePeriodDays ?? 10} {...register('gracePeriodDays')} />
-                    </Field>
-                    <Field label="Late Fee Type">
-                        <Select defaultValue={s?.settings?.lateFeeType ?? 'PERCENTAGE'} {...register('lateFeeType')}>
-                            <option value="PERCENTAGE">Percentage</option>
-                            <option value="FIXED">Fixed Amount</option>
-                        </Select>
-                    </Field>
-                    <Field label="Late Fee Percentage (%)">
-                        <Input type="number" min={0} step="0.1" defaultValue={s?.settings?.lateFeePercentage ?? 2} {...register('lateFeePercentage')} />
-                    </Field>
-                    <Field label="Late Fee Fixed Amount (₹)">
-                        <Input type="number" min={0} defaultValue={s?.settings?.lateFeeFixedAmount ?? 0} {...register('lateFeeFixedAmount')} />
-                    </Field>
-                    <Field label="Maintenance Tax (%)">
-                        <Input type="number" min={0} max={100} step="0.1" defaultValue={s?.settings?.maintenanceTaxPercentage ?? 0} {...register('maintenanceTaxPercentage')} />
-                    </Field>
-                </div>
-            </Section>
-
-            {/* Visitor & Resident Settings */}
-            <Section title="Visitor & Resident Settings" description="Control visitor access and resident directory">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <Field label="Visitor Approval">
-                        <Select defaultValue={s?.settings?.visitorApprovalMode ?? 'REQUIRED'} {...register('visitorApprovalMode')}>
-                            <option value="REQUIRED">Approval Required</option>
-                            <option value="AUTO_ALLOW">Auto Allow</option>
-                        </Select>
-                    </Field>
-                    <Field label="Max Vehicles per Unit">
-                        <Input type="number" min={0} defaultValue={s?.settings?.maxVehiclesPerUnit ?? 2} {...register('maxVehiclesPerUnit')} />
-                    </Field>
-                    <Field label="Resident Directory Visible">
-                        <Select defaultValue={s?.settings?.allowResidentDirectoryView ? 'true' : 'false'} {...register('allowResidentDirectoryView')}>
-                            <option value="true">Yes — Residents can view directory</option>
-                            <option value="false">No — Directory hidden</option>
-                        </Select>
-                    </Field>
-                </div>
-            </Section>
-
-            {/* Emergency Contacts */}
-            <Section title="Emergency Contacts" description="Quick-dial numbers for emergencies">
-                <div className="space-y-3">
-                    {emergencyContacts.map((contact, i) => (
-                        <div key={i} className="flex items-center gap-3 rounded-xl bg-gray-50 p-3 ring-1 ring-gray-200">
-                            <div className="grid flex-1 gap-2 sm:grid-cols-3">
-                                <Input
-                                    value={contact.name}
-                                    onChange={(e) => updateContact(i, 'name', e.target.value)}
-                                    placeholder="Contact name"
+                    <div className="flex flex-wrap justify-center lg:justify-start gap-2 w-full">
+                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
+                            <Calendar className="w-4 h-4 text-indigo-400" />
+                            <div>
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Est. Year</p>
+                                <input 
+                                    {...register('establishmentYear')}
+                                    className="bg-transparent text-xs font-medium text-white focus:outline-none w-12"
+                                    placeholder="2010"
+                                    defaultValue={society?.establishmentYear}
                                 />
-                                <Input
-                                    value={contact.phone}
-                                    onChange={(e) => updateContact(i, 'phone', e.target.value)}
-                                    placeholder="Phone number"
-                                />
-                                <Select
-                                    value={contact.type}
-                                    onChange={(e) => updateContact(i, 'type', e.target.value)}
-                                >
-                                    {EMERGENCY_TYPES.map((t) => (
-                                        <option key={t} value={t}>{t}</option>
-                                    ))}
-                                </Select>
-                                {contact.type === 'OTHER' && (
-                                    <Input
-                                        value={contact.customContactType || ''}
-                                        onChange={(e) => updateContact(i, 'customContactType', e.target.value)}
-                                        placeholder="e.g. Plumber"
-                                    />
-                                )}
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => removeEmergencyContact(i)}
-                                className="flex h-9 w-9 items-center justify-center rounded-lg text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
                         </div>
-                    ))}
-                    <button
-                        type="button"
-                        onClick={addEmergencyContact}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-indigo-400 hover:text-indigo-600"
-                    >
-                        <Plus className="h-4 w-4" /> Add Emergency Contact
-                    </button>
+
+                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
+                            <FileText className="w-4 h-4 text-blue-400" />
+                            <div>
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Registration No.</p>
+                                <input 
+                                    {...register('registrationNumber')}
+                                    className="bg-transparent text-xs font-medium text-white focus:outline-none w-28"
+                                    placeholder="REG-0000"
+                                    defaultValue={society?.registrationNumber}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
+                            <IndianRupee className="w-4 h-4 text-emerald-400" />
+                            <div>
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Currency</p>
+                                <select 
+                                    {...register('currency')}
+                                    className="bg-transparent text-xs font-medium text-white focus:outline-none appearance-none cursor-pointer"
+                                    defaultValue={society?.settings?.currency ?? 'INR'}
+                                >
+                                    <option value="INR" className="bg-[#1a1d24]">INR - Indian Rupee</option>
+                                    <option value="USD" className="bg-[#1a1d24]">USD - US Dollar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold overflow-hidden border border-white/10 shrink-0">
+                                {user?.profilePhotoUrl ? <img src={user.profilePhotoUrl} className="w-full h-full object-cover" alt="" /> : user?.firstName?.[0]}
+                            </div>
+                            <div>
+                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Society Admin</p>
+                                <p className="text-xs font-medium text-white">{user?.firstName} {user?.lastName}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </Section>
+            </div>
+
+            {/* Grid Layout for Configuration Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                
+                {/* Address Card */}
+                <div className="bg-[#13151a] border border-white/5 rounded-2xl p-5 lg:p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 rounded-lg bg-indigo-500/10">
+                            <MapPin className="w-5 h-5 text-indigo-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-white font-semibold">Address</h3>
+                            <p className="text-xs text-gray-400">Society's physical location</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 flex-1">
+                        <div>
+                            <label className={labelClasses}>Address Line 1</label>
+                            <input {...register('addressLine1')} className={inputClasses} placeholder="Street / Locality" defaultValue={society?.addressLine1} />
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Address Line 2 (Area / Landmark)</label>
+                            <input {...register('addressLine2')} className={inputClasses} placeholder="Area / Landmark" defaultValue={society?.addressLine2} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelClasses}>City</label>
+                                <input {...register('city')} className={inputClasses} placeholder="City" defaultValue={society?.city} />
+                            </div>
+                            <div>
+                                <label className={labelClasses}>State</label>
+                                <input {...register('state')} className={inputClasses} placeholder="State" defaultValue={society?.state} />
+                            </div>
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Pincode</label>
+                            <input {...register('pincode')} className={inputClasses} placeholder="Pincode" maxLength={6} defaultValue={society?.pincode} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Contact Details Card */}
+                <div className="bg-[#13151a] border border-white/5 rounded-2xl p-5 lg:p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 rounded-lg bg-blue-500/10">
+                            <Phone className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-white font-semibold">Contact Details</h3>
+                            <p className="text-xs text-gray-400">How residents and visitors can reach the society</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 flex-1">
+                        <div>
+                            <label className={labelClasses}>Contact Email</label>
+                            <input type="email" {...register('contactEmail')} className={inputClasses} placeholder="office@society.com" defaultValue={society?.contactEmail} />
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Contact Phone</label>
+                            <input {...register('contactPhone')} className={inputClasses} placeholder="Phone Number" defaultValue={society?.contactPhone} />
+                        </div>
+                    </div>
+
+                    <div className="mt-6 flex items-start gap-3 bg-violet-500/10 border border-violet-500/20 rounded-xl p-4">
+                        <div className="mt-0.5 shrink-0">
+                            <Phone className="w-4 h-4 text-violet-400" />
+                        </div>
+                        <p className="text-xs text-violet-300 leading-relaxed">
+                            These contact details will be visible to all residents and used for important communications.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Billing & Finance Settings */}
+                <div className="bg-[#13151a] border border-white/5 rounded-2xl p-5 lg:p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 rounded-lg bg-rose-500/10">
+                            <CreditCard className="w-5 h-5 text-rose-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-white font-semibold">Billing & Finance Settings</h3>
+                            <p className="text-xs text-gray-400">Configure billing cycles, late fees, and maintenance</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 flex-1">
+                        <div>
+                            <label className={labelClasses}>Billing Date (Day of Month)</label>
+                            <input type="number" min={1} max={28} {...register('billingDate')} className={inputClasses} defaultValue={society?.settings?.billingDate ?? 1} />
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Grace Period (Days)</label>
+                            <input type="number" min={0} {...register('gracePeriodDays')} className={inputClasses} defaultValue={society?.settings?.gracePeriodDays ?? 10} />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <label className={labelClasses}>Late Fee Type</label>
+                            <select {...register('lateFeeType')} className={selectClasses} defaultValue={society?.settings?.lateFeeType ?? 'PERCENTAGE'}>
+                                <option value="PERCENTAGE">Percentage</option>
+                                <option value="FIXED">Fixed Amount</option>
+                            </select>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <label className={labelClasses}>Late Fee Percentage (%)</label>
+                            <input type="number" step="0.1" min={0} {...register('lateFeePercentage')} className={inputClasses} defaultValue={society?.settings?.lateFeePercentage ?? 2} />
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Late Fee Fixed Amount (₹)</label>
+                            <input type="number" min={0} {...register('lateFeeFixedAmount')} className={inputClasses} defaultValue={society?.settings?.lateFeeFixedAmount ?? 0} />
+                        </div>
+                        <div>
+                            <label className={labelClasses}>Maintenance Tax (%)</label>
+                            <input type="number" step="0.1" min={0} max={100} {...register('maintenanceTaxPercentage')} className={inputClasses} defaultValue={society?.settings?.maintenanceTaxPercentage ?? 0} />
+                        </div>
+                    </div>
+
+                    <div className="mt-6 flex items-start gap-3 bg-violet-500/10 border border-violet-500/20 rounded-xl p-4">
+                        <div className="mt-0.5 shrink-0">
+                            <CreditCard className="w-4 h-4 text-violet-400" />
+                        </div>
+                        <p className="text-xs text-violet-300 leading-relaxed">
+                            These settings will be applied to all billing cycles and invoices.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Visitor & Resident Settings */}
+                <div className="bg-[#13151a] border border-white/5 rounded-2xl p-5 lg:p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 rounded-lg bg-emerald-500/10">
+                            <Users className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-white font-semibold">Visitor & Resident Settings</h3>
+                            <p className="text-xs text-gray-400">Control visitor access and resident directory</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 flex-1">
+                        <div className="col-span-2 sm:col-span-1">
+                            <label className={labelClasses}>Visitor Approval</label>
+                            <select {...register('visitorApprovalMode')} className={selectClasses} defaultValue={society?.settings?.visitorApprovalMode ?? 'REQUIRED'}>
+                                <option value="REQUIRED">Approval Required</option>
+                                <option value="AUTO_ALLOW">Auto Allow</option>
+                            </select>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <label className={labelClasses}>Max Vehicles Per Unit</label>
+                            <input type="number" min={0} {...register('maxVehiclesPerUnit')} className={inputClasses} defaultValue={society?.settings?.maxVehiclesPerUnit ?? 2} />
+                        </div>
+                        <div className="col-span-2">
+                            <label className={labelClasses}>Resident Directory Visible</label>
+                            <select {...register('allowResidentDirectoryView')} className={selectClasses} defaultValue={society?.settings?.allowResidentDirectoryView ? 'true' : 'false'}>
+                                <option value="true">Yes — Residents can view directory</option>
+                                <option value="false">No — Directory hidden</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="mt-auto pt-6 flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                        <div className="mt-0.5 shrink-0">
+                            <Users className="w-4 h-4 text-blue-400" />
+                        </div>
+                        <p className="text-xs text-blue-300 leading-relaxed">
+                            These settings help manage security and privacy within the society.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Emergency Contacts - Full Width */}
+                <div className="lg:col-span-2 bg-[#13151a] border border-white/5 rounded-2xl p-5 lg:p-6 flex flex-col">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-orange-500/10">
+                                <Phone className="w-5 h-5 text-orange-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-white font-semibold">Emergency Contacts</h3>
+                                <p className="text-xs text-gray-400">Quick-dial numbers for emergencies</p>
+                            </div>
+                        </div>
+                        <button 
+                            type="button" 
+                            onClick={addEmergencyContact}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-200 text-sm font-medium hover:bg-white/10 transition-colors"
+                        >
+                            <Plus className="w-4 h-4" /> Add Contact
+                        </button>
+                    </div>
+
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-left text-sm text-gray-400">
+                            <thead className="text-[10px] uppercase tracking-wider text-gray-500 bg-white/5 border-b border-white/10">
+                                <tr>
+                                    <th className="px-4 py-3 font-medium rounded-tl-lg">Name / Department</th>
+                                    <th className="px-4 py-3 font-medium">Phone Number</th>
+                                    <th className="px-4 py-3 font-medium">Type</th>
+                                    <th className="px-4 py-3 font-medium rounded-tr-lg w-24">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {emergencyContacts.map((contact, i) => (
+                                    <tr key={i} className="border-b border-white/5 hover:bg-white/5 group transition-colors">
+                                        <td className="px-4 py-3">
+                                            <input 
+                                                value={contact.name}
+                                                onChange={(e) => updateContact(i, 'name', e.target.value)}
+                                                className="bg-transparent text-gray-200 placeholder-gray-600 focus:outline-none w-full font-medium"
+                                                placeholder="Name..."
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <input 
+                                                value={contact.phone}
+                                                onChange={(e) => updateContact(i, 'phone', e.target.value)}
+                                                className="bg-transparent text-gray-300 placeholder-gray-600 focus:outline-none w-full"
+                                                placeholder="Number..."
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex flex-col gap-2">
+                                                <select
+                                                    value={contact.type}
+                                                    onChange={(e) => updateContact(i, 'type', e.target.value)}
+                                                    className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none cursor-pointer"
+                                                >
+                                                    {EMERGENCY_TYPES.map((t) => (
+                                                        <option key={t} value={t}>{t}</option>
+                                                    ))}
+                                                </select>
+                                                {contact.type === 'OTHER' && (
+                                                    <input
+                                                        value={contact.customContactType || ''}
+                                                        onChange={(e) => updateContact(i, 'customContactType', e.target.value)}
+                                                        className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none"
+                                                        placeholder="Specify..."
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-7 h-7 rounded bg-white/5 flex items-center justify-center text-gray-400 cursor-not-allowed">
+                                                    <Edit3 className="w-3.5 h-3.5" />
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => removeEmergencyContact(i)}
+                                                    className="w-7 h-7 rounded bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {emergencyContacts.length === 0 && (
+                                    <tr>
+                                        <td colSpan="4" className="px-4 py-8 text-center text-gray-500">
+                                            No emergency contacts configured yet.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </form>
     );
 }

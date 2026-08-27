@@ -34,7 +34,6 @@ const SIDEBAR_CONFIG = {
   navItems: [
     { to: '/admin', label: 'Dashboard', Icon: LayoutDashboard, end: true },
     { to: '/admin/profile', label: 'Society Profile', Icon: Settings },
-    { to: '/admin/towers', label: 'Towers & Floors', Icon: Building2 },
     { to: '/admin/units', label: 'Units', Icon: Grid3X3 },
     { to: '/admin/staff', label: 'Staff', Icon: Users },
     { to: '/admin/residents', label: 'Residents', Icon: UserCheck },
@@ -48,6 +47,8 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/polls', label: 'Polls & Voting', Icon: BarChart2 },
     { to: '/admin/documents', label: 'Documents', Icon: FileText },
     { to: '/admin/amenities', label: 'Amenities', Icon: Building2 },
+    { to: '/admin/towers', label: 'Towers & Floors', Icon: Building2 },
+
   ],
   bottomNavRoutes: ['/admin', '/admin/residents', '/admin/complaints', '/admin/emergencies', '/admin/notices', '/admin/amenities', '/admin/polls', '/admin/documents', '/admin/invoices'],
 };

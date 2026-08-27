@@ -81,15 +81,8 @@ export default function ResidentEmergencyPage() {
         }
     };
 
-    // We fallback to some defaults if societyContacts is empty to match the mockup
-    const defaultContacts = [
-        { type: 'SECURITY', name: 'Security Office', number: '8000868197' },
-        { type: 'FIRE', name: 'Fire Department', number: '8787678798' },
-        { type: 'HOSPITAL', name: 'City Hospital', number: '8787987656' },
-        { type: 'AMBULANCE', name: 'Ambulance', number: '8798767656' },
-        { type: 'POLICE', name: 'Nearby Police Station', number: '878789877' },
-    ];
-    const displayContacts = societyContacts.length > 0 ? societyContacts : defaultContacts;
+    // We now strictly use the dynamic societyContacts from the backend.
+    const displayContacts = societyContacts;
 
     // SVG Circle Math for the SOS button progress ring
     const radius = 130;
@@ -196,43 +189,51 @@ export default function ResidentEmergencyPage() {
                     </div>
 
                     <div className="flex-1 space-y-3">
-                        {displayContacts.map((contact, idx) => {
-                            const { icon, bg } = getContactIcon(contact.type);
-                            // Badge colors
-                            let badgeClass = "bg-slate-500/10 text-slate-400";
-                            if (contact.type === 'SECURITY') badgeClass = "bg-blue-500/10 text-blue-400";
-                            else if (contact.type === 'FIRE') badgeClass = "bg-orange-500/10 text-orange-400";
-                            else if (contact.type === 'HOSPITAL') badgeClass = "bg-emerald-500/10 text-emerald-400";
-                            else if (contact.type === 'AMBULANCE') badgeClass = "bg-red-500/10 text-red-400";
-                            else if (contact.type === 'POLICE') badgeClass = "bg-indigo-500/10 text-indigo-400";
-                            
-                            const phoneNumber = contact.phone || contact.number;
+                        {displayContacts.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-8 px-4 text-center rounded-2xl border border-dashed border-white/10 bg-[#1A1C2A]">
+                                <AlertCircle className="w-8 h-8 text-slate-500 mb-3" />
+                                <h3 className="text-sm font-bold text-slate-300">No Emergency Contacts</h3>
+                                <p className="text-xs text-slate-500 mt-1">Your society admin hasn't added any quick contacts yet.</p>
+                            </div>
+                        ) : (
+                            displayContacts.map((contact, idx) => {
+                                const { icon, bg } = getContactIcon(contact.type);
+                                // Badge colors
+                                let badgeClass = "bg-slate-500/10 text-slate-400";
+                                if (contact.type === 'SECURITY') badgeClass = "bg-blue-500/10 text-blue-400";
+                                else if (contact.type === 'FIRE') badgeClass = "bg-orange-500/10 text-orange-400";
+                                else if (contact.type === 'HOSPITAL') badgeClass = "bg-emerald-500/10 text-emerald-400";
+                                else if (contact.type === 'AMBULANCE') badgeClass = "bg-red-500/10 text-red-400";
+                                else if (contact.type === 'POLICE') badgeClass = "bg-indigo-500/10 text-indigo-400";
+                                
+                                const phoneNumber = contact.phone || contact.number;
 
-                            return (
-                                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-[#1A1C2A] hover:border-white/10 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bg}`}>
-                                            {icon}
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h4 className="text-sm font-bold text-white">{contact.name}</h4>
-                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded tracking-wider ${badgeClass}`}>
-                                                    {contact.type}
-                                                </span>
+                                return (
+                                    <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-[#1A1C2A] hover:border-white/10 transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bg}`}>
+                                                {icon}
                                             </div>
-                                            <p className="text-xs text-slate-400 font-medium">{phoneNumber}</p>
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <h4 className="text-sm font-bold text-white">{contact.name}</h4>
+                                                    <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded tracking-wider ${badgeClass}`}>
+                                                        {contact.type}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-slate-400 font-medium">{phoneNumber}</p>
+                                            </div>
                                         </div>
+                                        <a 
+                                            href={`tel:${phoneNumber}`}
+                                            className="w-10 h-10 rounded-xl border border-white/5 flex items-center justify-center hover:bg-emerald-500/10 hover:border-emerald-500/20 group transition-all"
+                                        >
+                                            <PhoneCall className="w-4 h-4 text-emerald-500 opacity-70 group-hover:opacity-100" />
+                                        </a>
                                     </div>
-                                    <a 
-                                        href={`tel:${phoneNumber}`}
-                                        className="w-10 h-10 rounded-xl border border-white/5 flex items-center justify-center hover:bg-emerald-500/10 hover:border-emerald-500/20 group transition-all"
-                                    >
-                                        <PhoneCall className="w-4 h-4 text-emerald-500 opacity-70 group-hover:opacity-100" />
-                                    </a>
-                                </div>
-                            );
-                        })}
+                                );
+                            })
+                        )}
                     </div>
                 </div>
             </div>

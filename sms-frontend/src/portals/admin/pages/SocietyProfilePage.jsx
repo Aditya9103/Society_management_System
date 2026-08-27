@@ -13,29 +13,39 @@ import { cn } from '../../../components/ui/Button';
 
 const EMERGENCY_TYPES = ['POLICE', 'FIRE', 'AMBULANCE', 'HOSPITAL', 'SECURITY_AGENCY', 'OTHER'];
 
+import SocietyEmergencyContactModal from '../components/profile/SocietyEmergencyContactModal';
+
 export default function SocietyProfilePage() {
     const { user } = useSelector(s => s.auth);
     const dispatch = useDispatch();
     const { data, isLoading } = useGetSocietyProfileQuery();
     const [updateProfile, { isLoading: isSaving }] = useUpdateSocietyProfileMutation();
     const [updateLogo, { isLoading: isUpdatingLogo }] = useUpdateSocietyLogoMutation();
-    const [emergencyContacts, setEmergencyContacts] = useState([]);
-    const [contactsInit, setContactsInit] = useState(false);
 
     const society = data?.data?.society;
-
     const { register, handleSubmit, reset } = useForm();
+    const [emergencyContacts, setEmergencyContacts] = useState([]);
+    const [contactsInit, setContactsInit] = useState(false);
+    
+    // Modal state for emergency contacts
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [editingContactIndex, setEditingContactIndex] = useState(null);
 
-    useEffect(() => {
-        if (society) {
-            reset(society);
-        }
-    }, [society, reset]);
-
+    // Initialize emergency contacts
     if (society && !contactsInit) {
         setEmergencyContacts(society.emergencyContacts ?? []);
         setContactsInit(true);
     }
+
+    // Set form defaults once society data loads
+    useEffect(() => {
+        if (society) {
+            reset({
+                ...society,
+                settings: society.settings,
+            });
+        }
+    }, [society, reset]);
 
     const handleLogoChange = async (e) => {
         const file = e.target.files?.[0];
@@ -51,10 +61,29 @@ export default function SocietyProfilePage() {
         }
     };
 
+    const openAddContactModal = () => {
+        setEditingContactIndex(null);
+        setIsContactModalOpen(true);
+    };
+
+    const openEditContactModal = (index) => {
+        setEditingContactIndex(index);
+        setIsContactModalOpen(true);
+    };
+
+    const handleSaveContact = (contactData) => {
+        if (editingContactIndex !== null) {
+            setEmergencyContacts(prev => prev.map((c, idx) => (idx === editingContactIndex ? { ...c, ...contactData } : c)));
+        } else {
+            setEmergencyContacts(prev => [...prev, contactData]);
+        }
+    };
+
     const onSubmit = async (formData) => {
         try {
             const processedEmergencyContacts = emergencyContacts.map(c => {
                 const copy = { ...c };
+                delete copy._id; // Remove _id as Joi validator rejects it
                 if (copy.type !== 'OTHER') {
                     delete copy.customContactType;
                 } else if (!copy.customContactType?.trim()) {
@@ -96,9 +125,7 @@ export default function SocietyProfilePage() {
         }
     };
 
-    const addEmergencyContact = () => setEmergencyContacts((prev) => [...prev, { name: '', phone: '', type: 'POLICE', customContactType: '' }]);
     const removeEmergencyContact = (i) => setEmergencyContacts((prev) => prev.filter((_, idx) => idx !== i));
-    const updateContact = (i, field, value) => setEmergencyContacts((prev) => prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c)));
 
     if (isLoading) {
         return (
@@ -113,6 +140,7 @@ export default function SocietyProfilePage() {
     const labelClasses = "block text-[11px] uppercase tracking-wider text-gray-400 mb-1.5 font-medium";
 
     return (
+        <>
         <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 space-y-4 lg:space-y-6 font-sans relative pb-10">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
@@ -407,7 +435,7 @@ export default function SocietyProfilePage() {
                         </div>
                         <button 
                             type="button" 
-                            onClick={addEmergencyContact}
+                            onClick={openAddContactModal}
                             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-200 text-sm font-medium hover:bg-white/10 transition-colors"
                         >
                             <Plus className="w-4 h-4" /> Add Contact
@@ -427,48 +455,26 @@ export default function SocietyProfilePage() {
                             <tbody>
                                 {emergencyContacts.map((contact, i) => (
                                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 group transition-colors">
-                                        <td className="px-4 py-3">
-                                            <input 
-                                                value={contact.name}
-                                                onChange={(e) => updateContact(i, 'name', e.target.value)}
-                                                className="bg-transparent text-gray-200 placeholder-gray-600 focus:outline-none w-full font-medium"
-                                                placeholder="Name..."
-                                            />
+                                        <td className="px-4 py-3 text-gray-200 font-medium">
+                                            {contact.name}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-300">
+                                            {contact.phone}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <input 
-                                                value={contact.phone}
-                                                onChange={(e) => updateContact(i, 'phone', e.target.value)}
-                                                className="bg-transparent text-gray-300 placeholder-gray-600 focus:outline-none w-full"
-                                                placeholder="Number..."
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex flex-col gap-2">
-                                                <select
-                                                    value={contact.type}
-                                                    onChange={(e) => updateContact(i, 'type', e.target.value)}
-                                                    className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none cursor-pointer"
-                                                >
-                                                    {EMERGENCY_TYPES.map((t) => (
-                                                        <option key={t} value={t}>{t}</option>
-                                                    ))}
-                                                </select>
-                                                {contact.type === 'OTHER' && (
-                                                    <input
-                                                        value={contact.customContactType || ''}
-                                                        onChange={(e) => updateContact(i, 'customContactType', e.target.value)}
-                                                        className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none"
-                                                        placeholder="Specify..."
-                                                    />
-                                                )}
-                                            </div>
+                                            <span className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-gray-300">
+                                                {contact.type === 'OTHER' ? contact.customContactType : contact.type}
+                                            </span>
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-7 h-7 rounded bg-white/5 flex items-center justify-center text-gray-400 cursor-not-allowed">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => openEditContactModal(i)}
+                                                    className="w-7 h-7 rounded bg-white/5 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+                                                >
                                                     <Edit3 className="w-3.5 h-3.5" />
-                                                </div>
+                                                </button>
                                                 <button 
                                                     type="button" 
                                                     onClick={() => removeEmergencyContact(i)}
@@ -494,5 +500,13 @@ export default function SocietyProfilePage() {
 
             </div>
         </form>
+
+        <SocietyEmergencyContactModal
+            isOpen={isContactModalOpen}
+            onClose={() => setIsContactModalOpen(false)}
+            onSave={handleSaveContact}
+            initialData={editingContactIndex !== null ? emergencyContacts[editingContactIndex] : null}
+        />
+        </>
     );
 }

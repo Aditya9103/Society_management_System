@@ -585,8 +585,9 @@ export const listUnits = async (societyId, query = {}) => {
     ]);
 
     // Aggregate stats dynamically
+    const mongoose = (await import('mongoose')).default;
     const statsAgg = await Unit.aggregate([
-        { $match: { societyId: filter.societyId } },
+        { $match: { societyId: new mongoose.Types.ObjectId(filter.societyId) } },
         { 
             $group: { 
                 _id: "$ownershipStatus", 

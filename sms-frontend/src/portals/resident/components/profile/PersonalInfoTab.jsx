@@ -42,62 +42,62 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                         <div className="grid gap-4 sm:grid-cols-2">
                             {[['firstName', 'First Name'], ['lastName', 'Last Name']].map(([key, label]) => (
                                 <div key={key}>
-                                    <label className="block text-xs font-semibold text-slate-400 mb-1">{label}</label>
+                                    <label className="block text-[13px] font-bold text-slate-300 mb-1">{label}</label>
                                     <input value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                        className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                        className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                                 </div>
                             ))}
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1">Phone</label>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Phone</label>
                                 <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
                         </div>
                     ) : (
                         <div className="flex flex-col">
                             {/* Full Name */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-800/60 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Full Name</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Full Name</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium">{user?.firstName} {user?.lastName}</div>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{user?.firstName} {user?.lastName}</div>
                                 </div>
                             </div>
                             {/* Email Address */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-800/60 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Email Address</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Email Address</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium truncate pr-2">{user?.email}</div>
-                                    <button onClick={() => handleCopy(user?.email)} className="text-slate-500 hover:text-white transition-colors shrink-0 p-1 -mr-1"><Copy size={16} /></button>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold truncate pr-2">{user?.email}</div>
+                                    <button onClick={() => handleCopy(user?.email)} className="text-slate-400 hover:text-white transition-colors shrink-0 p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Mobile Number */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-800/60 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><Phone className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Mobile Number</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Phone className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Mobile Number</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium">{user?.phone}</div>
-                                    <button onClick={() => handleCopy(user?.phone)} className="text-slate-500 hover:text-white transition-colors p-1 -mr-1"><Copy size={16} /></button>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{user?.phone}</div>
+                                    <button onClick={() => handleCopy(user?.phone)} className="text-slate-400 hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Resident ID */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-800/60 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><Building2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Resident ID</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Building2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Resident ID</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium">{profile?.residentCode ?? 'RES-702110-301'}</div>
-                                    <button onClick={() => handleCopy(profile?.residentCode ?? 'RES-702110-301')} className="text-slate-500 hover:text-white transition-colors p-1 -mr-1"><Copy size={16} /></button>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.residentCode ?? 'RES-702110-301'}</div>
+                                    <button onClick={() => handleCopy(profile?.residentCode ?? 'RES-702110-301')} className="text-slate-400 hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Role */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-slate-800/60 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><Shield className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Role</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Shield className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Role</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium capitalize">{profile?.ownershipType?.toLowerCase() ?? 'Tenant'}</div>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold capitalize">{profile?.ownershipType?.toLowerCase() ?? 'Tenant'}</div>
                                 </div>
                             </div>
                             {/* Move-in Date */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 gap-1 sm:gap-0">
-                                <div className="flex items-center gap-2 sm:gap-3 text-slate-300 w-full sm:w-1/3"><Calendar className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-xs sm:text-[13px]">Move-in Date</span></div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Calendar className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Move-in Date</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-sm sm:text-[13px] font-medium">02 Jul 2024</div>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">02 Jul 2024</div>
                                 </div>
                             </div>
                         </div>

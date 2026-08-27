@@ -2,6 +2,28 @@
 
 @theme {
   --animate-blob: blob 7s infinite;
+
+  /* Global Typography Enhancements (Extreme Intensity) */
+  --text-xs: 0.875rem; /* 14px (originally 12px) */
+  --text-sm: 1rem; /* 16px (originally 14px) */
+  --text-base: 1.125rem; /* 18px (originally 16px) */
+  
+  /* Global Font Weight Boost (Make everything thicker) */
+  --font-weight-medium: 600; /* Originally 500 */
+  --font-weight-semibold: 700; /* Originally 600 */
+  --font-weight-bold: 800; /* Originally 700 */
+
+  /* Global Contrast Enhancements (Pure intensity) */
+  --color-slate-300: #f8fafc; /* Map to slate-50 (almost white) */
+  --color-slate-400: #f1f5f9; /* Map to slate-100 */
+  --color-slate-500: #e2e8f0; /* Map to slate-200 */
+  --color-slate-600: #cbd5e1; /* Map to slate-300 */
+  
+  /* Extreme Indigo Brightness */
+  --color-indigo-200: #ffffff; /* Pure white */
+  --color-indigo-300: #eff6ff; /* Map to blue-50 */
+  --color-indigo-400: #dbeafe; /* Map to blue-100 */
+  --color-indigo-500: #bfdbfe; /* Map to blue-200 */
 }
 
 @keyframes blob {

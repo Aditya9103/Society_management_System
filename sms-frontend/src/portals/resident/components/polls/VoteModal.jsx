@@ -42,15 +42,15 @@ export default function VoteModal({ initialPoll, onClose }) {
     };
 
     return (
-        <Modal isOpen={true} onClose={onClose} title="Cast Your Vote" size="lg">
+        <Modal isOpen={true} onClose={onClose} title="Cast Your Vote" size="lg" theme="dark" className="border border-white/10 shadow-2xl">
             <div className="space-y-6">
-                <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 p-6 rounded-2xl border border-indigo-100/50 text-center">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-2">{poll.title}</h3>
+                <div className="bg-[#131525] p-6 rounded-2xl border border-white/5 text-center">
+                    <h3 className="text-2xl font-bold text-white mb-2">{poll.title}</h3>
                     {poll.description && (
-                        <p className="text-slate-600 font-medium text-lg">{poll.description}</p>
+                        <p className="text-slate-400 font-medium text-sm lg:text-base">{poll.description}</p>
                     )}
                     <div className="mt-4 flex items-center justify-center gap-2">
-                        <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">
+                        <span className="bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">
                             {poll.votingMethod === 'SINGLE_CHOICE' ? 'Select One' : `Select up to ${poll.maxChoices}`}
                         </span>
                     </div>
@@ -64,22 +64,22 @@ export default function VoteModal({ initialPoll, onClose }) {
                                 key={opt.optionId}
                                 onClick={() => handleVote(opt.optionId)}
                                 className={`relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all overflow-hidden ${isSelected
-                                    ? 'border-indigo-600 bg-indigo-50/50 shadow-md shadow-indigo-100 scale-[1.02]'
-                                    : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-sm'
+                                    ? 'border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-900/20 scale-[1.02]'
+                                    : 'border-white/10 bg-[#0B0D17]/50 hover:border-indigo-500/50 hover:bg-white/5'
                                     }`}
                             >
                                 {opt.photoUrl && (
-                                    <div className="w-38 h-38 mb-4 rounded-full object-cover border-1 border-zinc-500 overflow-hidden shadow-sm">
+                                    <div className="w-24 h-24 mb-4 rounded-full object-cover border border-white/10 overflow-hidden shadow-sm">
                                         <img src={opt.photoUrl} alt={opt.text} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                                     </div>
                                 )}
-                                <span className={`text-xl font-bold transition-colors ${isSelected ? 'text-indigo-700' : 'text-slate-700'}`}>
+                                <span className={`text-xl font-bold transition-colors ${isSelected ? 'text-indigo-400' : 'text-slate-300'}`}>
                                     {opt.text}
                                 </span>
 
                                 {isSelected && (
                                     <div className="absolute top-4 right-4 animate-in zoom-in duration-200">
-                                        <CheckCircle2 className="w-6 h-6 text-indigo-600" />
+                                        <CheckCircle2 className="w-6 h-6 text-indigo-500" />
                                     </div>
                                 )}
                             </button>
@@ -87,13 +87,13 @@ export default function VoteModal({ initialPoll, onClose }) {
                     })}
                 </div>
 
-                <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
-                    <Button variant="outline" onClick={onClose} className="px-6 rounded-xl">Cancel</Button>
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                    <Button variant="outline" onClick={onClose} className="px-6 rounded-xl border-white/10 text-slate-300 hover:text-white hover:bg-white/5">Cancel</Button>
                     <Button
                         onClick={handleSubmit}
                         isLoading={isLoading}
                         disabled={selectedOptions.length === 0}
-                        className="px-8 rounded-xl shadow-lg shadow-indigo-200"
+                        className="px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-lg shadow-indigo-900/20"
                     >
                         Submit Vote
                     </Button>

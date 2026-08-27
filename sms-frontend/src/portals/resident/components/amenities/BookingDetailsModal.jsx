@@ -36,16 +36,16 @@ export function BookingDetailsModal({ booking, onClose, onCancel, onRate }) {
 
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-[#151822] p-4 rounded-xl border border-slate-800/50">
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Date</p>
+                    <div className="bg-[#0B0D17] p-5 rounded-2xl border border-white/5 shadow-inner">
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">Date</p>
                         <p className="text-sm font-semibold text-slate-200 flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-purple-400" />
                             {new Date(booking.bookingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                     </div>
                     
-                    <div className="bg-[#151822] p-4 rounded-xl border border-slate-800/50">
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Time</p>
+                    <div className="bg-[#0B0D17] p-5 rounded-2xl border border-white/5 shadow-inner">
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">Time</p>
                         <p className="text-sm font-semibold text-slate-200 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-blue-400" />
                             {booking.startTime} - {booking.endTime}
@@ -53,8 +53,8 @@ export function BookingDetailsModal({ booking, onClose, onCancel, onRate }) {
                     </div>
 
                     {booking.expectedGuests > 0 && (
-                        <div className="bg-[#151822] p-4 rounded-xl border border-slate-800/50">
-                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Guests</p>
+                        <div className="bg-[#0B0D17] p-5 rounded-2xl border border-white/5 shadow-inner">
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">Guests</p>
                             <p className="text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 <Users className="w-4 h-4 text-emerald-400" />
                                 {booking.expectedGuests} People
@@ -63,27 +63,27 @@ export function BookingDetailsModal({ booking, onClose, onCancel, onRate }) {
                     )}
 
                     {booking.purpose && (
-                        <div className="col-span-2 bg-[#151822] p-4 rounded-xl border border-slate-800/50">
-                            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Purpose</p>
+                        <div className="col-span-2 bg-[#0B0D17] p-5 rounded-2xl border border-white/5 shadow-inner">
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">Purpose</p>
                             <p className="text-sm text-slate-300">{booking.purpose}</p>
                         </div>
                     )}
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
                     <DarkButton type="button" variant="secondary" onClick={() => onClose()}>Close</DarkButton>
                     
                     {canCancel && (
-                        <DarkButton type="button" onClick={() => { onClose(); onCancel(booking); }} className="bg-red-600 hover:bg-red-700 text-white border-none">
+                        <button type="button" onClick={() => { onClose(); onCancel(booking); }} className="px-5 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 hover:border-rose-500/30 font-semibold rounded-xl transition-colors">
                             Cancel Booking
-                        </DarkButton>
+                        </button>
                     )}
 
                     {canRate && (
-                        <DarkButton type="button" onClick={() => { onClose(); onRate(booking); }} className="bg-amber-500 hover:bg-amber-600 text-white border-none">
+                        <button type="button" onClick={() => { onClose(); onRate(booking); }} className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] font-semibold rounded-xl transition-all flex items-center">
                             <Star className="w-4 h-4 mr-2" /> Rate Experience
-                        </DarkButton>
+                        </button>
                     )}
                 </div>
             </div>

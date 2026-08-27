@@ -213,6 +213,9 @@ export const scanVehicleEntry = async (guardId, societyId, qrToken, gateId) => {
 
     const entryLog = await vehicleRepo.createVehicleLog(logData);
 
+    // Update vehicle parked status
+    await vehicleRepo.updateVehicle(vehicle._id, { isCurrentlyParked: true });
+
     // Broadcast Event
     getIO().to(ROOMS.SOCIETY_ADMIN(societyId)).emit('vehicle:entry', { vehicleNumber: vehicle.vehicleNumber, unit: vehicle.unitId?.unitNumber });
 
@@ -249,7 +252,11 @@ export const scanVehicleExit = async (guardId, societyId, qrToken, gateId) => {
     activeLog.exitTime = exitTime;
     activeLog.status = 'EXIT';
     activeLog.durationMinutes = durationMinutes;
+    activeLog.guardId = guardId; // guard who scanned exit
     await activeLog.save();
+
+    // Update vehicle parked status
+    await vehicleRepo.updateVehicle(vehicle._id, { isCurrentlyParked: false });
 
     // Broadcast Event
     getIO().to(ROOMS.SOCIETY_ADMIN(societyId)).emit('vehicle:exit', { vehicleNumber: vehicle.vehicleNumber });

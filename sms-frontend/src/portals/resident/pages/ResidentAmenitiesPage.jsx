@@ -65,8 +65,8 @@ export default function ResidentAmenitiesPage() {
     const scrollToBookings = () => bookingsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     return (
-        <div className="min-h-screen bg-[#0f111a] p-4 lg:p-8 font-sans">
-            <div className="max-w-[1400px] mx-auto">
+        <>
+            <div className="max-w-[1400px] mx-auto space-y-6 pb-20">
                 
                 {/* Top Banner & Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -88,20 +88,21 @@ export default function ResidentAmenitiesPage() {
                     <div className="lg:col-span-8 space-y-8">
                         
                         {/* Hero Promotion Widget */}
-                        <div className="bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#120f22] border border-indigo-500/20 rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center justify-between min-h-[220px]">
+                        <div className="bg-gradient-to-br from-[#131525] to-[#0B0D17] border border-white/5 rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center justify-between min-h-[220px] shadow-2xl">
                             {/* Decorative lighting */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-[60px] rounded-full mix-blend-screen pointer-events-none"></div>
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none"></div>
                             
                             <div className="z-10 md:w-1/2">
                                 <h2 className="text-3xl font-bold text-white mb-3 leading-tight text-shadow-sm">
-                                    Book Your Favorite <span className="text-indigo-400">Amenities</span>
+                                    Book Your Favorite <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Amenities</span>
                                 </h2>
-                                <p className="text-indigo-200/80 text-sm mb-6 leading-relaxed">
+                                <p className="text-slate-300 text-sm mb-6 leading-relaxed font-medium">
                                     From clubhouse to sports courts, enjoy world-class facilities at your convenience.
                                 </p>
                                 <button 
                                     onClick={scrollToAmenities}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-purple-900/20"
+                                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)]"
                                 >
                                     Explore Amenities <ArrowRight className="w-4 h-4" />
                                 </button>
@@ -109,38 +110,37 @@ export default function ResidentAmenitiesPage() {
                             
                             {/* Generic Image placeholder representing the 3D graphic */}
                             <div className="z-10 md:w-1/2 flex justify-end mt-6 md:mt-0 relative">
-                                <img src="https://images.unsplash.com/photo-1542314831-c6a4d14eff43?auto=format&fit=crop&q=80&w=600" alt="3D Pool" className="w-full max-w-[320px] rounded-2xl shadow-2xl shadow-black/50 border border-white/10 brightness-90 contrast-125" />
-                                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-indigo-950/80 rounded-2xl hidden md:block"></div>
+                                <img src="https://images.unsplash.com/photo-1542314831-c6a4d14eff43?auto=format&fit=crop&q=80&w=600" alt="3D Pool" className="w-full max-w-[320px] rounded-3xl shadow-2xl shadow-black/50 border border-white/5 object-cover h-48" />
                             </div>
                         </div>
 
                         {/* Search and Filter */}
-                        <div ref={amenitiesSectionRef} className="flex flex-col md:flex-row gap-4 items-center pt-2">
+                        <div ref={amenitiesSectionRef} className="flex flex-col md:flex-row gap-4 items-center pt-4">
                             <div className="relative flex-1 w-full">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input 
                                     type="text" 
                                     placeholder="Search amenities..." 
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-[#151822] border border-slate-800 text-white rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-purple-500/50" 
+                                    className="w-full bg-[#0B0D17] border border-white/5 text-white rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:border-indigo-500/50 shadow-inner" 
                                 />
                             </div>
-                            <button className="w-full md:w-auto bg-[#151822] hover:bg-slate-800 border border-slate-800 text-slate-300 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shrink-0">
+                            <button className="w-full md:w-auto bg-[#0B0D17] hover:bg-white/5 border border-white/5 text-slate-300 px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shrink-0 shadow-sm">
                                 <SlidersHorizontal className="w-4 h-4" /> Filters
                             </button>
                         </div>
 
                         {/* Custom Tabs */}
-                        <div className="flex overflow-x-auto pb-2 space-x-2 border-b border-slate-800/80 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        <div className="flex overflow-x-auto pb-2 space-x-2 border-b border-white/5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {TABS.map(tab => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setFilter(tab.id)}
                                     className={`flex items-center gap-2 px-5 py-3 text-sm font-bold transition-all whitespace-nowrap border-b-2
-                                        ${filter === tab.id ? 'text-purple-400 border-purple-500 bg-purple-500/5 rounded-t-lg' : 'text-slate-400 border-transparent hover:text-slate-300'}`}
+                                        ${filter === tab.id ? 'text-indigo-400 border-indigo-500 bg-indigo-500/5 rounded-t-lg' : 'text-slate-400 border-transparent hover:text-slate-300 hover:bg-white/5 rounded-t-lg'}`}
                                 >
-                                    <span className="opacity-70 grayscale">{tab.icon}</span> {tab.label}
+                                    <span className={filter === tab.id ? '' : 'opacity-70 grayscale'}>{tab.icon}</span> {tab.label}
                                 </button>
                             ))}
                         </div>
@@ -241,6 +241,6 @@ export default function ResidentAmenitiesPage() {
                     }}
                 />
             )}
-        </div>
+        </>
     );
 }

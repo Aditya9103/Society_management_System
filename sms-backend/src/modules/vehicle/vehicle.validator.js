@@ -10,8 +10,10 @@ export const registerVehicleSchema = {
         make: Joi.string().optional().allow('', null),
         model: Joi.string().optional().allow('', null),
         color: Joi.string().optional().allow('', null),
+        fuelType: Joi.string().valid('PETROL', 'DIESEL', 'ELECTRIC', 'CNG', 'HYBRID', 'OTHER').optional(),
         yearOfManufacture: Joi.number().optional().allow(null),
         registrationState: Joi.string().optional().allow('', null),
+        insuranceExpiry: Joi.date().optional().allow(null, ''),
         rcPhotoUrl: Joi.string().optional().allow('', null),
         vehiclePhotoUrl: Joi.string().optional().allow('', null),
         isPrimary: Joi.boolean().optional()

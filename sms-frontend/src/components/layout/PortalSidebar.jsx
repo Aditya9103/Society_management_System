@@ -115,7 +115,7 @@ export default function PortalSidebar({ config, isOpen, onClose }) {
         {bottomContent && <div className="mb-4">{bottomContent}</div>}
         <div 
           onClick={() => { navigate(profileRoute); onClose?.(); }}
-          className="mb-3 flex items-center gap-3.5 rounded-2xl border border-white/10 bg-black/20 p-3 cursor-pointer hover:bg-black/30 transition-colors shadow-sm"
+          className="mb-1 flex items-center gap-3.5 rounded-2xl border border-white/10 bg-black/20 p-3 cursor-pointer hover:bg-black/30 transition-colors shadow-sm"
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-sm font-bold text-white shadow-md overflow-hidden ring-1 ring-white/10">
             {user?.profilePhotoUrl ? (

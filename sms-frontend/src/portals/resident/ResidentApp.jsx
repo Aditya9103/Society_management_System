@@ -56,7 +56,7 @@ export default function ResidentApp() {
 
     // Block PENDING_APPROVAL users from all pages EXCEPT documents
     if (
-        user?.registrationStatus === 'PENDING_APPROVAL' && 
+        user?.registrationStatus === 'PENDING_APPROVAL' &&
         !location.pathname.includes('/documents')
     ) {
         return <PendingApprovalScreen />;

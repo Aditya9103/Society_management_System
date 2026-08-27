@@ -27,6 +27,14 @@ export const vehicleApi = createApi({
             query: (id) => ({ url: `/vehicles/${id}/regenerate-qr`, method: 'POST' }),
             invalidatesTags: ['Vehicle'],
         }),
+        getMyVehicleLogs: builder.query({
+            query: () => ({ url: '/vehicles/logs/history', method: 'GET' }),
+            providesTags: ['VehicleLog'],
+        }),
+        getMyViolations: builder.query({
+            query: () => ({ url: '/vehicles/violations/history', method: 'GET' }),
+            providesTags: ['Vehicle'], // For now tying violations cache to vehicle
+        }),
 
         // Admin Endpoints
         getAllVehicles: builder.query({
@@ -86,6 +94,8 @@ export const {
     useUpdateMyVehicleMutation,
     useDeleteMyVehicleMutation,
     useRegenerateVehicleQrMutation,
+    useGetMyVehicleLogsQuery,
+    useGetMyViolationsQuery,
     useGetAllVehiclesQuery,
     useApproveVehicleMutation,
     useRejectVehicleMutation,

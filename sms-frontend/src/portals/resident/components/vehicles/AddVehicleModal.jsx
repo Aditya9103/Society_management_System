@@ -13,9 +13,11 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
         make: '',
         model: '',
         color: '',
+        fuelType: 'PETROL',
         vehicleCategory: 'PERSONAL',
         yearOfManufacture: '',
         registrationState: '',
+        insuranceExpiry: '',
         rcPhotoUrl: '',
         vehiclePhotoUrl: '',
         isPrimary: false
@@ -60,9 +62,14 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
     };
 
     return (
-        <Modal isOpen={true} onClose={onClose} title="Register New Vehicle">
+        <Modal 
+            isOpen={true} 
+            onClose={onClose} 
+            title="Register New Vehicle"
+            theme="dark"
+        >
             <form onSubmit={handleSubmit} className="space-y-4">
-                <Input 
+                <Input theme="dark" 
                     label="Vehicle Number *" 
                     placeholder="e.g. MH 12 AB 1234" 
                     value={form.vehicleNumber}
@@ -70,7 +77,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                     required
                 />
                 
-                <Select
+                <Select theme="dark"
                     label="Vehicle Type *"
                     value={form.vehicleType}
                     onChange={e => setForm({...form, vehicleType: e.target.value})}
@@ -85,7 +92,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                 </Select>
 
                 {form.vehicleType === 'OTHER' && (
-                    <Input
+                    <Input theme="dark"
                         label="Specify Vehicle Type *"
                         required
                         placeholder="e.g. Tractor"
@@ -95,13 +102,13 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
-                    <Input 
+                    <Input theme="dark" 
                         label="Make/Brand" 
                         placeholder="e.g. Honda" 
                         value={form.make}
                         onChange={e => setForm({...form, make: e.target.value})}
                     />
-                    <Input 
+                    <Input theme="dark" 
                         label="Model" 
                         placeholder="e.g. City" 
                         value={form.model}
@@ -109,15 +116,29 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                     />
                 </div>
 
-                <Input 
-                    label="Color" 
-                    placeholder="e.g. White" 
-                    value={form.color}
-                    onChange={e => setForm({...form, color: e.target.value})}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                    <Input theme="dark" 
+                        label="Color" 
+                        placeholder="e.g. White" 
+                        value={form.color}
+                        onChange={e => setForm({...form, color: e.target.value})}
+                    />
+                    <Select theme="dark"
+                        label="Fuel Type"
+                        value={form.fuelType}
+                        onChange={e => setForm({...form, fuelType: e.target.value})}
+                    >
+                        <option value="PETROL">Petrol</option>
+                        <option value="DIESEL">Diesel</option>
+                        <option value="ELECTRIC">Electric</option>
+                        <option value="CNG">CNG</option>
+                        <option value="HYBRID">Hybrid</option>
+                        <option value="OTHER">Other</option>
+                    </Select>
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <Select
+                    <Select theme="dark"
                         label="Category"
                         value={form.vehicleCategory}
                         onChange={e => setForm({...form, vehicleCategory: e.target.value})}
@@ -126,7 +147,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                         <option value="COMMERCIAL">Commercial</option>
                     </Select>
                     
-                    <Input 
+                    <Input theme="dark" 
                         label="Year of Manufacture" 
                         type="number"
                         placeholder="e.g. 2023" 
@@ -135,18 +156,24 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                    <Input 
+                <div className="grid grid-cols-2 gap-4">
+                    <Input theme="dark" 
                         label="Registration State" 
                         placeholder="e.g. Maharashtra" 
                         value={form.registrationState}
                         onChange={e => setForm({...form, registrationState: e.target.value})}
                     />
+                    <Input theme="dark" 
+                        label="Insurance Expiry" 
+                        type="date"
+                        value={form.insuranceExpiry}
+                        onChange={e => setForm({...form, insuranceExpiry: e.target.value})}
+                    />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                        <label className="block text-sm font-semibold text-slate-300 mb-1.5">
                             Vehicle Document (Any)
                         </label>
                         <div className="flex flex-col gap-2">
@@ -154,15 +181,15 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                                 type="file" 
                                 accept="image/*,.pdf"
                                 onChange={handleRcUpload}
-                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer"
+                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
                             />
-                            {isUploadingRc && <span className="text-sm text-indigo-600 animate-pulse">Uploading...</span>}
-                            {form.rcPhotoUrl && !isUploadingRc && <span className="text-sm text-green-600 font-medium">✓ Document Uploaded</span>}
+                            {isUploadingRc && <span className="text-sm text-indigo-400 animate-pulse">Uploading...</span>}
+                            {form.rcPhotoUrl && !isUploadingRc && <span className="text-sm text-emerald-400 font-medium">✓ Document Uploaded</span>}
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                        <label className="block text-sm font-semibold text-slate-300 mb-1.5">
                             Vehicle Image
                         </label>
                         <div className="flex flex-col gap-2">
@@ -170,30 +197,30 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                                 type="file" 
                                 accept="image/*"
                                 onChange={handleVehiclePhotoUpload}
-                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer"
+                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
                             />
-                            {isUploadingVehicle && <span className="text-sm text-indigo-600 animate-pulse">Uploading...</span>}
-                            {form.vehiclePhotoUrl && !isUploadingVehicle && <span className="text-sm text-green-600 font-medium">✓ Image Uploaded</span>}
+                            {isUploadingVehicle && <span className="text-sm text-indigo-400 animate-pulse">Uploading...</span>}
+                            {form.vehiclePhotoUrl && !isUploadingVehicle && <span className="text-sm text-emerald-400 font-medium">✓ Image Uploaded</span>}
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 pb-2">
+                <div className="flex items-center gap-3 pt-2 pb-2">
                     <input 
                         type="checkbox" 
                         id="isPrimary"
                         checked={form.isPrimary}
                         onChange={e => setForm({...form, isPrimary: e.target.checked})}
-                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0 transition-all cursor-pointer"
                     />
-                    <label htmlFor="isPrimary" className="text-sm font-medium text-slate-700 cursor-pointer">
+                    <label htmlFor="isPrimary" className="text-sm font-medium text-slate-300 cursor-pointer select-none">
                         Set as Primary Vehicle
                     </label>
                 </div>
 
                 {/* Read-Only Info Box explaining automatic coupling */}
-                <div className="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100 flex gap-3 text-sm text-indigo-900">
-                    <div className="mt-0.5 text-indigo-500">
+                <div className="bg-indigo-500/10 rounded-xl p-4 border border-indigo-500/20 flex gap-3 text-sm text-indigo-200">
+                    <div className="mt-0.5 text-indigo-400">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -204,9 +231,13 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                     </div>
                 </div>
 
-                <div className="pt-4 flex justify-end gap-3">
-                    <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-                    <Button type="submit" isLoading={isLoading}>Register Vehicle</Button>
+                <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+                    <Button type="button" variant="outline" className="border-white/20 text-slate-300 hover:bg-white/5" onClick={onClose} disabled={isLoading}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-medium">
+                        {isLoading ? 'Registering...' : 'Register Vehicle'}
+                    </Button>
                 </div>
             </form>
         </Modal>

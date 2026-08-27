@@ -158,7 +158,10 @@ export default function ResidentProfilePage() {
                     <h1 className="text-2xl font-bold text-white mb-1">My Profile</h1>
                     <p className="text-sm text-slate-400">Manage your account, personal details and preferences.</p>
                 </div>
-                <button className="flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-5 py-2.5 text-sm font-bold text-white transition-colors shadow-lg shadow-purple-600/30">
+                <button 
+                    onClick={startEdit}
+                    className="flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-5 py-2.5 text-sm font-bold text-white transition-colors shadow-lg shadow-purple-600/30"
+                >
                     <Edit2 size={16} /> Edit Profile
                 </button>
             </div>

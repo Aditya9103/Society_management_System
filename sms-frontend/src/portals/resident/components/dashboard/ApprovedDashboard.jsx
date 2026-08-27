@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGetNotificationsQuery, useMarkAsReadMutation } from '../../../../store/api/notificationApi';
+import { formatDistanceToNow } from 'date-fns';
 import { 
     MessageSquareWarning, Users, Receipt, Bell, 
     ShieldAlert, Building2, Car, FileText, 
-    ChevronRight, CloudMoon, UserCheck, Search, Menu, Plus, ChevronDown, MessageCircle, Megaphone,
+    ChevronRight, UserCheck, Search, Plus, ChevronDown, MessageCircle, Megaphone,
     Shield, Leaf, Siren, Pencil, Coffee, Folder
 } from 'lucide-react';
+import { CommandPaletteModal } from './CommandPaletteModal';
+import { WeatherWidget } from './WeatherWidget';
 
 export function ApprovedDashboard({ profile, user }) {
     const navigate = useNavigate();
@@ -19,6 +23,44 @@ export function ApprovedDashboard({ profile, user }) {
         return 'Good Evening';
     };
 
+    // State for dropdowns and modals
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const notifRef = useRef(null);
+    const quickActionRef = useRef(null);
+
+    // Global Search Cmd+K Listener
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    // Notifications data
+    const { data: notifData } = useGetNotificationsQuery();
+    const [markAsRead] = useMarkAsReadMutation();
+    
+    // Safely extract notifications array depending on API response structure
+    const rawList = notifData?.data?.data || notifData?.data;
+    const notifications = Array.isArray(rawList) ? rawList : [];
+    const unreadCount = notifData?.data?.unreadCount || notifData?.unreadCount || 0;
+
+    // Handle outside clicks for dropdowns
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (notifRef.current && !notifRef.current.contains(event.target)) setIsNotifOpen(false);
+            if (quickActionRef.current && !quickActionRef.current.contains(event.target)) setIsQuickActionOpen(false);
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <div className="space-y-8 pb-6 relative z-10">
             {/* ── Top Banner ──────────────────────── */}
@@ -26,39 +68,93 @@ export function ApprovedDashboard({ profile, user }) {
                 <div className="relative z-10 p-4 sm:px-6 sm:py-5">
                     {/* Top Toolbar */}
                     <div className="flex items-center justify-between mb-6 sm:mb-8">
-                        <button className="text-slate-300 hover:text-white transition-colors lg:hidden">
-                            <Menu size={24} />
-                        </button>
-                        <div className="hidden lg:block w-6"></div> {/* Spacer for desktop where hamburger isn't needed or just visual balance */}
 
                         {/* Search Bar */}
-                        <div className="flex-1 max-w-md mx-4 sm:mx-8">
-                            <div className="relative flex items-center w-full h-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md px-3 group focus-within:border-purple-500/50 transition-colors">
+                        <div className="flex-1 max-w-md mx-auto sm:ml-0 sm:mr-8">
+                            <button 
+                                onClick={() => setIsSearchOpen(true)}
+                                className="relative flex items-center w-full h-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md px-3 group hover:border-purple-500/50 transition-colors cursor-text text-left"
+                            >
                                 <Search size={18} className="text-slate-400 mr-2" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Search anything..." 
-                                    className="w-full bg-transparent text-sm text-slate-200 placeholder-slate-400 focus:outline-none"
-                                />
+                                <span className="w-full bg-transparent text-sm text-slate-400">Search anything...</span>
                                 <div className="hidden sm:flex items-center justify-center bg-slate-800 rounded px-1.5 py-0.5 text-[10px] font-bold text-slate-400 border border-slate-700">
                                     ⌘K
                                 </div>
-                            </div>
+                            </button>
                         </div>
 
                         {/* Right Actions */}
                         <div className="flex items-center gap-3 sm:gap-4">
-                            <button className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md text-slate-300 hover:text-white transition-colors">
-                                <Bell size={18} />
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-[#0b0c10]">
-                                    3
-                                </span>
-                            </button>
-                            <button className="hidden sm:flex items-center gap-2 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all">
-                                <Plus size={16} />
-                                Quick Action
-                                <ChevronDown size={14} className="ml-1 opacity-80" />
-                            </button>
+                            {/* Notifications */}
+                            <div className="relative" ref={notifRef}>
+                                <button 
+                                    onClick={() => setIsNotifOpen(!isNotifOpen)}
+                                    className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md text-slate-300 hover:text-white transition-colors"
+                                >
+                                    <Bell size={18} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-[#0b0c10]">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {isNotifOpen && (
+                                    <div className="absolute right-0 mt-2 w-80 max-h-[400px] overflow-y-auto bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl z-50">
+                                        <div className="p-4 border-b border-slate-800 flex justify-between items-center sticky top-0 bg-slate-900/95 backdrop-blur z-10">
+                                            <h3 className="font-bold text-white">Notifications</h3>
+                                            {unreadCount > 0 && <span className="text-xs text-indigo-400 font-semibold">{unreadCount} unread</span>}
+                                        </div>
+                                        {notifications.length === 0 ? (
+                                            <div className="p-6 text-center text-slate-500 text-sm">No new notifications</div>
+                                        ) : (
+                                            <div className="flex flex-col">
+                                                {notifications.map(notif => (
+                                                    <div 
+                                                        key={notif._id} 
+                                                        onClick={() => { if (!notif.readAt) markAsRead(notif._id); }}
+                                                        className={`p-4 border-b border-slate-800/50 cursor-pointer hover:bg-slate-800/50 transition-colors ${!notif.readAt ? 'bg-indigo-500/5' : ''}`}
+                                                    >
+                                                        <div className="flex justify-between items-start mb-1">
+                                                            <span className="text-sm font-semibold text-slate-200">{notif.title}</span>
+                                                            <span className="text-[10px] text-slate-500 shrink-0 ml-2">{formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}</span>
+                                                        </div>
+                                                        <p className="text-xs text-slate-400 line-clamp-2">{notif.body}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Quick Actions */}
+                            <div className="relative" ref={quickActionRef}>
+                                <button 
+                                    onClick={() => setIsQuickActionOpen(!isQuickActionOpen)}
+                                    className="hidden sm:flex items-center gap-2 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all"
+                                >
+                                    <Plus size={16} />
+                                    Quick Action
+                                    <ChevronDown size={14} className={`ml-1 opacity-80 transition-transform ${isQuickActionOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {isQuickActionOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl z-50 p-2 flex flex-col gap-1">
+                                        <button onClick={() => { navigate('/resident/amenities'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                            <Coffee size={16} className="text-fuchsia-400" /> Book Amenity
+                                        </button>
+                                        <button onClick={() => { navigate('/resident/visitors'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                            <UserCheck size={16} className="text-emerald-400" /> Pre-approve Visitor
+                                        </button>
+                                        <button onClick={() => { navigate('/resident/complaints'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                            <MessageCircle size={16} className="text-rose-400" /> Raise Complaint
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -74,13 +170,7 @@ export function ApprovedDashboard({ profile, user }) {
                         </div>
                         
                         {/* Weather Widget */}
-                        <div className="flex items-center gap-3 bg-slate-900/40 rounded-xl px-4 py-2 border border-slate-700/50 backdrop-blur-md">
-                            <CloudMoon className="text-blue-200 drop-shadow-[0_0_10px_rgba(191,219,254,0.5)]" size={28} strokeWidth={1.5} />
-                            <div>
-                                <div className="text-lg font-bold text-white leading-none mb-1">32°C</div>
-                                <div className="text-[10px] font-medium text-slate-300 leading-none">Clear Sky, {city}</div>
-                            </div>
-                        </div>
+                        <WeatherWidget defaultCity={city} />
                     </div>
                 </div>
             </div>
@@ -282,7 +372,7 @@ export function ApprovedDashboard({ profile, user }) {
             {/* ── Lists ───────────────────────────────────────────────────── */}
             <div className="grid lg:grid-cols-2 gap-6">
                 {/* Recent Notices */}
-                <div className="rounded-2xl bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                <div className="rounded-2xl bg-[#0a0b12] border border-slate-800/80 p-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-[40px] pointer-events-none"></div>
                     <div className="flex items-center justify-between mb-5 relative z-10">
                         <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
@@ -302,7 +392,7 @@ export function ApprovedDashboard({ profile, user }) {
                 </div>
 
                 {/* Upcoming Amenities */}
-                <div className="rounded-2xl bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                <div className="rounded-2xl bg-[#0a0b12] border border-slate-800/80 p-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-600/5 rounded-full blur-[40px] pointer-events-none"></div>
                     <div className="flex items-center justify-between mb-5 relative z-10">
                         <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
@@ -321,6 +411,9 @@ export function ApprovedDashboard({ profile, user }) {
                     </div>
                 </div>
             </div>
+            {/* Search Command Palette Modal */}
+            <CommandPaletteModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
         </div>
     );
 }
@@ -429,9 +522,16 @@ function NoticeItem({ title, date, badge, badgeColor, dotColor }) {
 
 function AmenityItem({ title, date, img }) {
     return (
-        <div className="flex items-center justify-between group cursor-pointer hover:bg-slate-800/50 p-2 -mx-2 rounded-xl transition-colors">
+        <div className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-2 -mx-2 rounded-xl transition-colors">
             <div className="flex items-center gap-3">
-                <img src={img} alt={title} className="w-12 h-10 object-cover rounded-lg" />
+                <div className="relative w-12 h-10 rounded-lg overflow-hidden bg-slate-800">
+                    <img 
+                        src={img} 
+                        alt={title} 
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300" 
+                        onLoad={(e) => e.target.classList.remove('opacity-0')} 
+                    />
+                </div>
                 <div>
                     <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">{title}</div>
                     <div className="text-[11px] text-slate-500 mt-0.5">{date}</div>

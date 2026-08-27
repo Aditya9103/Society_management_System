@@ -30,6 +30,16 @@ export const deleteMyVehicle = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, null, 'Vehicle deleted successfully'));
 });
 
+export const getMyVehicleLogs = asyncHandler(async (req, res) => {
+    const logs = await vehicleService.getMyVehicleLogs(req.user.sub);
+    res.status(200).json(new ApiResponse(200, { logs }, 'Logs retrieved successfully'));
+});
+
+export const getMyViolations = asyncHandler(async (req, res) => {
+    const violations = await vehicleService.getMyViolations(req.user.sub);
+    res.status(200).json(new ApiResponse(200, { violations }, 'Violations retrieved successfully'));
+});
+
 // --- ADMIN CONTROLLERS ---
 
 export const getAllVehicles = asyncHandler(async (req, res) => {

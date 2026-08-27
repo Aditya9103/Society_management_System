@@ -1,6 +1,7 @@
 import Vehicle from './vehicle.model.js';
 import VehicleLog from './vehicleLog.model.js';
 import ParkingSlot from './parkingSlot.model.js';
+import Violation from './violation.model.js';
 
 // --- VEHICLE CRUD ---
 
@@ -76,5 +77,24 @@ export const getVehicleLogsBySociety = async (societyId, filter = {}) => {
         .populate('vehicleId', 'vehicleNumber vehicleType')
         .populate('gateId', 'name')
         .populate('guardId', 'name')
+        .sort({ createdAt: -1 });
+};
+
+export const getVehicleLogsByResident = async (residentId) => {
+    // We first need the resident's vehicles to get logs, OR we can query logs where vehicleId is in the resident's vehicle list.
+    // However, it's easier to find vehicles for the resident, then find logs for those vehicles.
+    const vehicles = await Vehicle.find({ residentId }).select('_id');
+    const vehicleIds = vehicles.map(v => v._id);
+    return VehicleLog.find({ vehicleId: { $in: vehicleIds } })
+        .populate('vehicleId', 'vehicleNumber')
+        .populate('gateId', 'name')
+        .sort({ entryTime: -1 });
+};
+
+// --- VIOLATIONS ---
+
+export const getViolationsByResident = async (residentId) => {
+    return Violation.find({ residentId })
+        .populate('vehicleId', 'vehicleNumber')
         .sort({ createdAt: -1 });
 };

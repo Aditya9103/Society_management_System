@@ -8,7 +8,7 @@ import {
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { AuthCard } from '../components/ui/AuthCard';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
     const [step, setStep] = useState(1);
@@ -74,125 +74,126 @@ export default function ForgotPasswordPage() {
             title="Forgot Password"
             subtitle={step === 1 ? 'Enter your email to receive an OTP' : 'Enter the OTP and your new password'}
         >
-                    {errorMsg && (
-                        <div className="mb-4 rounded-md bg-red-50 p-4">
-                            <div className="flex">
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">{errorMsg}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {successMsg && (
-                        <div className="mb-4 rounded-md bg-green-50 p-4">
-                            <div className="flex">
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-green-800">{successMsg}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+            <form className="space-y-6" onSubmit={handleSubmit(step === 1 ? handleSendOtp : handleResetPassword)}>
+                {errorMsg && (
+                    <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4">
+                        <p className="text-sm text-red-400 font-medium">{errorMsg}</p>
+                    </div>
+                )}
+                {successMsg && (
+                    <div className="rounded-xl bg-green-500/10 border border-green-500/20 p-4">
+                        <p className="text-sm text-green-400 font-medium">{successMsg}</p>
+                    </div>
+                )}
 
-                    <form className="space-y-6" onSubmit={handleSubmit(step === 1 ? handleSendOtp : handleResetPassword)}>
-                        {step === 1 ? (
-                            <div>
-                                <Input
-                                    id="email"
-                                    label="Email address"
-                                    type="email"
-                                    autoComplete="email"
-                                    {...register('email', {
-                                        required: 'Email is required',
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: 'Invalid email address',
-                                        },
-                                    })}
-                                    error={errors.email?.message}
-                                />
-                            </div>
-                        ) : (
-                            <>
-                                <Input
-                                    id="otp"
-                                    label="Verification OTP"
-                                    type="text"
-                                    inputMode="numeric"
-                                    {...register('otp', {
-                                        required: 'OTP is required',
-                                        pattern: {
-                                            value: /^\d{6}$/,
-                                            message: 'OTP must be 6 digits',
-                                        },
-                                    })}
-                                    error={errors.otp?.message}
-                                />
+                <div className="space-y-5 text-left">
+                    {step === 1 ? (
+                        <Input
+                            id="email"
+                            label="Email Address"
+                            type="email"
+                            autoComplete="email"
+                            theme="dark"
+                            leftIcon={Mail}
+                            {...register('email', {
+                                required: 'Email is required',
+                                pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: 'Invalid email address',
+                                },
+                            })}
+                            error={errors.email?.message}
+                        />
+                    ) : (
+                        <>
+                            <Input
+                                id="otp"
+                                label="Verification OTP"
+                                type="text"
+                                inputMode="numeric"
+                                theme="dark"
+                                leftIcon={Lock}
+                                {...register('otp', {
+                                    required: 'OTP is required',
+                                    pattern: {
+                                        value: /^\d{6}$/,
+                                        message: 'OTP must be 6 digits',
+                                    },
+                                })}
+                                error={errors.otp?.message}
+                            />
 
-                                <div className="relative">
-                                    <Input
-                                        id="newPassword"
-                                        label="New Password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        {...register('newPassword', {
-                                            required: 'New password is required',
-                                            minLength: {
-                                                value: 8,
-                                                message: 'Password must be at least 8 characters',
-                                            },
-                                            pattern: {
-                                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
-                                                message: 'Must include uppercase, lowercase, number, and special character',
-                                            },
-                                        })}
-                                        error={errors.newPassword?.message}
-                                    />
+                            <Input
+                                id="newPassword"
+                                label="New Password"
+                                type={showPassword ? 'text' : 'password'}
+                                theme="dark"
+                                leftIcon={Lock}
+                                RightElement={
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        className="text-slate-400 hover:text-slate-300 transition-colors"
                                     >
-                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
-                                </div>
+                                }
+                                {...register('newPassword', {
+                                    required: 'New password is required',
+                                    minLength: {
+                                        value: 8,
+                                        message: 'Password must be at least 8 characters',
+                                    },
+                                    pattern: {
+                                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+                                        message: 'Must include uppercase, lowercase, number, and special character',
+                                    },
+                                })}
+                                error={errors.newPassword?.message}
+                            />
 
-                                <div className="relative">
-                                    <Input
-                                        id="confirmPassword"
-                                        label="Confirm New Password"
-                                        type={showConfirmPassword ? 'text' : 'password'}
-                                        {...register('confirmPassword', {
-                                            required: 'Please confirm your new password',
-                                            validate: (value) =>
-                                                value === newPassword || 'Passwords do not match',
-                                        })}
-                                        error={errors.confirmPassword?.message}
-                                    />
+                            <Input
+                                id="confirmPassword"
+                                label="Confirm New Password"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                theme="dark"
+                                leftIcon={Lock}
+                                RightElement={
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        className="text-slate-400 hover:text-slate-300 transition-colors"
                                     >
-                                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
-                                </div>
-                            </>
-                        )}
+                                }
+                                {...register('confirmPassword', {
+                                    required: 'Please confirm your new password',
+                                    validate: (value) =>
+                                        value === newPassword || 'Passwords do not match',
+                                })}
+                                error={errors.confirmPassword?.message}
+                            />
+                        </>
+                    )}
+                </div>
 
-                        <div>
-                            <Button type="submit" disabled={isSendingOtp || isResetting} className="w-full">
-                                {step === 1
-                                    ? isSendingOtp ? 'Sending...' : 'Send OTP'
-                                    : isResetting ? 'Resetting...' : 'Reset Password'}
-                            </Button>
-                        </div>
-                    </form>
+                <div className="pt-2">
+                    <Button type="submit" disabled={isSendingOtp || isResetting} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
+                        {step === 1
+                            ? isSendingOtp ? 'Sending...' : 'Send OTP'
+                            : isResetting ? 'Resetting...' : 'Reset Password'}
+                        <ArrowRight size={18} />
+                    </Button>
+                </div>
+            </form>
 
-                    <p className="mt-10 text-center text-sm text-gray-500">
-                        Remember your password?{' '}
-                        <Link to="/auth/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                            Sign in
-                        </Link>
-                    </p>
+            <p className="mt-8 text-center text-sm text-slate-400 font-medium">
+                Remember your password?{' '}
+                <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                    Sign in
+                </Link>
+            </p>
         </AuthCard>
     );
 }

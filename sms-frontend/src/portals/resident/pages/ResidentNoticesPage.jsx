@@ -63,7 +63,7 @@ export default function ResidentNoticesPage() {
     const pinnedNotice = notices.find(n => n.isPinned);
 
     return (
-        <div className="min-h-screen bg-[#0a0b12] text-white p-4 lg:p-8 font-sans">
+        <div className="relative text-white p-4 lg:p-8 font-sans z-10">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>

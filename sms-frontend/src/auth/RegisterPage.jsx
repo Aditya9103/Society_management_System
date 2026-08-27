@@ -30,13 +30,13 @@ function StepDot({ n, current }) {
     const active = current === n;
     return (
         <div className="flex items-center gap-1.5">
-            <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${done ? 'bg-indigo-600 text-white' :
-                active ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-400' :
-                    'bg-slate-100 text-slate-400'
+            <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${done ? 'bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)]' :
+                active ? 'bg-indigo-500/20 text-indigo-300 ring-2 ring-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]' :
+                    'bg-white/5 text-slate-500 border border-white/10'
                 }`}>
                 {done ? <CheckCircle2 className="h-4 w-4" /> : n}
             </div>
-            {n < 3 && <div className={`h-0.5 w-6 rounded ${current > n ? 'bg-indigo-400' : 'bg-slate-200'}`} />}
+            {n < 3 && <div className={`h-0.5 w-6 rounded ${current > n ? 'bg-indigo-500 shadow-[0_0_5px_rgba(99,102,241,0.5)]' : 'bg-white/10'}`} />}
         </div>
     );
 }
@@ -179,9 +179,9 @@ export default function RegisterPage() {
 
             {/* Error banner */}
             {errorMsg && (
-                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-600 font-medium leading-relaxed">{errorMsg}</p>
+                <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-400 font-medium leading-relaxed">{errorMsg}</p>
                 </div>
             )}
 
@@ -191,14 +191,16 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <Input
                             label="First Name"
-                            icon={User}
+                            leftIcon={User}
+                            theme="dark"
                             placeholder="John"
                             error={errors.firstName?.message}
                             {...register('firstName', { required: 'Required' })}
                         />
                         <Input
                             label="Last Name"
-                            icon={User}
+                            leftIcon={User}
+                            theme="dark"
                             placeholder="Doe"
                             error={errors.lastName?.message}
                             {...register('lastName', { required: 'Required' })}
@@ -206,7 +208,8 @@ export default function RegisterPage() {
                     </div>
                     <Input
                         label="Email Address"
-                        icon={Mail}
+                        leftIcon={Mail}
+                        theme="dark"
                         type="email"
                         placeholder="john@example.com"
                         error={errors.email?.message}
@@ -214,7 +217,8 @@ export default function RegisterPage() {
                     />
                     <Input
                         label="Password"
-                        icon={Lock}
+                        leftIcon={Lock}
+                        theme="dark"
                         type="password"
                         placeholder="Create a strong password"
                         error={errors.password?.message}
@@ -223,9 +227,9 @@ export default function RegisterPage() {
                             minLength: { value: 6, message: 'Min 6 chars' },
                         })}
                     />
-                    <div className="pt-2">
-                        <Button type="submit" className="w-full" disabled={isInitiating}>
-                            {isInitiating ? 'Creating Account...' : 'Continue to Verify'}
+                    <div className="pt-4">
+                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" disabled={isInitiating}>
+                            {isInitiating ? 'Creating Account...' : 'Continue to Verify'} <ArrowRight size={18} />
                         </Button>
                     </div>
                 </form>
@@ -235,18 +239,19 @@ export default function RegisterPage() {
             {step === 2 && (
                 <form className="space-y-6" onSubmit={handleSubmit(onVerify)}>
                     <div className="text-center space-y-2">
-                        <div className="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
                             <Mail className="w-8 h-8" />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-800">Check your email</h3>
-                        <p className="text-sm text-slate-500">
+                        <h3 className="text-lg font-bold text-white">Check your email</h3>
+                        <p className="text-sm text-slate-400">
                             We've sent a 6-digit verification code to <br />
-                            <span className="font-medium text-slate-700">{registrationEmail}</span>
+                            <span className="font-medium text-white">{registrationEmail}</span>
                         </p>
                     </div>
                     <Input
                         label="Verification Code"
-                        icon={CheckCircle2}
+                        leftIcon={CheckCircle2}
+                        theme="dark"
                         type="text"
                         placeholder="123456"
                         maxLength={6}
@@ -256,13 +261,13 @@ export default function RegisterPage() {
                         })}
                         error={errors.otp?.message}
                     />
-                    <Button type="submit" disabled={isVerifying} className="w-full" isLoading={isVerifying}>
-                        Verify Email <ArrowRight className="ml-1.5 h-4 w-4" />
+                    <Button type="submit" disabled={isVerifying} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" isLoading={isVerifying}>
+                        Verify Email <ArrowRight size={18} />
                     </Button>
                     <button
                         type="button"
                         onClick={() => setStep(1)}
-                        className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500"
+                        className="w-full text-center text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
                     >
                         ← Change email address
                     </button>
@@ -276,28 +281,28 @@ export default function RegisterPage() {
                     {/* Avatar Upload */}
                     <div className="flex flex-col items-center justify-center space-y-3 mb-6">
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                            <div className="w-24 h-24 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden">
                                 {photoPreview ? (
                                     <img src={photoPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <User className="w-10 h-10 text-slate-400" />
+                                    <User className="w-10 h-10 text-slate-500" />
                                 )}
                             </div>
-                            <label className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 shadow-md transition-colors">
+                            <label className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-colors">
                                 <Upload className="w-4 h-4" />
                                 <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
                             </label>
                         </div>
-                        <p className="text-xs text-slate-500 font-medium">Upload Profile Photo (Optional)</p>
+                        <p className="text-xs text-slate-400 font-medium">Upload Profile Photo (Optional)</p>
                     </div>
 
                     {/* Society */}
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                            <Building2 className="mr-1 inline h-4 w-4 text-indigo-500" /> Select Society
+                        <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                            <Building2 className="mr-1 inline h-4 w-4 text-indigo-400" /> Select Society
                         </label>
                         <select
-                            className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                            className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-white px-4 text-sm focus:border-indigo-500 focus:bg-[#0f1123] focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors [&>option]:text-slate-900"
                             value={selectedSocietyId}
                             onChange={(e) => { setSelectedSocietyId(e.target.value); setSelectedUnitId(''); }}
                             disabled={isLoadingSocieties}
@@ -310,17 +315,17 @@ export default function RegisterPage() {
                                 </option>
                             ))}
                         </select>
-                        {isLoadingSocieties && <p className="mt-1 text-xs text-slate-400">Loading societies…</p>}
+                        {isLoadingSocieties && <p className="mt-1.5 text-xs text-slate-500">Loading societies…</p>}
                     </div>
 
                     {/* Unit — shown only after society selected */}
                     {selectedSocietyId && (
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">
-                                <Home className="mr-1 inline h-4 w-4 text-indigo-500" /> Select Unit / Flat
+                            <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                                <Home className="mr-1 inline h-4 w-4 text-indigo-400" /> Select Unit / Flat
                             </label>
                             <select
-                                className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-white px-4 text-sm focus:border-indigo-500 focus:bg-[#0f1123] focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors [&>option]:text-slate-900"
                                 value={selectedUnitId}
                                 onChange={(e) => setSelectedUnitId(e.target.value)}
                                 disabled={isLoadingUnits}
@@ -338,18 +343,18 @@ export default function RegisterPage() {
                                     )
                                 )}
                             </select>
-                            {isLoadingUnits && <p className="mt-1 text-xs text-slate-400">Loading units…</p>}
+                            {isLoadingUnits && <p className="mt-1.5 text-xs text-slate-500">Loading units…</p>}
                             {!isLoadingUnits && Object.keys(groupedUnits).length === 0 && (
-                                <p className="mt-1 text-xs text-red-500">No vacant units found in this society.</p>
+                                <p className="mt-1.5 text-xs text-red-400">No vacant units found in this society.</p>
                             )}
                         </div>
                     )}
 
                     {/* Ownership type */}
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Ownership Type</label>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-300">Ownership Type</label>
                         <select
-                            className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                            className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-white px-4 text-sm focus:border-indigo-500 focus:bg-[#0f1123] focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors [&>option]:text-slate-900"
                             {...register('ownershipType', { required: 'Required' })}
                         >
                             <option value="">— Choose —</option>
@@ -357,18 +362,20 @@ export default function RegisterPage() {
                             <option value="TENANT"> Renter</option>
                         </select>
                         {errors.ownershipType && (
-                            <p className="mt-1 text-xs text-red-500">{errors.ownershipType.message}</p>
+                            <p className="mt-1.5 text-xs text-red-400">{errors.ownershipType.message}</p>
                         )}
                     </div>
 
-                    <Button
-                        type="submit"
-                        disabled={isCompleting || !selectedUnitId}
-                        className="w-full"
-                        isLoading={isCompleting}
-                    >
-                        Submit for Approval <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Button>
+                    <div className="pt-4">
+                        <Button
+                            type="submit"
+                            disabled={isCompleting || !selectedUnitId}
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors"
+                            isLoading={isCompleting}
+                        >
+                            Submit for Approval <ArrowRight size={18} />
+                        </Button>
+                    </div>
                     {isAuthenticated && (
                         <button
                             type="button"
@@ -376,7 +383,7 @@ export default function RegisterPage() {
                                 dispatch(logout());
                                 setStep(1);
                             }}
-                            className="w-full mt-3 text-sm text-slate-500 hover:text-indigo-600 transition-colors"
+                            className="w-full mt-4 text-sm text-slate-400 hover:text-indigo-400 transition-colors"
                         >
                             Not you? Start over
                         </button>
@@ -386,17 +393,19 @@ export default function RegisterPage() {
 
             {/* ── Step 4: Success ── */}
             {step === 4 && (
-                <div className="space-y-4 py-6 text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-                        <CheckCircle2 className="h-9 w-9 text-emerald-600" />
+                <div className="space-y-6 py-6 text-center">
+                    <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                        <CheckCircle2 className="h-10 w-10 text-emerald-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Registration Submitted!</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                        Your profile has been submitted to the <strong>Society Admin</strong> for review.
-                        You will receive an email confirmation once your account is approved.
-                        This typically takes 1–2 business days.
-                    </p>
-                    <Button onClick={() => navigate('/auth/login')} className="mt-2 w-full">
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-2">Registration Submitted!</h3>
+                        <p className="text-sm text-slate-400 leading-relaxed">
+                            Your profile has been submitted to the <strong className="text-white">Society Admin</strong> for review.
+                            You will receive an email confirmation once your account is approved.
+                            This typically takes 1–2 business days.
+                        </p>
+                    </div>
+                    <Button onClick={() => navigate('/auth/login')} className="w-full bg-white text-slate-900 hover:bg-slate-100 rounded-xl h-12 flex justify-center items-center font-bold transition-colors">
                         Return to Login
                     </Button>
                 </div>
@@ -404,9 +413,9 @@ export default function RegisterPage() {
 
             {/* Footer link */}
             {step < 4 && (
-                <p className="mt-5 text-center text-sm text-gray-500">
+                <p className="mt-8 text-center text-sm text-slate-400 font-medium">
                     Already have an account?{' '}
-                    <Link to="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                    <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
                         Sign in
                     </Link>
                 </p>

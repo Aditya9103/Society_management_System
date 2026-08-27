@@ -22,7 +22,7 @@ const SIZES = {
   xl: 'max-w-4xl',
 };
 
-export default function Modal({ isOpen, onClose, title, description, size = 'md', children, className }) {
+export default function Modal({ isOpen, onClose, title, description, size = 'md', children, className, theme = 'light' }) {
   useEffect(() => {
     document.body.classList.toggle('modal-open', isOpen);
     return () => document.body.classList.remove('modal-open');
@@ -46,23 +46,34 @@ export default function Modal({ isOpen, onClose, title, description, size = 'md'
         aria-hidden="true"
       />
       {/* Panel */}
-      <div className={cn('relative z-10 w-full overflow-hidden rounded-3xl bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] flex flex-col max-h-[90vh]', SIZES[size], className)}>
+      <div className={cn(
+        'relative z-10 w-full overflow-hidden rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] flex flex-col max-h-[90vh]', 
+        SIZES[size], 
+        theme === 'dark' ? 'bg-[#131525] text-white border border-white/10' : 'bg-white text-slate-800',
+        className
+      )}>
         {title && (
-          <div className="flex shrink-0 items-start justify-between border-b border-slate-100 px-6 py-5">
+          <div className={cn(
+            "flex shrink-0 items-start justify-between border-b px-6 py-5",
+            theme === 'dark' ? 'border-white/10' : 'border-slate-100'
+          )}>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">{title}</h2>
-              {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
+              <h2 className={cn("text-lg font-bold", theme === 'dark' ? 'text-white' : 'text-slate-800')}>{title}</h2>
+              {description && <p className={cn("mt-1 text-sm", theme === 'dark' ? 'text-slate-400' : 'text-slate-500')}>{description}</p>}
             </div>
             <button
               onClick={onClose}
               aria-label="Close"
-              className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              className={cn(
+                "ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                theme === 'dark' ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+              )}
             >
-              <X className="h-5 w-5" />
+              <X size={20} strokeWidth={2.5} />
             </button>
           </div>
         )}
-        <div className="overflow-y-auto px-6 py-5">{children}</div>
+        <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">{children}</div>
       </div>
     </div>,
     document.body

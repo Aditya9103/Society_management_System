@@ -38,6 +38,12 @@ const vehicleSchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        // Fuel Type
+        fuelType: {
+            type: String,
+            enum: ['PETROL', 'DIESEL', 'ELECTRIC', 'CNG', 'HYBRID', 'OTHER'],
+            default: 'PETROL'
+        },
         // Vehicle category
         vehicleCategory: {
             type: String,
@@ -129,6 +135,11 @@ const vehicleSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true
+        },
+        // Tracks if the vehicle is currently inside the society / parked
+        isCurrentlyParked: {
+            type: Boolean,
+            default: false
         },
     },
     { timestamps: true }

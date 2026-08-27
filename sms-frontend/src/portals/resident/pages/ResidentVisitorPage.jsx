@@ -33,7 +33,7 @@ export default function ResidentVisitorPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0f111a] p-4 lg:p-8 font-sans">
+        <div className="relative p-4 lg:p-8 font-sans z-10">
             <div className="max-w-[1400px] mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

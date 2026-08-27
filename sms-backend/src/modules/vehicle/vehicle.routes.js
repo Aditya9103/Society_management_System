@@ -14,6 +14,8 @@ router.get('/', authorize('RESIDENT'), vehicleController.getMyVehicles);
 router.put('/:id', authorize('RESIDENT'), auditLog('UPDATE', 'VEHICLE'), vehicleController.updateMyVehicle);
 router.delete('/:id', authorize('RESIDENT'), auditLog('DELETE', 'VEHICLE'), vehicleController.deleteMyVehicle);
 router.post('/:id/regenerate-qr', authorize('RESIDENT'), auditLog('REGENERATE_QR', 'VEHICLE'), vehicleController.regenerateQr);
+router.get('/logs/history', authorize('RESIDENT'), vehicleController.getMyVehicleLogs);
+router.get('/violations/history', authorize('RESIDENT'), vehicleController.getMyViolations);
 
 // --- ADMIN ROUTES ---
 router.get('/admin/all', authorize('SOCIETY_ADMIN'), vehicleController.getAllVehicles);

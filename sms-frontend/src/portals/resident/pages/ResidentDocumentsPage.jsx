@@ -1,14 +1,21 @@
-import { useState } from 'react';
-import { Download, Upload, X, Trash2 } from 'lucide-react';
-import { 
-    useGetDocumentsQuery, 
-    useUploadDocumentMutation, 
+import React, { useState } from 'react';
+import {
+    Download, Upload, X, Trash2, Folder, ShieldCheck,
+    Clock, FileWarning, Search, ChevronDown, List, LayoutGrid,
+    MoreVertical, FileText
+} from 'lucide-react';
+import {
+    useGetDocumentsQuery,
+    useUploadDocumentMutation,
     useLazyDownloadDocumentQuery,
     useDeleteDocumentMutation
 } from '../../../store/api/documentApi';
 import { useGetMyVehiclesQuery } from '../../../store/api/vehicleApi';
 import { useSelector } from 'react-redux';
 import { Button } from '../../../components/ui/Button';
+import Modal from '../../../components/ui/Modal';
+import { Input } from '../../../components/ui/Input';
+import { Select } from '../../../components/ui/Select';
 import toast from 'react-hot-toast';
 
 export default function ResidentDocumentsPage() {
@@ -25,7 +32,13 @@ export default function ResidentDocumentsPage() {
     const [uploadModalVisible, setUploadModalVisible] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [activeTab, setActiveTab] = useState('MY_DOCS');
-    
+
+    // Filters & View
+    const [searchQuery, setSearchQuery] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('ALL');
+    const [sortOrder, setSortOrder] = useState('NEWEST');
+    const [viewMode, setViewMode] = useState('LIST');
+
     // form state
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('IDENTITY');
@@ -50,7 +63,7 @@ export default function ResidentDocumentsPage() {
             formData.append('customDocumentType', customDocumentType);
         }
         formData.append('ownerType', 'RESIDENT');
-        const ownerId = user.residentId || user._id || user.id;
+        const ownerId = user.residentId || user._id || user.id || user.sub;
         if (ownerId) {
             formData.append('ownerId', ownerId);
         }
@@ -99,177 +112,433 @@ export default function ResidentDocumentsPage() {
         }
     };
 
-    const userId = user?._id || user?.id;
-    
+    const userId = user?._id || user?.id || user?.sub;
+
     const myDocs = documents.filter(d => {
         const upId = d.uploadedBy?._id || d.uploadedBy?.id || d.uploadedBy;
         return upId && userId && String(upId) === String(userId);
     });
-    
+
     const societyDocs = documents.filter(d => {
         const upId = d.uploadedBy?._id || d.uploadedBy?.id || d.uploadedBy;
         return upId && userId && String(upId) !== String(userId) && d.category === 'SOCIETY';
     });
 
-    const renderTable = (data) => (
-        <div className="rounded-xl border border-slate-200/60 bg-white shadow-sm overflow-hidden mt-4">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-slate-600">
-                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
-                        <tr>
-                            <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">Document</th>
-                            <th className="hidden sm:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Category</th>
-                            <th className="hidden md:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Type</th>
-                            <th className="hidden sm:table-cell px-5 py-3 text-xs font-bold uppercase tracking-wider">Status</th>
-                            <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {isLoadingDocs && data.length === 0 ? (
-                            <tr><td colSpan="5" className="p-8 text-center text-slate-500 font-medium">Loading documents...</td></tr>
-                        ) : data.length === 0 ? (
-                            <tr><td colSpan="5" className="p-8 text-center text-slate-500 font-medium">No documents found.</td></tr>
-                        ) : data.map(d => (
-                            <tr key={d._id} className="hover:bg-slate-50 transition-colors duration-150">
-                                <td className="p-4 sm:px-5">
-                                    <p className="font-bold text-slate-800">{d.title}</p>
-                                    <p className="text-xs text-slate-500 mt-1 md:hidden">{d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType}</p>
-                                    <div className="flex sm:hidden items-center gap-2 mt-2">
-                                        <span className="inline-flex items-center rounded-md bg-blue-50 border border-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">{d.category}</span>
-                                        <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold
-                                            ${d.status === 'ACTIVE' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
-                                              d.status === 'PENDING' ? 'bg-amber-50 border-amber-100 text-amber-700' :
-                                              d.status === 'REJECTED' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                            {d.status}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="hidden sm:table-cell p-4 sm:px-5">
-                                    <span className="inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">{d.category}</span>
-                                </td>
-                                <td className="hidden md:table-cell p-4 sm:px-5 font-medium text-slate-600">{d.documentType === 'OTHER' && d.customDocumentType ? d.customDocumentType : d.documentType}</td>
-                                <td className="hidden sm:table-cell p-4 sm:px-5">
-                                    <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-bold tracking-wide uppercase
-                                        ${d.status === 'ACTIVE' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
-                                          d.status === 'PENDING' ? 'bg-amber-50 border-amber-100 text-amber-700' :
-                                          d.status === 'REJECTED' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-                                        {d.status}
-                                    </span>
-                                </td>
-                                <td className="p-4 sm:px-5 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button onClick={() => handleDownload(d._id)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Download"><Download className="h-4 w-4" /></button>
-                                        <button onClick={() => handleDelete(d._id)} className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+    const activeDocs = activeTab === 'MY_DOCS' ? myDocs : societyDocs;
+
+    // Determine visual status
+    const getDocStatus = (doc) => {
+        if (doc.expiryDate && new Date(doc.expiryDate) < new Date()) return 'EXPIRED';
+        if (doc.isVerified) return 'VERIFIED';
+        if (doc.status === 'PENDING') return 'PENDING';
+        return 'VERIFIED'; // Default to verified if active for UI purposes if not explicitly pending
+    };
+
+    // Stats
+    const totalDocsCount = activeDocs.length;
+    const verifiedCount = activeDocs.filter(d => getDocStatus(d) === 'VERIFIED').length;
+    const pendingCount = activeDocs.filter(d => getDocStatus(d) === 'PENDING').length;
+    const expiredCount = activeDocs.filter(d => getDocStatus(d) === 'EXPIRED').length;
+
+    // Filters and Sorting
+    const filteredDocs = activeDocs.filter(d => {
+        const matchesSearch = d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (d.documentType.toLowerCase().includes(searchQuery.toLowerCase()));
+        const matchesCategory = categoryFilter === 'ALL' || d.category === categoryFilter;
+        return matchesSearch && matchesCategory;
+    }).sort((a, b) => {
+        if (sortOrder === 'NEWEST') return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortOrder === 'OLDEST') return new Date(a.createdAt) - new Date(b.createdAt);
+        return 0;
+    });
+
+    const getFileExtension = (url) => {
+        if (!url) return 'PDF';
+        const parts = url.split('.');
+        return parts[parts.length - 1].toUpperCase();
+    };
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">My Documents</h1>
-                    <p className="text-slate-500">Manage your personal and society documents.</p>
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <FileText className="w-8 h-8 text-indigo-400" />
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">My Documents</h1>
+                        <p className="text-slate-400 text-sm mt-1">Store and manage all your personal and society documents securely.</p>
+                    </div>
                 </div>
-                <Button onClick={() => setUploadModalVisible(true)} className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" />
-                    Upload Document
+                <Button
+                    onClick={() => setUploadModalVisible(true)}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] flex items-center gap-2 hover:opacity-90 transition-all font-semibold"
+                >
+                    <Upload className="w-4 h-4" /> Upload Document
                 </Button>
             </div>
 
-            <div className="flex bg-slate-100 p-1 rounded-lg w-fit">
-                <button 
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
+                        <Folder className="w-6 h-6 text-indigo-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-slate-400 font-medium mb-0.5">Total Documents</p>
+                        <h3 className="text-2xl font-bold text-white">{totalDocsCount}</h3>
+                        <p className="text-[10px] text-slate-500 mt-1">All uploaded documents</p>
+                    </div>
+                </div>
+                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-slate-400 font-medium mb-0.5">Verified</p>
+                        <h3 className="text-2xl font-bold text-white">{verifiedCount}</h3>
+                        <p className="text-[10px] text-slate-500 mt-1">Documents verified</p>
+                    </div>
+                </div>
+                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-6 h-6 text-amber-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-slate-400 font-medium mb-0.5">Pending Review</p>
+                        <h3 className="text-2xl font-bold text-white">{pendingCount}</h3>
+                        <p className="text-[10px] text-slate-500 mt-1">Awaiting verification</p>
+                    </div>
+                </div>
+                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
+                        <FileWarning className="w-6 h-6 text-red-400" />
+                    </div>
+                    <div>
+                        <p className="text-xs text-slate-400 font-medium mb-0.5">Expired</p>
+                        <h3 className="text-2xl font-bold text-white">{expiredCount}</h3>
+                        <p className="text-[10px] text-slate-500 mt-1">Requires attention</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-white/10 mt-6 gap-6">
+                <button
                     onClick={() => setActiveTab('MY_DOCS')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'MY_DOCS' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'MY_DOCS' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
                     My Documents
+                    {activeTab === 'MY_DOCS' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab('SOCIETY')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-md ${activeTab === 'SOCIETY' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'SOCIETY' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
                     Society Documents
+                    {activeTab === 'SOCIETY' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
                 </button>
             </div>
 
-            {activeTab === 'MY_DOCS' ? renderTable(myDocs) : renderTable(societyDocs)}
+            {/* Filter Bar */}
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                <div className="relative w-full lg:w-[400px]">
+                    <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search documents by name or category..."
+                        className="w-full bg-[#131525] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                    />
+                </div>
 
-            {/* Modal Replacement using native Tailwind classes */}
-            {uploadModalVisible && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-slate-800">Upload Personal Document</h2>
-                            <button type="button" onClick={() => setUploadModalVisible(false)} className="text-slate-400 hover:text-slate-600">
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <form onSubmit={handleUpload} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Document Title</label>
-                                <input required value={title} onChange={(e) => setTitle(e.target.value)} type="text" className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. My Driving License" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                                <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                    <option value="IDENTITY">Identity Proof</option>
-                                    <option value="RESIDENTIAL">Property / Residential</option>
-                                    <option value="VEHICLE">Vehicle Document</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
-                                <select value={documentType} onChange={(e) => setDocumentType(e.target.value)} className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                    <option value="AADHAAR">Aadhaar Card</option>
-                                    <option value="PAN">PAN Card</option>
-                                    <option value="DRIVING_LICENSE">Driving License</option>
-                                    <option value="RENT_AGREEMENT">Rent Agreement</option>
-                                    <option value="RC_BOOK">RC Book</option>
-                                    <option value="EMISSION_CERTIFICATE">Emission Certificate</option>
-                                    <option value="INSURANCE">Insurance</option>
-                                    <option value="OTHER">Other</option>
-                                </select>
-                            </div>
-                            {category === 'VEHICLE' && (
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Select Vehicle</label>
-                                    <select value={selectedVehicleId} onChange={(e) => setSelectedVehicleId(e.target.value)} className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                        <option value="">-- Select a Vehicle --</option>
-                                        {vehicles.map(v => (
-                                            <option key={v._id} value={v._id}>{v.vehicleNumber}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-                            {documentType === 'OTHER' && (
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Specify Document Type</label>
-                                    <input required value={customDocumentType} onChange={(e) => setCustomDocumentType(e.target.value)} type="text" className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Enter document type" />
-                                </div>
-                            )}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Visibility</label>
-                                <select value={visibility} onChange={(e) => setVisibility(e.target.value)} className="w-full rounded-lg border border-slate-300 p-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                    <option value="PRIVATE">Private (Only Me)</option>
-                                    <option value="MANAGEMENT">Management (Committee)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">File (Max 10MB)</label>
-                                <input required onChange={(e) => setFileList(e.target.files)} type="file" className="w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100" />
-                            </div>
-                            <Button disabled={isUploading} type="submit" className="w-full">
-                                {isUploading ? 'Uploading...' : 'Upload'}
-                            </Button>
-                        </form>
+                <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <div className="relative flex-1 sm:flex-none min-w-[160px]">
+                        <select
+                            value={categoryFilter}
+                            onChange={(e) => setCategoryFilter(e.target.value)}
+                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-300 focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                            <option value="ALL">All Categories</option>
+                            <option value="IDENTITY">Identity Proof</option>
+                            <option value="RESIDENTIAL">Property / Residential</option>
+                            <option value="VEHICLE">Vehicle Document</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+
+                    <div className="relative flex-1 sm:flex-none min-w-[160px]">
+                        <select
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value)}
+                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm font-medium text-slate-300 focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                            <option value="NEWEST">Sort By: Newest</option>
+                            <option value="OLDEST">Sort By: Oldest</option>
+                        </select>
+                        <List className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-[#131525] border border-white/10 p-1 rounded-xl shrink-0">
+                        <button
+                            onClick={() => setViewMode('GRID')}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'GRID' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            <LayoutGrid size={16} />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('LIST')}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'LIST' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            <List size={16} />
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            {/* Document Table (List View) */}
+            {viewMode === 'LIST' && (
+                <div className="bg-[#131525] border border-white/5 rounded-2xl shadow-lg overflow-hidden">
+                    <div className="overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr className="bg-white/5 border-b border-white/10">
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Document</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Type</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Uploaded On</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {isLoadingDocs ? (
+                                    <tr><td colSpan="6" className="py-12 text-center text-slate-500 font-medium"><div className="flex justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div></td></tr>
+                                ) : filteredDocs.length === 0 ? (
+                                    <tr><td colSpan="6" className="py-16 text-center text-slate-400 font-medium">No documents found.</td></tr>
+                                ) : filteredDocs.map(d => {
+                                    const docStatus = getDocStatus(d);
+                                    const ext = getFileExtension(d.fileUrl);
+                                    return (
+                                        <tr key={d._id} className="hover:bg-white/[0.02] transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-10 rounded shadow-sm flex items-center justify-center shrink-0 border relative overflow-hidden
+                                                        ${ext === 'PDF' ? 'bg-red-500/10 border-red-500/20' : ext === 'JPG' || ext === 'PNG' || ext === 'JPEG' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-indigo-500/10 border-indigo-500/20'}`}
+                                                    >
+                                                        <span className={`text-[10px] font-bold tracking-wider relative z-10 
+                                                            ${ext === 'PDF' ? 'text-red-400' : ext === 'JPG' || ext === 'PNG' || ext === 'JPEG' ? 'text-blue-400' : 'text-indigo-400'}`}>
+                                                            {ext}
+                                                        </span>
+                                                        <div className={`absolute bottom-0 left-0 right-0 h-1/3 opacity-20
+                                                            ${ext === 'PDF' ? 'bg-red-500' : ext === 'JPG' || ext === 'PNG' || ext === 'JPEG' ? 'bg-blue-500' : 'bg-indigo-500'}`}>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-white text-sm leading-tight">{d.title}</p>
+                                                        <p className="text-xs text-slate-500 mt-0.5">{d.title.toLowerCase().replace(/\s+/g, '_')}.{ext.toLowerCase()}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center rounded bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 text-xs font-semibold text-indigo-400">
+                                                    {d.category.replace('_', ' ')}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-slate-300">
+                                                {(d.documentType === 'OTHER' && d.customDocumentType) ? d.customDocumentType : d.documentType.replace('_', ' ')}
+                                            </td>
+                                            <td className="px-6 py-4 text-xs text-slate-400">
+                                                {new Date(d.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                <br />
+                                                <span className="text-slate-500">{new Date(d.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold
+                                                    ${docStatus === 'VERIFIED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                                                        docStatus === 'PENDING' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
+                                                            'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                                                    {docStatus === 'VERIFIED' ? <ShieldCheck size={12} /> : docStatus === 'PENDING' ? <Clock size={12} /> : <FileWarning size={12} />}
+                                                    {docStatus === 'VERIFIED' ? 'Verified' : docStatus === 'PENDING' ? 'Pending Review' : 'Expired'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button onClick={() => handleDownload(d._id)} className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
+                                                        <Download className="h-4 w-4" />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(d._id)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                        <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500 bg-white/[0.01]">
+                            <span>Showing 1 to {filteredDocs.length} of {activeDocs.length} documents</span>
+                            <div className="flex gap-1">
+                                <button className="w-6 h-6 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">«</button>
+                                <button className="w-6 h-6 rounded border border-indigo-500 bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center">1</button>
+                                <button className="w-6 h-6 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">2</button>
+                                <button className="w-6 h-6 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">3</button>
+                                <button className="w-6 h-6 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">»</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Grid View */}
+            {viewMode === 'GRID' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {isLoadingDocs ? (
+                        <div className="col-span-full py-12 flex justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div>
+                    ) : filteredDocs.length === 0 ? (
+                        <div className="col-span-full py-16 text-center text-slate-400 font-medium">No documents found.</div>
+                    ) : filteredDocs.map(d => {
+                        const docStatus = getDocStatus(d);
+                        const ext = getFileExtension(d.fileUrl);
+                        return (
+                            <div key={d._id} className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex flex-col shadow-lg hover:border-white/10 transition-colors">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className={`w-12 h-14 rounded shadow-sm flex items-center justify-center shrink-0 border relative overflow-hidden
+                                        ${ext === 'PDF' ? 'bg-red-500/10 border-red-500/20' : ext === 'JPG' || ext === 'PNG' || ext === 'JPEG' ? 'bg-blue-500/10 border-blue-500/20' : 'bg-indigo-500/10 border-indigo-500/20'}`}
+                                    >
+                                        <span className={`text-[12px] font-bold tracking-wider relative z-10 
+                                            ${ext === 'PDF' ? 'text-red-400' : ext === 'JPG' || ext === 'PNG' || ext === 'JPEG' ? 'text-blue-400' : 'text-indigo-400'}`}>
+                                            {ext}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <button onClick={() => handleDownload(d._id)} className="p-1.5 text-slate-400 hover:text-indigo-400 bg-white/5 rounded-lg transition-colors"><Download className="h-3.5 w-3.5" /></button>
+                                        <button onClick={() => handleDelete(d._id)} className="p-1.5 text-slate-400 hover:text-red-400 bg-white/5 rounded-lg transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
+                                    </div>
+                                </div>
+                                <h3 className="font-bold text-white text-base truncate">{d.title}</h3>
+                                <p className="text-xs text-slate-400 mt-1 truncate">{(d.documentType === 'OTHER' && d.customDocumentType) ? d.customDocumentType : d.documentType.replace('_', ' ')} • {d.category.replace('_', ' ')}</p>
+
+                                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                                    <span className="text-[10px] text-slate-500">{new Date(d.createdAt).toLocaleDateString('en-GB')}</span>
+                                    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide
+                                        ${docStatus === 'VERIFIED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                                            docStatus === 'PENDING' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
+                                                'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                                        {docStatus === 'VERIFIED' ? 'Verified' : docStatus === 'PENDING' ? 'Pending' : 'Expired'}
+                                    </span>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
+
+            {/* Upload Modal */}
+            {uploadModalVisible && (
+                <Modal
+                    isOpen={true}
+                    onClose={() => setUploadModalVisible(false)}
+                    title="Upload Document"
+                    theme="dark"
+                    className="max-w-lg border border-white/10 shadow-2xl"
+                >
+                    <form onSubmit={handleUpload} className="space-y-4">
+                        <Input
+                            theme="dark"
+                            label="Document Title"
+                            required
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="e.g. My Driving License"
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Select
+                                theme="dark"
+                                label="Category"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                            >
+                                <option value="IDENTITY">Identity Proof</option>
+                                <option value="RESIDENTIAL">Property / Residential</option>
+                                <option value="VEHICLE">Vehicle Document</option>
+                            </Select>
+
+                            <Select
+                                theme="dark"
+                                label="Document Type"
+                                value={documentType}
+                                onChange={(e) => setDocumentType(e.target.value)}
+                            >
+                                <option value="AADHAAR">Aadhaar Card</option>
+                                <option value="PAN">PAN Card</option>
+                                <option value="DRIVING_LICENSE">Driving License</option>
+                                <option value="RENT_AGREEMENT">Rent Agreement</option>
+                                <option value="RC_BOOK">RC Book</option>
+                                <option value="EMISSION_CERTIFICATE">Emission Certificate</option>
+                                <option value="INSURANCE">Insurance</option>
+                                <option value="OTHER">Other</option>
+                            </Select>
+                        </div>
+
+                        {category === 'VEHICLE' && (
+                            <Select
+                                theme="dark"
+                                label="Select Vehicle"
+                                value={selectedVehicleId}
+                                onChange={(e) => setSelectedVehicleId(e.target.value)}
+                            >
+                                <option value="">-- Select a Vehicle --</option>
+                                {vehicles.map(v => (
+                                    <option key={v._id} value={v._id}>{v.vehicleNumber}</option>
+                                ))}
+                            </Select>
+                        )}
+
+                        {documentType === 'OTHER' && (
+                            <Input
+                                theme="dark"
+                                label="Specify Document Type"
+                                required
+                                value={customDocumentType}
+                                onChange={(e) => setCustomDocumentType(e.target.value)}
+                                placeholder="Enter document type"
+                            />
+                        )}
+
+                        <Select
+                            theme="dark"
+                            label="Visibility"
+                            value={visibility}
+                            onChange={(e) => setVisibility(e.target.value)}
+                        >
+                            <option value="PRIVATE">Private (Only Me)</option>
+                            <option value="MANAGEMENT">Management (Committee)</option>
+                        </Select>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-300 mb-1.5">File (Max 10MB)</label>
+                            <input
+                                required
+                                onChange={(e) => setFileList(e.target.files)}
+                                type="file"
+                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+                            <Button type="button" variant="outline" className="border-white/20 text-slate-300 hover:bg-white/5" onClick={() => setUploadModalVisible(false)} disabled={isUploading}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={isUploading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-medium">
+                                {isUploading ? 'Uploading...' : 'Upload Document'}
+                            </Button>
+                        </div>
+                    </form>
+                </Modal>
             )}
         </div>
     );

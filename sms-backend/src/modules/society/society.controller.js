@@ -109,8 +109,8 @@ export const listResidents = asyncHandler(async (req, res) => {
  */
 export const listResidentProfiles = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
-    const { data, pagination } = await societyService.listResidentProfiles(societyId, req.query);
-    res.status(200).json(new ApiResponse(200, data, 'Resident profiles fetched successfully', pagination));
+    const { data, pagination, stats } = await societyService.listResidentProfiles(societyId, req.query);
+    res.status(200).json(new ApiResponse(200, data, 'Resident profiles fetched successfully', pagination, stats));
 });
 
 /**
@@ -305,4 +305,21 @@ export const deleteUnit = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
     await societyService.deleteUnit(req.params.id, societyId);
     res.status(200).json(new ApiResponse(200, null, 'Unit deleted successfully'));
+});
+
+/**
+ * Update a resident's profile (admin)
+ */
+export const updateResidentProfile = asyncHandler(async (req, res) => {
+    await societyService.updateResidentProfile(req.params.id, req.user.societyId, req.body);
+    res.status(200).json(ApiResponse.success(null, 'Resident profile updated successfully'));
+});
+
+/**
+ * Reset a resident's password (admin)
+ */
+export const resetResidentPassword = asyncHandler(async (req, res) => {
+    const { newPassword } = req.body;
+    await societyService.resetResidentPassword(req.params.id, req.user.societyId, newPassword);
+    res.status(200).json(ApiResponse.success(null, 'Resident password reset successfully'));
 });

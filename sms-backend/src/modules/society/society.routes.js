@@ -18,7 +18,7 @@ import {
     createStaffSchema,
     approveResidentSchema,
     rejectResidentSchema,
-    updateSocietySchema,
+    updateSocietySchema, updateResidentSchema,
     createTowerSchema,
     updateTowerSchema,
     createFloorSchema,

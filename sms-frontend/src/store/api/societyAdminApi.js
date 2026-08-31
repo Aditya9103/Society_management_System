@@ -81,6 +81,25 @@ export const societyAdminApi = createApi({
             providesTags: [{ type: 'Resident', id: 'PROFILES' }],
         }),
 
+        
+        updateResidentProfile: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/admin/society/residents/${id}`,
+                method: 'PUT',
+                body: data,
+            }),
+            invalidatesTags: (result, error, { id }) => [
+                { type: 'Resident', id },
+                { type: 'Resident', id: 'LIST' }
+            ],
+        }),
+        resetResidentPassword: builder.mutation({
+            query: ({ id, newPassword }) => ({
+                url: `/admin/society/residents/${id}/reset-password`,
+                method: 'POST',
+                body: { newPassword },
+            }),
+        }),
         approveResident: builder.mutation({
             query: ({ id, adminComments }) => ({
                 url: `/societies/resident/${id}/approve`,
@@ -343,7 +362,7 @@ export const {
     useListResidentsQuery,
     useListResidentProfilesQuery,
     useGetResidentProfileQuery,
-    useApproveResidentMutation,
+    useUpdateResidentProfileMutation, useResetResidentPasswordMutation, useApproveResidentMutation,
     useRejectResidentMutation,
     useRevokeResidentMutation,
     useListTowersQuery,

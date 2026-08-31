@@ -191,3 +191,17 @@ export const listQuerySchema = {
         status: Joi.string().allow(''),
     }),
 };
+
+export const updateResidentSchema = Joi.object({
+    firstName: Joi.string().trim().max(50).optional(),
+    lastName: Joi.string().trim().max(50).optional().allow(''),
+    phone: Joi.string().trim().optional().allow(''),
+    dateOfBirth: Joi.date().iso().optional().allow(null, ''),
+    gender: Joi.string().valid('MALE', 'FEMALE', 'OTHER').optional().allow(null, ''),
+    nationality: Joi.string().trim().optional().allow(null, ''),
+    occupation: Joi.string().trim().optional().allow(null, ''),
+    bloodGroup: Joi.string().valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-').optional().allow(null, ''),
+    panNumber: Joi.string().trim().optional().allow(null, ''),
+    aadhaarNumber: Joi.string().trim().optional().allow(null, ''),
+    maritalStatus: Joi.string().valid('Single', 'Married', 'Divorced', 'Widowed').optional().allow(null, '')
+});

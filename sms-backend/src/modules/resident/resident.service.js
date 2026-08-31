@@ -104,12 +104,37 @@ export const updateMyProfile = async (userId, data) => {
     const user = await userRepo.findById(userId);
     if (!user) throw ApiError.notFound('User not found');
 
-    const allowedFields = ['firstName', 'lastName', 'phone'];
-    const updates = Object.fromEntries(
-        Object.entries(data).filter(([k]) => allowedFields.includes(k))
-    );
+    const residentDoc = await residentRepo.findByUserId(userId);
+    if (!residentDoc) throw ApiError.notFound('Resident details not found');
 
-    return userRepo.updateUser(userId, updates);
+    // Update User Info
+    const userAllowedFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'gender', 'nationality'];
+    const userUpdates = {};
+    for (const key of userAllowedFields) {
+        if (data[key] !== undefined) {
+            userUpdates[key] = data[key];
+        }
+    }
+
+    if (Object.keys(userUpdates).length > 0) {
+        await userRepo.updateUser(userId, userUpdates);
+    }
+
+    // Update Resident Info
+    const residentAllowedFields = ['occupation', 'bloodGroup', 'panNumber', 'aadhaarNumber', 'maritalStatus'];
+    const residentUpdates = {};
+    for (const key of residentAllowedFields) {
+        if (data[key] !== undefined) {
+            residentUpdates[key] = data[key];
+        }
+    }
+
+    if (Object.keys(residentUpdates).length > 0) {
+        await residentRepo.updateResident(residentDoc._id, residentUpdates);
+    }
+
+    const updatedUser = await userRepo.findById(userId);
+    return updatedUser;
 };
 
 export const updateMyAvatar = async (userId, imageBuffer) => {

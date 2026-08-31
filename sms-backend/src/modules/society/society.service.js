@@ -330,7 +330,7 @@ export const listResidents = async (societyId, query = {}) => {
  * Get detailed resident profiles with unit + family info.
  */
 export const listResidentProfiles = async (societyId, query = {}) => {
-    const { page = 1, limit = 20, approvalStatus } = query;
+    const { page = 1, limit = 20, approvalStatus, search = '', towerId } = query;
     const skip = (page - 1) * limit;
 
     const filter = {
@@ -338,16 +338,72 @@ export const listResidentProfiles = async (societyId, query = {}) => {
         ...(approvalStatus && { approvalStatus }),
     };
 
-    const [residents, total] = await Promise.all([
+    let [residents, total] = await Promise.all([
         Resident.find(filter)
             .populate('userId', 'firstName lastName email phone profilePhotoUrl registrationStatus')
-            .populate('unitId', 'unitNumber unitType bhkType')
+            .populate('unitId', 'unitNumber unitType bhkType towerId floorId')
             .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(Number(limit))
             .lean(),
         Resident.countDocuments(filter),
     ]);
+
+    // Client-side filtering for search and towerId since they are in populated fields
+    if (search || towerId) {
+        residents = residents.filter(r => {
+            let matchSearch = true;
+            let matchTower = true;
+
+            if (search) {
+                const s = search.toLowerCase();
+                const name = `${r.userId?.firstName || ''} ${r.userId?.lastName || ''}`.toLowerCase();
+                const email = (r.userId?.email || '').toLowerCase();
+                const phone = (r.userId?.phone || '').toLowerCase();
+                const unit = (r.unitId?.unitNumber || '').toLowerCase();
+                
+                matchSearch = name.includes(s) || email.includes(s) || phone.includes(s) || unit.includes(s);
+            }
+
+            if (towerId) {
+                matchTower = r.unitId?.towerId?.toString() === towerId;
+            }
+
+            return matchSearch && matchTower;
+        });
+        total = residents.length;
+    }
+
+    // Apply pagination after filtering
+    residents = residents.slice(skip, skip + Number(limit));
+
+    const mongoose = (await import('mongoose')).default;
+    
+    // Aggregate stats for Resident profiles
+    const statsAgg = await Resident.aggregate([
+        { $match: { societyId: new mongoose.Types.ObjectId(societyId) } },
+        { 
+            $group: { 
+                _id: "$approvalStatus", 
+                count: { $sum: 1 },
+                familyMembers: { $sum: { $size: "$familyMembers" } }
+            } 
+        }
+    ]);
+
+    const stats = {
+        total: 0,
+        approved: 0,
+        pending: 0,
+        rejected: 0,
+        familyMembers: 0
+    };
+
+    statsAgg.forEach(s => {
+        if (s._id === 'APPROVED') stats.approved = s.count;
+        if (s._id === 'PENDING') stats.pending = s.count;
+        if (s._id === 'REJECTED') stats.rejected = s.count;
+        stats.total += s.count;
+        stats.familyMembers += s.familyMembers;
+    });
 
     return {
         data: residents,
@@ -357,6 +413,7 @@ export const listResidentProfiles = async (societyId, query = {}) => {
             total,
             totalPages: Math.ceil(total / limit),
         },
+        stats
     };
 };
 
@@ -840,11 +897,74 @@ export const getResidentProfile = async (residentUserId, societyId) => {
     }
 
     const residentDoc = await Resident.findOne({ userId: residentUserId, societyId })
-        .populate('unitId')
+        .populate({
+            path: 'unitId',
+            populate: [
+                { path: 'towerId', select: 'name' },
+                { path: 'floorId', select: 'floorNumber floorName' }
+            ]
+        })
         .lean();
 
     return {
         user,
         residentDetails: residentDoc,
     };
+};
+
+/**
+ * Update resident profile (User + Resident details)
+ */
+export const updateResidentProfile = async (residentUserId, societyId, data) => {
+    const user = await userRepo.findById(residentUserId);
+    if (!user || user.societyId.toString() !== societyId.toString()) {
+        throw ApiError.notFound('Resident not found in this society');
+    }
+
+    const residentDoc = await Resident.findOne({ userId: residentUserId, societyId });
+    if (!residentDoc) {
+        throw ApiError.notFound('Resident details not found');
+    }
+
+    // Update User Info
+    const userUpdates = {};
+    if (data.firstName !== undefined) userUpdates.firstName = data.firstName;
+    if (data.lastName !== undefined) userUpdates.lastName = data.lastName;
+    if (data.phone !== undefined) userUpdates.phone = data.phone;
+    if (data.dateOfBirth !== undefined) userUpdates.dateOfBirth = data.dateOfBirth;
+    if (data.gender !== undefined) userUpdates.gender = data.gender;
+    if (data.nationality !== undefined) userUpdates.nationality = data.nationality;
+
+    if (Object.keys(userUpdates).length > 0) {
+        await userRepo.updateUser(residentUserId, userUpdates);
+    }
+
+    // Update Resident Info
+    const residentUpdates = {};
+    if (data.occupation !== undefined) residentUpdates.occupation = data.occupation;
+    if (data.bloodGroup !== undefined) residentUpdates.bloodGroup = data.bloodGroup;
+    if (data.panNumber !== undefined) residentUpdates.panNumber = data.panNumber;
+    if (data.aadhaarNumber !== undefined) residentUpdates.aadhaarNumber = data.aadhaarNumber;
+    if (data.maritalStatus !== undefined) residentUpdates.maritalStatus = data.maritalStatus;
+
+    if (Object.keys(residentUpdates).length > 0) {
+        await residentRepo.updateResident(residentDoc._id, residentUpdates);
+    }
+
+    return true;
+};
+
+/**
+ * Reset Resident Password
+ */
+export const resetResidentPassword = async (residentUserId, societyId, newPassword) => {
+    const user = await userRepo.findById(residentUserId);
+    if (!user || user.societyId.toString() !== societyId.toString()) {
+        throw ApiError.notFound('Resident not found in this society');
+    }
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    await userRepo.updateUser(residentUserId, { passwordHash: hashedPassword });
+    return true;
 };

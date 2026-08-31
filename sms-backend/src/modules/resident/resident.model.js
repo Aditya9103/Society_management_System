@@ -179,6 +179,21 @@ const residentSchema = new mongoose.Schema(
             type: String,
             default: null
         },       // encrypted
+        // Blood Group
+        bloodGroup: {
+            type: String,
+            default: null
+        },
+        // Occupation
+        occupation: {
+            type: String,
+            default: null
+        },
+        // Marital Status
+        maritalStatus: {
+            type: String,
+            default: null
+        },
         // Id card url
         idCardUrl: {
             type: String,

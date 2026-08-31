@@ -58,7 +58,10 @@ export default function ResidentProfilePage() {
     const domesticStaffList = staffData?.data ?? [];
 
     const [editing, setEditing] = useState(false);
-    const [form, setForm] = useState({ firstName: '', lastName: '', phone: '' });
+    const [form, setForm] = useState({ 
+        firstName: '', lastName: '', phone: '', dateOfBirth: '', gender: '', nationality: '',
+        occupation: '', bloodGroup: '', panNumber: '', aadhaarNumber: '', maritalStatus: ''
+    });
     const [saveMsg, setSaveMsg] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
     const [showAddContact, setShowAddContact] = useState(false);
@@ -67,20 +70,33 @@ export default function ResidentProfilePage() {
     const [activeTab, setActiveTab] = useState('personal');
 
     const startEdit = () => {
-        setForm({ firstName: user?.firstName ?? '', lastName: user?.lastName ?? '', phone: user?.phone ?? '' });
+        setForm({ 
+            firstName: user?.firstName ?? '', 
+            lastName: user?.lastName ?? '', 
+            phone: user?.phone ?? '',
+            dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+            gender: user?.gender ?? '',
+            nationality: user?.nationality ?? 'Indian',
+            occupation: profile?.occupation ?? '',
+            bloodGroup: profile?.bloodGroup ?? '',
+            panNumber: profile?.panNumber ?? '',
+            aadhaarNumber: profile?.aadhaarNumber ?? '',
+            maritalStatus: profile?.maritalStatus ?? ''
+        });
         setEditing(true);
         setSaveMsg('');
     };
 
     const handleSave = async () => {
         try {
-            const res = await updateMyProfile(form).unwrap();
+            const payload = { ...form };
+            if (!payload.dateOfBirth) delete payload.dateOfBirth;
+            const res = await updateMyProfile(payload).unwrap();
             dispatch(setCredentials({ user: { ...user, ...form }, accessToken: localStorage.getItem('accessToken') }));
             setEditing(false);
-            setSaveMsg('Profile saved!');
-            setTimeout(() => setSaveMsg(''), 3000);
-        } catch {
-            setSaveMsg('Failed to save.');
+            toast.success('Profile updated successfully!');
+        } catch (error) {
+            toast.error(error?.data?.message || 'Failed to update profile.');
         }
     };
 

@@ -52,6 +52,63 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                                     className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Date of Birth</label>
+                                <input type="date" value={form.dateOfBirth} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 [color-scheme:dark]" />
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Gender</label>
+                                <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Marital Status</label>
+                                <select value={form.maritalStatus} onChange={e => setForm(f => ({ ...f, maritalStatus: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Nationality</label>
+                                <input value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Occupation</label>
+                                <input value={form.occupation} onChange={e => setForm(f => ({ ...f, occupation: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Blood Group</label>
+                                <select value={form.bloodGroup} onChange={e => setForm(f => ({ ...f, bloodGroup: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select</option>
+                                    <option value="A+">A+</option><option value="A-">A-</option>
+                                    <option value="B+">B+</option><option value="B-">B-</option>
+                                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                    <option value="O+">O+</option><option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">PAN Number</label>
+                                <input value={form.panNumber} onChange={e => setForm(f => ({ ...f, panNumber: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase" />
+                            </div>
+                            <div>
+                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Aadhaar Number</label>
+                                <input value={form.aadhaarNumber} onChange={e => setForm(f => ({ ...f, aadhaarNumber: e.target.value }))}
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                            </div>
                         </div>
                     ) : (
                         <div className="flex flex-col">
@@ -94,10 +151,70 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 </div>
                             </div>
                             {/* Move-in Date */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 gap-1 sm:gap-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
                                 <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Calendar className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Move-in Date</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">02 Jul 2024</div>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">
+                                        {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not provided'}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Date of Birth */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Calendar className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Date of Birth</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">
+                                        {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not provided'}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Gender */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Gender</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{user?.gender || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* Nationality */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Nationality</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{user?.nationality || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* Occupation */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Occupation</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.occupation || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* Blood Group */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Blood Group</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.bloodGroup || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* Marital Status */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Marital Status</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.maritalStatus || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* PAN Number */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">PAN Number</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.panNumber || 'Not provided'}</div>
+                                </div>
+                            </div>
+                            {/* Aadhaar Number */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 gap-1 sm:gap-0">
+                                <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><User className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Aadhaar Number</span></div>
+                                <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.aadhaarNumber || 'Not provided'}</div>
                                 </div>
                             </div>
                         </div>

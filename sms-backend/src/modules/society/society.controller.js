@@ -77,18 +77,87 @@ export const createStaff = asyncHandler(async (req, res) => {
  */
 export const listStaff = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
-    const { data, pagination } = await societyService.listStaff(societyId, req.query);
-    res.status(200).json(new ApiResponse(200, data, 'Staff fetched successfully', pagination));
+    const { data, pagination, stats } = await societyService.listStaff(societyId, req.query);
+    res.status(200).json(new ApiResponse(200, data, 'Staff fetched successfully', pagination, stats));
+});
+
+/**
+ * DELETE /api/v1/societies/staff/:id
+ * Delete a staff member permanently.
+ */
+export const deleteStaff = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const societyId = req.user.societyId;
+    const result = await societyService.deleteStaff(id, societyId);
+    res.status(200).json(new ApiResponse(200, result, 'Staff deleted successfully'));
 });
 
 /**
  * PATCH /api/v1/societies/staff/:id/deactivate
- * Deactivate a staff member account.
+ * Deactivate a staff member.
  */
 export const deactivateStaff = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
-    await societyService.deactivateStaff(req.params.id, societyId);
-    res.status(200).json(new ApiResponse(200, null, 'Staff member deactivated successfully'));
+    const result = await societyService.deactivateStaff(req.params.id, societyId);
+    res.status(200).json(new ApiResponse(200, result, 'Staff member deactivated successfully'));
+});
+
+/**
+ * PATCH /api/v1/societies/staff/:id/reset-password
+ * Reset a staff member's password.
+ */
+export const resetStaffPassword = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const result = await societyService.resetStaffPassword(req.params.id, societyId);
+    res.status(200).json(new ApiResponse(200, result, 'Staff member password reset successfully'));
+});
+
+/**
+ * GET /api/v1/societies/staff/:id
+ * Get detailed staff profile.
+ */
+export const getStaffDetails = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const { user, profile } = await societyService.getStaffDetails(req.params.id, societyId);
+    res.status(200).json(new ApiResponse(200, { user, profile }, 'Staff details fetched successfully'));
+});
+
+/**
+ * PUT /api/v1/societies/staff/:id
+ * Update staff profile.
+ */
+export const updateStaffProfile = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const result = await societyService.updateStaffProfile(req.params.id, societyId, req.body);
+    res.status(200).json(new ApiResponse(200, result, 'Staff profile updated successfully'));
+});
+
+/**
+ * PATCH /api/v1/societies/staff/:id/documents/:docId/verify
+ * Verify a staff document.
+ */
+export const verifyStaffDocument = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const result = await societyService.verifyStaffDocument(req.params.id, societyId, req.params.docId, req.user._id);
+    res.status(200).json(new ApiResponse(200, result, 'Staff document verified successfully'));
+});
+
+/**
+ * POST /api/v1/societies/staff/:id/documents
+ * Upload a staff document.
+ */
+export const uploadStaffDocument = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        throw new ApiError(400, 'No document file uploaded');
+    }
+    const { type } = req.body;
+    if (!type) {
+        throw new ApiError(400, 'Document type is required');
+    }
+    
+    const societyId = req.user.societyId;
+    const result = await societyService.uploadStaffDocument(req.params.id, societyId, req.file, type);
+    res.status(200).json(new ApiResponse(200, result, 'Staff document uploaded successfully'));
 });
 
 // ── Residents ─────────────────────────────────────────────────────────────────

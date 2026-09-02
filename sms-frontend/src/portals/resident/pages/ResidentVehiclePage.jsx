@@ -8,6 +8,32 @@ import { toast } from 'react-hot-toast';
 import AddVehicleModal from '../components/vehicles/AddVehicleModal';
 import ParkingOverview from '../components/vehicles/ParkingOverview';
 
+const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradient, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
+    >
+        {/* Abstract Background Waves (CSS based) */}
+        <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+            </svg>
+        </div>
+        
+        <div className="relative z-10 flex items-start gap-4">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
+            <div>
+                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
+                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+            </div>
+        </div>
+    </div>
+);
+
 export default function ResidentVehiclePage() {
     const { data, isLoading } = useGetMyVehiclesQuery();
     const [registerVehicle, { isLoading: isRegistering }] = useRegisterVehicleMutation();
@@ -110,15 +136,15 @@ export default function ResidentVehiclePage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-1">Vehicles & Parking</h1>
-                        <p className="text-slate-400">Manage your vehicles and parking spaces</p>
+                        <p className="text-white font-bold">Manage your vehicles and parking spaces</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 font-medium transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 font-bold transition-colors">
                             <QrCode size={18} /> Scan QR
                         </button>
                         <button 
                             onClick={() => setShowAddModal(true)} 
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:opacity-90 shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:opacity-90 shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all"
                         >
                             <Plus size={18} /> Add Vehicle
                         </button>
@@ -126,39 +152,36 @@ export default function ResidentVehiclePage() {
                 </div>
 
                 {/* Metrics Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start justify-between">
-                        <div>
-                            <p className="text-slate-400 text-xs font-medium mb-1 uppercase tracking-wider">Total Vehicles</p>
-                            <h3 className="text-2xl font-bold text-white">{vehicles.length}</h3>
-                            <p className="text-slate-500 text-xs mt-1">Registered</p>
-                        </div>
-                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                            <Car size={20} />
-                        </div>
-                    </div>
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start justify-between">
-                        <div>
-                            <p className="text-slate-400 text-xs font-medium mb-1 uppercase tracking-wider">Active Parking</p>
-                            <h3 className="text-2xl font-bold text-white">{activeParked}</h3>
-                            <p className="text-slate-500 text-xs mt-1">In Use</p>
-                        </div>
-                        <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center">
-                            <ParkingCircle size={20} />
-                        </div>
-                    </div>
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start justify-between">
-                        <div>
-                            <p className="text-slate-400 text-xs font-medium mb-1 uppercase tracking-wider">Available Slots</p>
-                            <h3 className="text-2xl font-bold text-white">
-                                {parkingSlots.filter(s => s.status === 'AVAILABLE' && !s.assignedVehicleId).length}
-                            </h3>
-                            <p className="text-slate-500 text-xs mt-1">Free Slots</p>
-                        </div>
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                            <CheckCircle2 size={20} />
-                        </div>
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <StatCard 
+                        icon={Car}
+                        title="Total Vehicles"
+                        value={vehicles.length}
+                        subtitle="Registered"
+                        iconBg="bg-[#3e248a]/50"
+                        iconColor="text-[#b388ff]"
+                        gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                        onClick={() => setActiveTab('My Vehicles')}
+                    />
+                    <StatCard 
+                        icon={ParkingCircle}
+                        title="Active Parking"
+                        value={activeParked}
+                        subtitle="In Use"
+                        iconBg="bg-[#1d488c]/50"
+                        iconColor="text-[#60a5fa]"
+                        gradient="from-[#143261]/80 to-[#0b1c36]"
+                        onClick={() => setActiveTab('My Parking')}
+                    />
+                    <StatCard 
+                        icon={CheckCircle2}
+                        title="Available Slots"
+                        value={parkingSlots.filter(s => s.status === 'AVAILABLE' && !s.assignedVehicleId).length}
+                        subtitle="Free Slots"
+                        iconBg="bg-[#1a4d35]/50"
+                        iconColor="text-[#4ade80]"
+                        gradient="from-[#123625]/80 to-[#0a1f15]"
+                    />
                 </div>
 
                 {/* Tabs */}
@@ -167,10 +190,10 @@ export default function ResidentVehiclePage() {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                            className={`px-4 py-3 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${
                                 activeTab === tab 
                                 ? 'border-indigo-500 text-indigo-400' 
-                                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-white/20'
+                                : 'border-transparent text-white font-bold hover:text-slate-200 hover:border-white/20'
                             }`}
                         >
                             {tab}
@@ -197,7 +220,7 @@ export default function ResidentVehiclePage() {
                                     <select 
                                         value={vehicleFilter}
                                         onChange={(e) => setVehicleFilter(e.target.value)}
-                                        className="appearance-none w-full flex items-center justify-between gap-3 pl-4 pr-10 py-2.5 bg-[#131525] border border-white/10 rounded-xl text-sm font-medium hover:bg-white/5 transition-colors text-slate-300 focus:outline-none"
+                                        className="appearance-none w-full flex items-center justify-between gap-3 pl-4 pr-10 py-2.5 bg-[#131525] border border-white/10 rounded-xl text-sm font-bold hover:bg-white/5 transition-colors text-white font-bold focus:outline-none"
                                     >
                                         <option value="ALL">All Vehicles</option>
                                         <option value="PARKED">Currently Parked</option>
@@ -211,7 +234,7 @@ export default function ResidentVehiclePage() {
                                     <select 
                                         value={vehicleSort}
                                         onChange={(e) => setVehicleSort(e.target.value)}
-                                        className="appearance-none w-full flex items-center justify-between gap-3 pl-10 pr-10 py-2.5 bg-[#131525] border border-white/10 rounded-xl text-sm font-medium hover:bg-white/5 transition-colors text-slate-300 focus:outline-none"
+                                        className="appearance-none w-full flex items-center justify-between gap-3 pl-10 pr-10 py-2.5 bg-[#131525] border border-white/10 rounded-xl text-sm font-bold hover:bg-white/5 transition-colors text-white font-bold focus:outline-none"
                                     >
                                         <option value="NEWEST">Newest First</option>
                                         <option value="OLDEST">Oldest First</option>
@@ -232,8 +255,8 @@ export default function ResidentVehiclePage() {
                         ) : filteredAndSortedVehicles.length === 0 ? (
                             <div className="py-16 text-center bg-white/5 rounded-2xl border border-white/10 border-dashed">
                                 <Car className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-white mb-2">No vehicles found</h3>
-                                <p className="text-slate-400 text-sm">Add a vehicle to manage your parking spaces or adjust your filters.</p>
+                                <h3 className="text-lg font-bold text-white mb-2">No vehicles found</h3>
+                                <p className="text-white font-bold text-sm">Add a vehicle to manage your parking spaces or adjust your filters.</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -258,7 +281,7 @@ export default function ResidentVehiclePage() {
                                                         {v.isPrimary && <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400">Primary</span>}
                                                     </div>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-slate-300 font-mono text-sm tracking-wide bg-white/5 px-2 py-1 rounded">{v.vehicleNumber}</span>
+                                                        <span className="text-white font-bold font-mono text-sm tracking-wide bg-white/5 px-2 py-1 rounded">{v.vehicleNumber}</span>
                                                         <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full border 
                                                             ${v.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
                                                               v.status === 'PENDING_APPROVAL' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
@@ -272,7 +295,7 @@ export default function ResidentVehiclePage() {
                                                 </button>
                                             </div>
 
-                                            <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-slate-400 mt-4">
+                                            <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-white font-bold mt-4">
                                                 <div className="flex items-center gap-1.5"><Car size={14} /> {(v.vehicleType === 'OTHER' ? v.customVehicleType : v.vehicleType).replace('_', ' ')} • {v.color || 'No Color'} • {v.fuelType}</div>
                                                 <div className="flex items-center gap-1.5"><Calendar size={14} /> Registered {new Date(v.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                                             </div>
@@ -284,15 +307,15 @@ export default function ResidentVehiclePage() {
                                         {/* Right: Parking & QR */}
                                         <div className="flex items-center gap-6 lg:min-w-[280px]">
                                             <div className="flex-1">
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Parking Slot</p>
+                                                <p className="text-xs text-slate-500 font-bold mb-1">Parking Slot</p>
                                                 {v.parkingSlotId ? (
                                                     <div>
                                                         <p className="font-bold text-white text-lg">{v.parkingSlotId.slotNumber}</p>
-                                                        <p className="text-xs text-slate-400">Basement Floor 1</p>
+                                                        <p className="text-xs text-white font-bold">Basement Floor 1</p>
                                                     </div>
                                                 ) : (
                                                     <div>
-                                                        <p className="font-bold text-slate-300 text-lg">Unassigned</p>
+                                                        <p className="font-bold text-white font-bold text-lg">Unassigned</p>
                                                         <p className="text-xs text-slate-500">-</p>
                                                     </div>
                                                 )}
@@ -311,7 +334,7 @@ export default function ResidentVehiclePage() {
                                                     <div className="p-2 bg-white rounded-xl shadow-lg border border-white/20">
                                                         <QRCode value={v.qrToken} size={64} level="H" />
                                                     </div>
-                                                    <button onClick={() => handleRegenerate(v._id)} className="text-[10px] font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                                                    <button onClick={() => handleRegenerate(v._id)} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
                                                         <RefreshCw size={10} /> Regenerate
                                                     </button>
                                                 </div>
@@ -339,8 +362,8 @@ export default function ResidentVehiclePage() {
                         ) : myParkingSlots.length === 0 ? (
                             <div className="py-16 text-center bg-white/5 rounded-2xl border border-white/10 border-dashed">
                                 <ParkingCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-white mb-2">No parking slots</h3>
-                                <p className="text-slate-400 text-sm">You haven't been assigned any parking slots yet.</p>
+                                <h3 className="text-lg font-bold text-white mb-2">No parking slots</h3>
+                                <p className="text-white font-bold text-sm">You haven't been assigned any parking slots yet.</p>
                             </div>
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2">
@@ -348,7 +371,7 @@ export default function ResidentVehiclePage() {
                                     <div key={slot._id} className="bg-[#131525] border border-white/5 rounded-2xl p-5 shadow-lg">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">{slot.floor}</p>
+                                                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">{slot.floor}</p>
                                                 <h3 className="text-2xl font-bold text-white">{slot.slotNumber}</h3>
                                             </div>
                                             <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
@@ -360,14 +383,14 @@ export default function ResidentVehiclePage() {
                                                 <div className="w-10 h-10 rounded bg-indigo-500/10 flex items-center justify-center text-indigo-400"><Car size={20} /></div>
                                                 <div>
                                                     <p className="text-sm font-bold text-white">{slot.assignedVehicleId.vehicleNumber}</p>
-                                                    <p className="text-xs text-slate-400">Currently Assigned</p>
+                                                    <p className="text-xs text-white font-bold">Currently Assigned</p>
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="bg-white/5 rounded-xl p-4 flex items-center gap-4 border border-white/5 border-dashed">
                                                 <div className="w-10 h-10 rounded bg-slate-800 flex items-center justify-center text-slate-500"><Car size={20} /></div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-400">Empty Slot</p>
+                                                    <p className="text-sm font-bold text-white font-bold">Empty Slot</p>
                                                 </div>
                                             </div>
                                         )}
@@ -385,18 +408,18 @@ export default function ResidentVehiclePage() {
                         ) : logs.length === 0 ? (
                             <div className="py-16 text-center bg-white/5 rounded-2xl border border-white/10 border-dashed">
                                 <Calendar className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-white mb-2">No history</h3>
-                                <p className="text-slate-400 text-sm">No entry or exit logs found for your vehicles.</p>
+                                <h3 className="text-lg font-bold text-white mb-2">No history</h3>
+                                <p className="text-white font-bold text-sm">No entry or exit logs found for your vehicles.</p>
                             </div>
                         ) : (
                             <div className="bg-[#131525] border border-white/5 rounded-2xl shadow-lg overflow-hidden">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-white/5 border-b border-white/10">
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Date & Time</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Vehicle</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
-                                            <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Gate</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-white font-bold uppercase tracking-wider">Date & Time</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-white font-bold uppercase tracking-wider">Vehicle</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-white font-bold uppercase tracking-wider">Action</th>
+                                            <th className="px-6 py-4 text-xs font-semibold text-white font-bold uppercase tracking-wider">Gate</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
@@ -405,7 +428,7 @@ export default function ResidentVehiclePage() {
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     {new Date(log.status === 'ENTRY' ? log.entryTime : log.exitTime).toLocaleString('en-GB')}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm font-mono text-slate-300">
+                                                <td className="px-6 py-4 text-sm font-mono text-white font-bold">
                                                     {log.vehicleNumber}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm">
@@ -414,7 +437,7 @@ export default function ResidentVehiclePage() {
                                                         {log.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-slate-400">
+                                                <td className="px-6 py-4 text-sm text-white font-bold">
                                                     {log.gateId?.name || 'Main Gate'}
                                                 </td>
                                             </tr>
@@ -433,8 +456,8 @@ export default function ResidentVehiclePage() {
                         ) : violations.length === 0 ? (
                             <div className="py-16 text-center bg-white/5 rounded-2xl border border-white/10 border-dashed">
                                 <ShieldAlert className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-white mb-2">All clear!</h3>
-                                <p className="text-slate-400 text-sm">You have zero parking violations.</p>
+                                <h3 className="text-lg font-bold text-white mb-2">All clear!</h3>
+                                <p className="text-white font-bold text-sm">You have zero parking violations.</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -446,10 +469,10 @@ export default function ResidentVehiclePage() {
                                             </div>
                                             <div>
                                                 <h3 className="text-lg font-bold text-white mb-1">{violation.type.replace('_', ' ')}</h3>
-                                                <p className="text-sm text-slate-400 mb-2">{violation.description || 'No description provided.'}</p>
-                                                <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+                                                <p className="text-sm text-white font-bold mb-2">{violation.description || 'No description provided.'}</p>
+                                                <div className="flex items-center gap-4 text-xs font-bold text-slate-500">
                                                     <span>{new Date(violation.createdAt).toLocaleDateString('en-GB')}</span>
-                                                    <span className="font-mono text-slate-300 bg-white/5 px-2 py-0.5 rounded">{violation.vehicleId?.vehicleNumber}</span>
+                                                    <span className="font-mono text-white font-bold bg-white/5 px-2 py-0.5 rounded">{violation.vehicleId?.vehicleNumber}</span>
                                                 </div>
                                             </div>
                                         </div>

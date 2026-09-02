@@ -17,7 +17,7 @@ function SlotChip({ slot, selected, onClick }) {
                 ? 'bg-slate-800/50 border-slate-700/50 text-slate-500 cursor-not-allowed'
                 : selected
                     ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20'
-                    : 'bg-[#151822] border-slate-700 text-slate-300 hover:border-purple-500/50 hover:bg-slate-800'
+                    : 'bg-[#151822] border-slate-700 text-white font-bold hover:border-purple-500/50 hover:bg-slate-800'
                 }`}
         >
             {slot.startTime}–{slot.endTime}
@@ -86,7 +86,7 @@ export function BookModal({ amenity, onClose }) {
                     </div>
                 ) : hasConfiguredSlots ? (
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-2">Select Slot</label>
+                        <label className="block text-xs font-semibold text-white font-bold mb-2">Select Slot</label>
                         {slots.length === 0 ? (
                             <p className="text-slate-500 text-sm">No slots configured for this day.</p>
                         ) : (

@@ -53,7 +53,7 @@ export default function ComplaintsOverviewChart({ complaints, totalComplaints })
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                         <span className="text-2xl font-bold text-white leading-none">{total}</span>
-                        <span className="text-[10px] text-gray-400">Total</span>
+                        <span className="text-[12px] text-gray-300">Total</span>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@ export default function ComplaintsOverviewChart({ complaints, totalComplaints })
                             </div>
                             <div className="flex items-center gap-2 text-xs">
                                 <span className="text-white font-medium">{item.value}</span>
-                                <span className="text-gray-400">({formatPercent(item.value)}%)</span>
+                                <span className="text-gray-300">({formatPercent(item.value)}%)</span>
                             </div>
                         </div>
                     ))}

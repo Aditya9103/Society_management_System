@@ -25,10 +25,10 @@ export function DomesticStaffCard({ staff, onDelete }) {
                     <div>
                         <p className="text-[13px] font-bold text-white">{staff.name}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-white font-bold">
                                 {staff.role === 'OTHER' ? staff.customRole || 'OTHER' : staff.role}
                             </span>
-                            {staff.phone && <span className="text-[11px] text-slate-400">{staff.phone}</span>}
+                            {staff.phone && <span className="text-[11px] text-white font-bold">{staff.phone}</span>}
                         </div>
                     </div>
                 </div>
@@ -50,14 +50,14 @@ export function DomesticStaffCard({ staff, onDelete }) {
             {showQr && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                     <div className="w-full max-w-sm rounded-[24px] bg-[#0a0b12] border border-purple-500/20 p-6 shadow-[0_0_40px_rgba(168,85,247,0.15)] text-center relative">
-                        <button onClick={() => setShowQr(false)} className="absolute top-4 right-4 p-1 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
+                        <button onClick={() => setShowQr(false)} className="absolute top-4 right-4 p-1 text-white font-bold hover:bg-slate-800 rounded-lg transition-colors"><X className="h-5 w-5" /></button>
                         <h3 className="font-bold text-white mb-4">Staff QR Code</h3>
                         <div className="bg-white p-2 rounded-xl inline-block mb-4 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                             <img src={staff.qrCodeUri} alt="QR Code" className="w-44 h-44 rounded-lg" />
                         </div>
                         <p className="text-sm font-bold text-white">{staff.name}</p>
-                        <p className="text-[11px] text-slate-400 mb-2">{staff.role === 'OTHER' ? staff.customRole || 'OTHER' : staff.role}</p>
-                        <p className="text-[11px] text-purple-400 font-medium">Scan this code at the gate for daily entry.</p>
+                        <p className="text-[11px] text-white font-bold mb-2">{staff.role === 'OTHER' ? staff.customRole || 'OTHER' : staff.role}</p>
+                        <p className="text-[11px] text-purple-400 font-bold">Scan this code at the gate for daily entry.</p>
                     </div>
                 </div>
             )}

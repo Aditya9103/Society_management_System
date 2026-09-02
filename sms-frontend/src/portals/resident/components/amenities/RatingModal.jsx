@@ -23,7 +23,7 @@ export function RatingModal({ booking, onClose }) {
     return (
         <DarkModal isOpen={true} onClose={() => onClose(false)} title="Rate Your Experience">
             <form onSubmit={handleSubmit} className="space-y-6">
-                <p className="text-slate-400 text-sm text-center">
+                <p className="text-white font-bold text-sm text-center">
                     How was your experience at {booking.amenityId?.name}?
                 </p>
 
@@ -41,7 +41,7 @@ export function RatingModal({ booking, onClose }) {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-2">Comments (Optional)</label>
+                    <label className="block text-xs font-semibold text-white font-bold mb-2">Comments (Optional)</label>
                     <textarea 
                         value={feedback} 
                         onChange={e => setFeedback(e.target.value)} 

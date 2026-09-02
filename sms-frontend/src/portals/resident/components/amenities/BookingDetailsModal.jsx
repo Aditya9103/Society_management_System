@@ -15,7 +15,7 @@ export function BookingDetailsModal({ booking, onClose, onCancel, onRate }) {
             case 'PENDING_APPROVAL': return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
             case 'COMPLETED': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
             case 'CANCELLED': return 'text-red-400 border-red-500/30 bg-red-500/10';
-            default: return 'text-slate-400 border-slate-500/30 bg-slate-500/10';
+            default: return 'text-white font-bold border-slate-500/30 bg-slate-500/10';
         }
     };
 
@@ -65,7 +65,7 @@ export function BookingDetailsModal({ booking, onClose, onCancel, onRate }) {
                     {booking.purpose && (
                         <div className="col-span-2 bg-[#0B0D17] p-5 rounded-2xl border border-white/5 shadow-inner">
                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1.5">Purpose</p>
-                            <p className="text-sm text-slate-300">{booking.purpose}</p>
+                            <p className="text-sm text-white font-bold">{booking.purpose}</p>
                         </div>
                     )}
                 </div>

@@ -107,20 +107,20 @@ export function NoticeCard({ notice }) {
                                         <Pin className="h-3 w-3" /> Pinned
                                     </span>
                                 )}
-                                <span className={`px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-300 text-[10px] font-bold tracking-widest uppercase border border-slate-700`}>
+                                <span className={`px-2 py-0.5 rounded-full bg-slate-800/80 text-white font-bold text-[10px] font-bold tracking-widest uppercase border border-slate-700`}>
                                     {notice.noticeType || 'GENERAL'}
                                 </span>
                             </div>
                             <h2 className="text-[14px] md:text-[20px] font-bold text-white leading-tight mt-1">{notice.title}</h2>
-                            <p className="text-[10px] md:text-xs text-slate-400 mt-1">{notice.noticeType === 'EVENT' ? 'Event Details' : notice.noticeType === 'MAINTENANCE' ? 'Maintenance Update' : 'General Announcement'}</p>
+                            <p className="text-[10px] md:text-xs text-white font-bold mt-1">{notice.noticeType === 'EVENT' ? 'Event Details' : notice.noticeType === 'MAINTENANCE' ? 'Maintenance Update' : 'General Announcement'}</p>
                         </div>
                     </div>
 
-                    <p className={`text-[11px] md:text-[13px] text-slate-300 leading-relaxed max-w-2xl mb-3 ${!expanded ? 'line-clamp-2 md:line-clamp-3' : ''}`}>
+                    <p className={`text-[11px] md:text-[13px] text-white font-bold leading-relaxed max-w-2xl mb-3 ${!expanded ? 'line-clamp-2 md:line-clamp-3' : ''}`}>
                         {notice.content}
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] md:text-xs font-semibold text-slate-400">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] md:text-xs font-semibold text-white font-bold">
                         <div className="flex items-center gap-1.5">
                             <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5" />
                             {notice.publishedAt ? new Date(notice.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently'}
@@ -157,7 +157,7 @@ export function NoticeCard({ notice }) {
                             onClick={() => setExpanded(!expanded)}
                             className={`flex items-center justify-center gap-2 rounded-[12px] bg-[#1a1c29]/80 px-4 md:px-5 py-2.5 text-[11px] md:text-[13px] font-bold text-white border border-slate-700/50 hover:bg-slate-800 transition-colors w-full sm:w-auto shadow-lg backdrop-blur-md ${(!notice.requiresAcknowledgement || isAck) ? 'sm:ml-auto' : ''}`}
                         >
-                            {expanded ? 'Show Less' : 'Read More'} {expanded ? <ChevronUp className="h-3.5 w-3.5 md:h-4 md:w-4 text-slate-400" /> : <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 text-slate-400" />}
+                            {expanded ? 'Show Less' : 'Read More'} {expanded ? <ChevronUp className="h-3.5 w-3.5 md:h-4 md:w-4 text-white font-bold" /> : <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 text-white font-bold" />}
                         </button>
                     </div>
                 </div>

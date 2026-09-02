@@ -173,7 +173,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                     <button 
                         type="button" 
                         onClick={handleClose} 
-                        className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white hover:rotate-90 transition-all duration-300"
+                        className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white hover:rotate-90 transition-all duration-300"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -191,7 +191,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
 
                         {/* Location Section */}
                         <div className="space-y-4">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest border-b border-white/5 pb-2">Location</h3>
+                            <h3 className="text-xs font-black text-gray-300 uppercase tracking-widest border-b border-white/5 pb-2">Location</h3>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Tower</label>
@@ -200,7 +200,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                             required: 'Select a tower',
                                             onChange: (e) => setSelectedTowerId(e.target.value),
                                         })}
-                                        className={`w-full bg-[#151722] border ${errors.towerId ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all`}
+                                        className={`w-full bg-[#151722] border ${errors.towerId ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all`}
                                     >
                                         <option value="">Select tower</option>
                                         {towers.map((t) => (
@@ -214,7 +214,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <select
                                         {...register('floorId', { required: 'Select a floor' })}
                                         disabled={!selectedTowerId}
-                                        className={`w-full bg-[#151722] border ${errors.floorId ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all disabled:opacity-50`}
+                                        className={`w-full bg-[#151722] border ${errors.floorId ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all disabled:opacity-50`}
                                     >
                                         <option value="">Select floor</option>
                                         {floors.map((f) => (
@@ -229,7 +229,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                         {/* Unit Details Section */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Unit Details</h3>
+                                <h3 className="text-xs font-black text-gray-300 uppercase tracking-widest">Unit Details</h3>
                                 {!isEdit && (
                                     <label className="flex items-center gap-2 cursor-pointer text-[13px] font-bold text-gray-300 hover:text-white transition-colors">
                                         <input
@@ -249,7 +249,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                         <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Unit Number</label>
                                         <input
                                             {...register('unitNumber', { required: !isBulk ? 'Unit number is required' : false })}
-                                            className={`w-full bg-[#151722] border ${errors.unitNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all`}
+                                            className={`w-full bg-[#151722] border ${errors.unitNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all`}
                                             placeholder="e.g. 101, A-201"
                                         />
                                         {errors.unitNumber && <p className="text-xs font-medium text-red-400 mt-1 pl-1">{errors.unitNumber.message}</p>}
@@ -260,7 +260,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                             <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Prefix (Optional)</label>
                                             <input
                                                 {...register('unitPrefix')}
-                                                className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                                className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                                 placeholder="e.g. A-"
                                             />
                                         </div>
@@ -268,7 +268,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                             <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Start Number</label>
                                             <input
                                                 {...register('startNumber', { required: isBulk ? 'Start number is required' : false })}
-                                                className={`w-full bg-[#151722] border ${errors.startNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all`}
+                                                className={`w-full bg-[#151722] border ${errors.startNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all`}
                                                 placeholder="e.g. 101"
                                             />
                                             {errors.startNumber && <p className="text-xs font-medium text-red-400 mt-1 pl-1">{errors.startNumber.message}</p>}
@@ -277,7 +277,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                             <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">End Number</label>
                                             <input
                                                 {...register('endNumber', { required: isBulk ? 'End number is required' : false })}
-                                                className={`w-full bg-[#151722] border ${errors.endNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all`}
+                                                className={`w-full bg-[#151722] border ${errors.endNumber ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all`}
                                                 placeholder="e.g. 105"
                                             />
                                             {errors.endNumber && <p className="text-xs font-medium text-red-400 mt-1 pl-1">{errors.endNumber.message}</p>}
@@ -289,7 +289,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Unit Type</label>
                                     <select
                                         {...register('unitType')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                     >
                                         {UNIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                                     </select>
@@ -298,7 +298,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">BHK Type</label>
                                     <select
                                         {...register('bhkType')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                     >
                                         <option value="">None / N.A.</option>
                                         {BHK_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -309,7 +309,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <input
                                         type="number" min={0}
                                         {...register('maintenanceAmount')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                         placeholder="0"
                                     />
                                 </div>
@@ -318,7 +318,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <input
                                         type="number" min={0}
                                         {...register('carpetAreaSqft')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                         placeholder="0"
                                     />
                                 </div>
@@ -327,7 +327,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <input
                                         type="number" min={0}
                                         {...register('builtUpAreaSqft')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                         placeholder="0"
                                     />
                                 </div>
@@ -336,7 +336,7 @@ export default function CreateUnitModal({ isOpen, onClose, initialData = null })
                                     <input
                                         type="number" min={0}
                                         {...register('parkingSlots')}
-                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all"
+                                        className="w-full bg-[#151722] border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:border-violet-500/50 transition-all"
                                         placeholder="0"
                                     />
                                 </div>

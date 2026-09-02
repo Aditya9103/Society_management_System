@@ -12,6 +12,34 @@ import { Button } from '../../../components/ui/Button';
 import VoteModal from '../components/polls/VoteModal';
 import PollResultsModal from '../../admin/components/polls/PollResultsModal';
 
+const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradient, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
+    >
+        {/* Abstract Background Waves (CSS based) */}
+        <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+            </svg>
+        </div>
+        
+        <div className="relative z-10 flex items-start gap-4">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
+            <div>
+                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
+                <div className="flex items-baseline gap-2">
+                    <h3 className="text-2xl font-bold text-white tracking-tight mb-1">{value}</h3>
+                </div>
+                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+            </div>
+        </div>
+    </div>
+);
+
 export default function ResidentPollsPage() {
     const { data: activeData, isLoading: activeLoading } = useGetResidentActivePollsQuery();
     const { data: allData, isLoading: allLoading } = useGetResidentVotedPollsQuery();
@@ -84,22 +112,22 @@ export default function ResidentPollsPage() {
             <div className="flex items-center gap-4 mt-2">
                 <div className="text-center">
                     <span className="block text-xl font-bold text-white leading-none">{String(timeLeft.days).padStart(2, '0')}</span>
-                    <span className="text-[10px] text-slate-400 mt-1 block">Days</span>
+                    <span className="text-[10px] text-white font-bold mt-1 block">Days</span>
                 </div>
                 <span className="text-xl font-bold text-slate-600 leading-none mb-4">:</span>
                 <div className="text-center">
                     <span className="block text-xl font-bold text-white leading-none">{String(timeLeft.hours).padStart(2, '0')}</span>
-                    <span className="text-[10px] text-slate-400 mt-1 block">Hrs</span>
+                    <span className="text-[10px] text-white font-bold mt-1 block">Hrs</span>
                 </div>
                 <span className="text-xl font-bold text-slate-600 leading-none mb-4">:</span>
                 <div className="text-center">
                     <span className="block text-xl font-bold text-white leading-none">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                    <span className="text-[10px] text-slate-400 mt-1 block">Mins</span>
+                    <span className="text-[10px] text-white font-bold mt-1 block">Mins</span>
                 </div>
                 <span className="text-xl font-bold text-slate-600 leading-none mb-4">:</span>
                 <div className="text-center">
                     <span className="block text-xl font-bold text-white leading-none">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                    <span className="text-[10px] text-slate-400 mt-1 block">Secs</span>
+                    <span className="text-[10px] text-white font-bold mt-1 block">Secs</span>
                 </div>
             </div>
         );
@@ -111,7 +139,7 @@ export default function ResidentPollsPage() {
             <div className="flex justify-between items-center bg-[#0B0D17] border border-white/5 rounded-2xl p-6 relative overflow-hidden">
                 <div className="relative z-10 max-w-[80%] md:max-w-none">
                     <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">Polls & Voting</h1>
-                    <p className="text-slate-400 text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
+                    <p className="text-white font-bold text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
                 </div>
                 <div className="absolute top-4 right-4 md:relative md:top-auto md:right-auto z-10 w-16 h-16 md:w-[120px] md:h-[120px] opacity-80 md:opacity-100">
                     <img src="/pollbox.png" alt="Poll Box Graphic" className="w-full h-full object-contain" />
@@ -122,57 +150,45 @@ export default function ResidentPollsPage() {
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                        <BarChart2 className="w-6 h-6 text-purple-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-1">Active Polls</p>
-                        <div className="flex items-baseline gap-2">
-                            <h3 className="text-2xl font-bold text-white">{totalActivePolls}</h3>
-                            <span className="text-[10px] text-slate-500">Currently open</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                        <Users className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-1">Total Participants</p>
-                        <div className="flex items-baseline gap-2">
-                            <h3 className="text-2xl font-bold text-white">{totalParticipants}</h3>
-                            <span className="text-[10px] text-slate-500">Across all polls</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                        <Activity className="w-6 h-6 text-amber-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-1">Total Votes Cast</p>
-                        <div className="flex items-baseline gap-2">
-                            <h3 className="text-2xl font-bold text-white">{totalVotesCast}</h3>
-                            <span className="text-[10px] text-slate-500">Total votes received</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                        <ShieldCheck className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-1">Participation Rate</p>
-                        <div className="flex items-baseline gap-2">
-                            <h3 className="text-2xl font-bold text-white">{participationRate}%</h3>
-                            <span className="text-[10px] text-slate-500">Active residents</span>
-                        </div>
-                    </div>
-                </div>
+                <StatCard 
+                    icon={BarChart2}
+                    title="Active Polls"
+                    value={totalActivePolls}
+                    subtitle="Currently open"
+                    iconBg="bg-[#3e248a]/50"
+                    iconColor="text-[#b388ff]"
+                    gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                    onClick={() => setActiveTab('ACTIVE')}
+                />
+                <StatCard 
+                    icon={Users}
+                    title="Total Participants"
+                    value={totalParticipants}
+                    subtitle="Across all polls"
+                    iconBg="bg-[#1a4d35]/50"
+                    iconColor="text-[#4ade80]"
+                    gradient="from-[#123625]/80 to-[#0a1f15]"
+                    onClick={() => setActiveTab('PAST')}
+                />
+                <StatCard 
+                    icon={Activity}
+                    title="Total Votes Cast"
+                    value={totalVotesCast}
+                    subtitle="Total votes received"
+                    iconBg="bg-[#6b4819]/50"
+                    iconColor="text-[#f59e0b]"
+                    gradient="from-[#4a3212]/80 to-[#261909]"
+                    onClick={() => setActiveTab('PAST')}
+                />
+                <StatCard 
+                    icon={ShieldCheck}
+                    title="Participation Rate"
+                    value={`${participationRate}%`}
+                    subtitle="Active residents"
+                    iconBg="bg-[#1d488c]/50"
+                    iconColor="text-[#60a5fa]"
+                    gradient="from-[#143261]/80 to-[#0b1c36]"
+                />
             </div>
 
             {/* Navigation & Filters */}
@@ -180,14 +196,14 @@ export default function ResidentPollsPage() {
                 <div className="flex gap-6">
                     <button 
                         onClick={() => setActiveTab('ACTIVE')}
-                        className={`text-sm font-semibold transition-all relative ${activeTab === 'ACTIVE' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`text-sm font-semibold transition-all relative ${activeTab === 'ACTIVE' ? 'text-indigo-400' : 'text-white font-bold hover:text-white font-bold'}`}
                     >
                         Active Polls
                         {activeTab === 'ACTIVE' && <div className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
                     </button>
                     <button 
                         onClick={() => setActiveTab('PAST')}
-                        className={`text-sm font-semibold transition-all relative ${activeTab === 'PAST' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`text-sm font-semibold transition-all relative ${activeTab === 'PAST' ? 'text-indigo-400' : 'text-white font-bold hover:text-white font-bold'}`}
                     >
                         Past Polls
                         {activeTab === 'PAST' && <div className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
@@ -209,7 +225,7 @@ export default function ResidentPollsPage() {
                         <select 
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-4 pr-10 py-2 text-sm font-medium text-slate-300 focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
+                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-4 pr-10 py-2 text-sm font-bold text-white font-bold focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
                         >
                             <option value="ALL">All Categories</option>
                             <option value="FACILITY_DECISION">Facility Decision</option>
@@ -221,13 +237,13 @@ export default function ResidentPollsPage() {
                     <div className="flex items-center gap-1 bg-[#131525] border border-white/10 p-1 rounded-xl shrink-0">
                         <button 
                             onClick={() => setViewMode('GRID')}
-                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'GRID' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'GRID' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-white font-bold'}`}
                         >
                             <LayoutGrid size={16} />
                         </button>
                         <button 
                             onClick={() => setViewMode('LIST')}
-                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'LIST' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'LIST' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-white font-bold'}`}
                         >
                             <List size={16} />
                         </button>
@@ -244,7 +260,7 @@ export default function ResidentPollsPage() {
                 ) : filteredPolls.length === 0 ? (
                     <div className="col-span-full py-12 text-center bg-[#131525] border border-white/5 rounded-2xl">
                         <BarChart2 className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-                        <p className="text-slate-400 font-medium">No polls found.</p>
+                        <p className="text-white font-bold font-bold">No polls found.</p>
                     </div>
                 ) : (
                     filteredPolls.map(poll => {
@@ -268,9 +284,9 @@ export default function ResidentPollsPage() {
                                         </div>
                                     </div>
                                     <h3 className="text-lg font-bold text-white mb-2 leading-snug">{poll.title}</h3>
-                                    <p className="text-xs text-slate-400 mb-6 leading-relaxed line-clamp-2">{poll.description}</p>
+                                    <p className="text-xs text-white font-bold mb-6 leading-relaxed line-clamp-2">{poll.description}</p>
                                     
-                                    <div className="flex flex-wrap items-center gap-4 text-[11px] font-medium text-slate-500 mt-auto">
+                                    <div className="flex flex-wrap items-center gap-4 text-[11px] font-bold text-slate-500 mt-auto">
                                         <div className="flex items-center gap-1.5"><User size={12}/> Posted by Committee</div>
                                         <div className="flex items-center gap-1.5"><Calendar size={12}/> {new Date(poll.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
                                         <div className="flex items-center gap-1.5"><Users size={12}/> {poll.totalVotes || 0} Participants</div>
@@ -304,7 +320,7 @@ export default function ResidentPollsPage() {
                                                     <div className={`text-lg font-bold w-12 ${textColor}`}>{percent}%</div>
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-end mb-1.5">
-                                                            <span className="text-xs font-bold text-slate-200 truncate">{opt.text}</span>
+                                                            <span className="text-xs font-bold text-slate-200 break-words whitespace-normal">{opt.text}</span>
                                                             <span className="text-[10px] text-slate-500">{opt.voteCount || 0} votes</span>
                                                         </div>
                                                         <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
@@ -317,9 +333,9 @@ export default function ResidentPollsPage() {
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center text-center">
                                             <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
-                                                <ShieldCheck className="w-5 h-5 text-slate-400" />
+                                                <ShieldCheck className="w-5 h-5 text-white font-bold" />
                                             </div>
-                                            <p className="text-sm font-medium text-slate-300">Results are hidden</p>
+                                            <p className="text-sm font-bold text-white font-bold">Results are hidden</p>
                                             <p className="text-xs text-slate-500 mt-1">Votes will be revealed after closing.</p>
                                         </div>
                                     )}
@@ -337,7 +353,7 @@ export default function ResidentPollsPage() {
                                     {!isClosed ? (
                                         <>
                                             <div className="mb-4 w-full pt-4 md:pt-0">
-                                                <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
+                                                <div className="flex items-center gap-1.5 text-xs text-white font-bold mb-1">
                                                     <Clock size={12} /> Ends in
                                                 </div>
                                                 <LiveTimer endDate={poll.endDate} />
@@ -352,7 +368,7 @@ export default function ResidentPollsPage() {
                                         </>
                                     ) : (
                                         <div className="w-full pt-6 md:pt-0">
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-4">
+                                            <div className="flex items-center gap-1.5 text-xs text-white font-bold mb-4">
                                                 <CheckCircle size={12} className="text-emerald-500" /> Poll Concluded
                                             </div>
                                             <Button 
@@ -378,12 +394,12 @@ export default function ResidentPollsPage() {
                     </div>
                     <div>
                         <h4 className="text-white font-bold text-lg">Your vote matters!</h4>
-                        <p className="text-slate-400 text-sm">Every vote helps us build a better community for everyone.</p>
+                        <p className="text-white font-bold text-sm">Every vote helps us build a better community for everyone.</p>
                     </div>
                 </div>
                 <Button 
                     variant="outline" 
-                    className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 whitespace-nowrap"
+                    className="border-white/10 text-white font-bold hover:text-white hover:bg-white/5 whitespace-nowrap"
                     onClick={() => setActiveTab('PAST')}
                 >
                     View Past Polls <ArrowRight size={16} className="ml-2 inline" />

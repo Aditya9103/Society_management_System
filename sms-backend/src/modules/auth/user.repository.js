@@ -197,3 +197,13 @@ export const getPasswordHistory = async (id) => {
     const user = await User.findById(id).select('+passwordHistory');
     return user?.passwordHistory ?? [];
 };
+
+/**
+ * Delete a user by their MongoDB ObjectId.
+ *
+ * @param {string} id - User ObjectId
+ * @returns {Promise<UserDocument|null>} Deleted document
+ */
+export const deleteUser = (id) => {
+    return User.findByIdAndDelete(id).lean();
+};

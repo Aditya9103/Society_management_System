@@ -63,7 +63,7 @@ export function AddDomesticStaffModal({ onClose, onAdd }) {
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1.5">Photo (Optional)</label>
+                    <label className="block text-xs font-semibold text-white font-bold mb-1.5">Photo (Optional)</label>
                     <input type="file" accept="image/*" onChange={e => setForm(f => ({ ...f, photoFile: e.target.files[0] }))}
                         className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-3 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30 transition-colors" />
                 </div>

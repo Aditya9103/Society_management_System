@@ -91,7 +91,7 @@ export default function ResidentWalkInListener() {
             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 animate-in zoom-in-95 duration-200 relative">
                 <button 
                     onClick={() => setApprovalRequest(null)}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition"
+                    className="absolute top-4 right-4 text-white font-bold hover:text-slate-600 transition"
                 >
                     <X className="h-5 w-5" />
                 </button>

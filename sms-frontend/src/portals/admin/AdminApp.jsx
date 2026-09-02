@@ -14,6 +14,7 @@ import SocietyProfilePage from './pages/SocietyProfilePage';
 import TowersPage from './pages/TowersPage';
 import UnitsPage from './pages/UnitsPage';
 import StaffPage from './pages/StaffPage';
+import StaffProfilePage from './pages/StaffProfilePage';
 import ResidentsPage from './pages/ResidentsPage';
 import PendingApprovalsPage from './pages/PendingApprovalsPage';
 import AdminComplaintsPage from './pages/AdminComplaintsPage';
@@ -62,6 +63,7 @@ export default function AdminApp() {
         <Route path="towers" element={<TowersPage />} />
         <Route path="units" element={<UnitsPage />} />
         <Route path="staff" element={<StaffPage />} />
+        <Route path="staff/:id" element={<StaffProfilePage />} />
         <Route path="residents" element={<ResidentsPage />} />
         <Route path="pending" element={<PendingApprovalsPage />} />
         <Route path="complaints" element={<AdminComplaintsPage />} />

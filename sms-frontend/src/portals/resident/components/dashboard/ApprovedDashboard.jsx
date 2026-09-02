@@ -75,9 +75,9 @@ export function ApprovedDashboard({ profile, user }) {
                                 onClick={() => setIsSearchOpen(true)}
                                 className="relative flex items-center w-full h-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md px-3 group hover:border-purple-500/50 transition-colors cursor-text text-left"
                             >
-                                <Search size={18} className="text-slate-400 mr-2" />
-                                <span className="w-full bg-transparent text-sm text-slate-400">Search anything...</span>
-                                <div className="hidden sm:flex items-center justify-center bg-slate-800 rounded px-1.5 py-0.5 text-[10px] font-bold text-slate-400 border border-slate-700">
+                                <Search size={18} className="text-white font-bold mr-2" />
+                                <span className="w-full bg-transparent text-sm text-white font-bold">Search anything...</span>
+                                <div className="hidden sm:flex items-center justify-center bg-slate-800 rounded px-1.5 py-0.5 text-[10px] font-bold text-white font-bold border border-slate-700">
                                     ⌘K
                                 </div>
                             </button>
@@ -89,7 +89,7 @@ export function ApprovedDashboard({ profile, user }) {
                             <div className="relative" ref={notifRef}>
                                 <button 
                                     onClick={() => setIsNotifOpen(!isNotifOpen)}
-                                    className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md text-slate-300 hover:text-white transition-colors"
+                                    className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-md text-white font-bold hover:text-white transition-colors"
                                 >
                                     <Bell size={18} />
                                     {unreadCount > 0 && (
@@ -120,7 +120,7 @@ export function ApprovedDashboard({ profile, user }) {
                                                             <span className="text-sm font-semibold text-slate-200">{notif.title}</span>
                                                             <span className="text-[10px] text-slate-500 shrink-0 ml-2">{formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}</span>
                                                         </div>
-                                                        <p className="text-xs text-slate-400 line-clamp-2">{notif.body}</p>
+                                                        <p className="text-xs text-white font-bold line-clamp-2">{notif.body}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -143,13 +143,13 @@ export function ApprovedDashboard({ profile, user }) {
                                 {/* Dropdown Menu */}
                                 {isQuickActionOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl z-50 p-2 flex flex-col gap-1">
-                                        <button onClick={() => { navigate('/resident/amenities'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                        <button onClick={() => { navigate('/resident/amenities'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-white font-bold hover:text-white transition-colors text-left">
                                             <Coffee size={16} className="text-fuchsia-400" /> Book Amenity
                                         </button>
-                                        <button onClick={() => { navigate('/resident/visitors'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                        <button onClick={() => { navigate('/resident/visitors'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-white font-bold hover:text-white transition-colors text-left">
                                             <UserCheck size={16} className="text-emerald-400" /> Pre-approve Visitor
                                         </button>
-                                        <button onClick={() => { navigate('/resident/complaints'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-slate-300 hover:text-white transition-colors text-left">
+                                        <button onClick={() => { navigate('/resident/complaints'); setIsQuickActionOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800 text-sm text-white font-bold hover:text-white transition-colors text-left">
                                             <MessageCircle size={16} className="text-rose-400" /> Raise Complaint
                                         </button>
                                     </div>
@@ -164,7 +164,7 @@ export function ApprovedDashboard({ profile, user }) {
                             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 flex items-center gap-3">
                                 {getGreeting()}, {user?.firstName}! <span className="animate-bounce inline-block origin-bottom-right">👋</span>
                             </h1>
-                            <p className="text-slate-200 text-xs sm:text-sm font-medium">
+                            <p className="text-slate-200 text-xs sm:text-sm font-bold">
                                 Welcome back to {societyName}
                             </p>
                         </div>
@@ -181,40 +181,48 @@ export function ApprovedDashboard({ profile, user }) {
                     title="Total Complaints" 
                     value="12" 
                     subtitle="2 Escalated"
-                    subtitleColor="text-red-500"
-                    icon={<MessageCircle size={26} className="text-[#d946ef]" strokeWidth={2.5} />}
-                    bgClass="bg-[#d946ef]/10"
-                    glowColor="#d946ef"
+                    subtitleColor="text-white font-bold"
+                    icon={<MessageCircle size={26} className="text-[#f87171]" strokeWidth={2.5} />}
+                    onClick={() => navigate('/resident/complaints')}
+                    bgClass="bg-[#701c22]/50"
+                    glowColor="#ef4444"
+                    colors="from-[#4a1216]/80 to-[#2b0a0d]"
                     svgPoints="0,22 10,25 20,15 25,25 35,20 45,5 55,18 65,22 75,10 85,20 95,25 100,22"
                 />
                 <StatCard 
                     title="Pending Visitors" 
                     value="3" 
                     subtitle="View all"
-                    subtitleColor="text-[#10b981]"
-                    icon={<Users size={26} className="text-[#10b981]" strokeWidth={2.5} />}
-                    bgClass="bg-[#10b981]/10"
+                    subtitleColor="text-white font-bold"
+                    icon={<Users size={26} className="text-[#4ade80]" strokeWidth={2.5} />}
+                    onClick={() => navigate('/resident/visitors')}
+                    bgClass="bg-[#1a4d35]/50"
                     glowColor="#10b981"
+                    colors="from-[#123625]/80 to-[#0a1f15]"
                     svgPoints="0,25 10,20 20,25 30,15 40,25 50,5 60,15 70,25 80,15 90,25 100,20"
                 />
                 <StatCard 
                     title="Unpaid Invoices" 
                     value="2" 
                     subtitle="Total ₹4,250"
-                    subtitleColor="text-[#f59e0b]"
+                    subtitleColor="text-white font-bold"
                     icon={<Receipt size={26} className="text-[#f59e0b]" strokeWidth={2.5} />}
-                    bgClass="bg-[#f59e0b]/10"
+                    onClick={() => navigate('/resident/invoices')}
+                    bgClass="bg-[#6b4819]/50"
                     glowColor="#f59e0b"
+                    colors="from-[#4a3212]/80 to-[#261909]"
                     svgPoints="0,25 15,15 25,22 35,15 45,25 55,5 65,18 75,22 85,10 95,20 100,25"
                 />
                 <StatCard 
                     title="Active Notices" 
                     value="5" 
                     subtitle="New updates"
-                    subtitleColor="text-[#3b82f6]"
-                    icon={<Megaphone size={26} className="text-[#3b82f6]" strokeWidth={2.5} />}
-                    bgClass="bg-[#3b82f6]/10"
+                    subtitleColor="text-white font-bold"
+                    icon={<Megaphone size={26} className="text-[#60a5fa]" strokeWidth={2.5} />}
+                    onClick={() => navigate('/resident/notices')}
+                    bgClass="bg-[#1d488c]/50"
                     glowColor="#3b82f6"
+                    colors="from-[#143261]/80 to-[#0b1c36]"
                     svgPoints="0,22 10,20 25,25 35,12 45,20 55,5 65,15 75,25 85,15 95,22 100,20"
                 />
             </div>
@@ -291,7 +299,7 @@ export function ApprovedDashboard({ profile, user }) {
                         </div>
                         <div>
                             <h2 className="text-[16px] sm:text-[17px] font-bold text-white mb-1.5 tracking-wide">Stay Safe, Stay Connected</h2>
-                            <p className="text-[12px] sm:text-[13px] font-medium text-slate-300 max-w-[340px] leading-relaxed">
+                            <p className="text-[12px] sm:text-[13px] font-bold text-white font-bold max-w-[340px] leading-relaxed">
                                 In case of any emergency, press the SOS button or contact security immediately.
                             </p>
                         </div>
@@ -324,7 +332,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="Book Facilities" 
                         onClick={() => navigate('/resident/amenities')}
                         glowColor="#d946ef"
-                        bgClass="bg-[#d946ef]/10"
+                        bgClass="bg-[#d946ef]/20"
+                        gradient="from-[#3a1342]/80 to-[#1e0a23]"
                     />
                     <QuickAccessBtn 
                         icon={<Users size={28} className="text-[#10b981] filter drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" strokeWidth={2} />} 
@@ -332,7 +341,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="Manage Visitors" 
                         onClick={() => navigate('/resident/visitors')}
                         glowColor="#10b981"
-                        bgClass="bg-[#10b981]/10"
+                        bgClass="bg-[#10b981]/20"
+                        gradient="from-[#123625]/80 to-[#0a1f15]"
                     />
                     <QuickAccessBtn 
                         icon={<MessageCircle size={28} className="text-[#f43f5e] filter drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]" strokeWidth={2} />} 
@@ -340,7 +350,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="Raise & Track" 
                         onClick={() => navigate('/resident/complaints')}
                         glowColor="#f43f5e"
-                        bgClass="bg-[#f43f5e]/10"
+                        bgClass="bg-[#f43f5e]/20"
+                        gradient="from-[#4a1226]/80 to-[#2b0a16]"
                     />
                     <QuickAccessBtn 
                         icon={<Receipt size={28} className="text-[#f59e0b] filter drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]" strokeWidth={2} />} 
@@ -348,7 +359,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="View & Pay" 
                         onClick={() => navigate('/resident/invoices')}
                         glowColor="#f59e0b"
-                        bgClass="bg-[#f59e0b]/10"
+                        bgClass="bg-[#f59e0b]/20"
+                        gradient="from-[#4a3212]/80 to-[#261909]"
                     />
                     <QuickAccessBtn 
                         icon={<Folder size={28} className="text-[#3b82f6] filter drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" strokeWidth={2} />} 
@@ -356,7 +368,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="My Documents" 
                         onClick={() => navigate('/resident/documents')}
                         glowColor="#3b82f6"
-                        bgClass="bg-[#3b82f6]/10"
+                        bgClass="bg-[#3b82f6]/20"
+                        gradient="from-[#143261]/80 to-[#0b1c36]"
                     />
                     <QuickAccessBtn 
                         icon={<Car size={28} className="text-[#06b6d4] filter drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]" strokeWidth={2} />} 
@@ -364,7 +377,8 @@ export function ApprovedDashboard({ profile, user }) {
                         sub="My Vehicles" 
                         onClick={() => navigate('/resident/vehicles')}
                         glowColor="#06b6d4"
-                        bgClass="bg-[#06b6d4]/10"
+                        bgClass="bg-[#06b6d4]/20"
+                        gradient="from-[#104a57]/80 to-[#092b33]"
                     />
                 </div>
             </div>
@@ -420,14 +434,26 @@ export function ApprovedDashboard({ profile, user }) {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function StatCard({ title, value, subtitle, subtitleColor, icon, bgClass, glowColor, svgPoints }) {
+function StatCard({ title, value, subtitle, subtitleColor, icon, bgClass, glowColor, svgPoints, colors = "from-[#1e293b]/80 to-[#0f172a]", onClick }) {
     const filterId = `glow-${title.replace(/\s+/g, '-')}`;
     const gradId = `grad-${title.replace(/\s+/g, '-')}`;
     
     return (
-        <div className="rounded-2xl bg-[#0a0b12] border border-slate-800/80 p-3 sm:p-5 relative overflow-hidden group shadow-sm transition-all hover:border-slate-700">
-            {/* Top row: Icon, text, menu */}
-            <div className="flex items-start justify-between mb-1 sm:mb-2">
+        <div 
+            onClick={onClick}
+            className={`rounded-2xl bg-gradient-to-br ${colors} border border-white/5 p-3 sm:p-5 relative overflow-hidden group shadow-lg transition-transform hover:scale-[1.02] ${onClick ? 'cursor-pointer' : ''}`}
+        >
+            {/* Abstract Background Waves (CSS based) */}
+            <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+                <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                    <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+                </svg>
+            </div>
+            
+            <div className="relative z-10">
+                {/* Top row: Icon, text, menu */}
+                <div className="flex items-start justify-between mb-1 sm:mb-2">
                 <div className="flex flex-col xl:flex-row gap-2 xl:gap-4 items-start xl:items-center">
                     {/* Icon container */}
                     <div className={`h-[42px] w-[42px] sm:h-[56px] sm:w-[56px] rounded-[14px] sm:rounded-[18px] flex items-center justify-center shrink-0 ${bgClass} shadow-[0_0_20px_rgba(0,0,0,0)] transition-shadow duration-500 group-hover:shadow-[0_0_25px_${glowColor}]`} style={{ boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.05)` }}>
@@ -435,17 +461,16 @@ function StatCard({ title, value, subtitle, subtitleColor, icon, bgClass, glowCo
                     </div>
                     {/* Title & Value */}
                     <div className="min-w-0">
-                        <div className="text-[11px] sm:text-[13px] text-slate-100 font-semibold mb-0.5 sm:mb-1 truncate leading-tight xl:whitespace-nowrap">{title}</div>
+                        <div className="text-[11px] sm:text-[13px] text-slate-100 font-semibold mb-0.5 sm:mb-1 break-words whitespace-normal leading-tight xl:whitespace-nowrap">{title}</div>
                         <div className="text-[22px] sm:text-[32px] font-bold text-white leading-none tracking-tight">{value}</div>
                     </div>
+                    </div>
                 </div>
-                <div className="text-slate-400 cursor-pointer hover:text-white px-1 sm:px-2">⋮</div>
-            </div>
-            
-            {/* Subtitle centered */}
-            <div className={`text-center text-[10px] sm:text-[11px] font-bold tracking-wide mt-2 mb-1.5 sm:mt-3 sm:mb-2 ${subtitleColor} line-clamp-1`}>
-                {subtitle}
-            </div>
+                
+                {/* Subtitle centered */}
+                <div className={`text-center text-[10px] sm:text-[11px] font-bold tracking-wide mt-2 mb-1.5 sm:mt-3 sm:mb-2 ${subtitleColor} line-clamp-1`}>
+                    {subtitle}
+                </div>
             
             {/* SVG Line Graph */}
             <div className="w-full h-[40px] relative mt-1">
@@ -480,24 +505,35 @@ function StatCard({ title, value, subtitle, subtitleColor, icon, bgClass, glowCo
                     })}
                 </svg>
             </div>
+            </div>
         </div>
     );
 }
 
-function QuickAccessBtn({ icon, label, sub, onClick, glowColor, bgClass }) {
+function QuickAccessBtn({ icon, label, sub, onClick, glowColor, bgClass, gradient }) {
     return (
         <button 
             onClick={onClick}
-            className={`group flex flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-[16px] sm:rounded-[20px] bg-[#0a0b12] border border-slate-800/80 p-2 sm:p-5 hover:border-slate-700 transition-all`}
+            className={`group relative overflow-hidden flex flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-[16px] sm:rounded-[20px] bg-gradient-to-br ${gradient} border border-white/5 p-2 sm:p-5 transition-transform hover:scale-[1.02] shadow-lg`}
         >
-            <div 
-                className={`h-10 w-10 sm:h-14 sm:w-14 rounded-[12px] sm:rounded-[16px] flex items-center justify-center mb-1 sm:mb-2 transition-shadow duration-500 group-hover:shadow-[0_0_20px_${glowColor}] ${bgClass}`}
-                style={{ boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.05)` }}
-            >
-                {React.cloneElement(icon, { className: `${icon.props.className} w-5 h-5 sm:w-7 sm:h-7` })}
+            {/* Abstract Background Waves */}
+            <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+                <svg width="80" height="60" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                    <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+                </svg>
             </div>
-            <div className="text-[10px] sm:text-[13px] font-bold text-white tracking-wide text-center leading-tight">{label}</div>
-            <div className="text-[8px] sm:text-[11px] font-medium text-slate-400 line-clamp-1 text-center">{sub}</div>
+
+            <div className="relative z-10 flex flex-col items-center w-full">
+                <div 
+                    className={`h-10 w-10 sm:h-14 sm:w-14 rounded-[12px] sm:rounded-[16px] flex items-center justify-center mb-1 sm:mb-2 backdrop-blur-md ${bgClass} transition-shadow duration-500 group-hover:shadow-[0_0_20px_${glowColor}]`}
+                    style={{ boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.05)` }}
+                >
+                    {React.cloneElement(icon, { className: `${icon.props.className} w-5 h-5 sm:w-7 sm:h-7` })}
+                </div>
+                <div className="text-[10px] sm:text-[13px] font-bold text-white tracking-wide text-center leading-tight">{label}</div>
+                <div className="text-[8px] sm:text-[11px] font-bold text-white font-bold line-clamp-1 text-center">{sub}</div>
+            </div>
         </button>
     );
 }
@@ -515,7 +551,7 @@ function NoticeItem({ title, date, badge, badgeColor, dotColor }) {
                     </div>
                 </div>
             </div>
-            <ChevronRight size={16} className="text-slate-600 group-hover:text-slate-400" />
+            <ChevronRight size={16} className="text-slate-600 group-hover:text-white font-bold" />
         </div>
     );
 }

@@ -131,7 +131,7 @@ export default function ResidentInvoicesPage() {
         if (status === 'PAID') return { label: 'PAID', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
         if (status === 'OVERDUE') return { label: 'OVERDUE', color: 'text-red-400 bg-red-500/10 border-red-500/20' };
         if (['DRAFT', 'SENT', 'PARTIAL'].includes(status)) return { label: 'UNPAID', color: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
-        return { label: status, color: 'text-slate-400 bg-slate-500/10 border-slate-500/20' };
+        return { label: status, color: 'text-white font-bold bg-slate-500/10 border-slate-500/20' };
     };
 
     return (
@@ -140,13 +140,13 @@ export default function ResidentInvoicesPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">Invoices & Billing</h1>
-                    <p className="text-sm text-slate-400">Your maintenance and society charges in one place.</p>
+                    <p className="text-sm text-white font-bold">Your maintenance and society charges in one place.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button onClick={handlePayNow} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition-colors">
                         <span>+ Pay Now</span>
                     </button>
-                    <button onClick={refetch} disabled={isFetching} className="p-2.5 bg-[#131525] border border-white/10 hover:border-white/20 text-slate-400 hover:text-white rounded-xl transition-colors">
+                    <button onClick={refetch} disabled={isFetching} className="p-2.5 bg-[#131525] border border-white/10 hover:border-white/20 text-white font-bold hover:text-white rounded-xl transition-colors">
                         <RefreshCw className={`w-5 h-5 ${isFetching ? 'animate-spin' : ''}`} />
                     </button>
                 </div>
@@ -158,7 +158,7 @@ export default function ResidentInvoicesPage() {
                 </Alert>
             )}
 
-            <InvoiceStatsCards stats={stats} formatCurrency={formatCurrency} />
+            <InvoiceStatsCards stats={stats} formatCurrency={formatCurrency} onCardClick={handleTabChange} />
 
             {/* Main Table Section */}
             <div className="bg-[#131525] border border-white/5 rounded-3xl overflow-hidden flex flex-col">

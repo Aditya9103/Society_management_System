@@ -66,12 +66,12 @@ export function ComplaintCard({ complaint }) {
                 {/* Main Content */}
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-bold text-[15px] text-white truncate">{c.title}</h3>
+                        <h3 className="font-bold text-[15px] text-white break-words whitespace-normal">{c.title}</h3>
                         <span className={`text-[10px] font-bold tracking-wider uppercase ${catTheme.color}`}>
                             {c.category === 'OTHER' ? c.customCategory || 'OTHER' : c.category}
                         </span>
                     </div>
-                    <p className="text-[12px] text-slate-400 line-clamp-1 mb-2">{c.description}</p>
+                    <p className="text-[12px] text-white font-bold line-clamp-1 mb-2">{c.description}</p>
                     <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
                         <span>{new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} • {new Date(c.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                         <span>#{c.complaintNumber}</span>
@@ -100,11 +100,11 @@ export function ComplaintCard({ complaint }) {
                             {getPriorityIcon(c.priority)} {c.priority}
                         </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-slate-400 transition-colors hidden md:block" />
+                    <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-white font-bold transition-colors hidden md:block" />
                 </div>
 
                 {/* Mobile chevron */}
-                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600 group-hover:text-slate-400 transition-colors md:hidden" />
+                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600 group-hover:text-white font-bold transition-colors md:hidden" />
                 
                 {/* Actions (if actionable) */}
                     {(c.status === 'DRAFT' || c.status === 'RESOLVED' || c.status === 'PENDING_RESIDENT') && (

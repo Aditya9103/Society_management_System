@@ -38,7 +38,7 @@ export function PendingApprovalScreen() {
                         </p>
                         <button 
                             onClick={() => navigate('/resident/documents')}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
                         >
                             Go to Documents
                             <ArrowRight className="w-4 h-4" />
@@ -49,7 +49,7 @@ export function PendingApprovalScreen() {
             
             <button 
                 onClick={handleLogout}
-                className="mt-8 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                className="mt-8 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors"
             >
                 Sign out
             </button>

@@ -90,7 +90,7 @@ export default function TowerCard({ tower, onAddFloor, onEditTower, onDeleteTowe
                                         <Layers className="h-4 w-4 shrink-0 text-slate-500 group-hover:text-violet-500 transition-colors" />
                                         <div>
                                             <p className="text-xs font-bold text-slate-800">{floor.floorName}</p>
-                                            <p className="text-[11px] font-semibold text-slate-500">{floor.totalUnits} units</p>
+                                            <p className="text-[12px] font-semibold text-slate-500">{floor.totalUnits} units</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

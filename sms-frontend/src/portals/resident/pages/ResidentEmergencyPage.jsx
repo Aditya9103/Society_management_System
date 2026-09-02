@@ -99,7 +99,7 @@ export default function ResidentEmergencyPage() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white leading-tight">Emergency (SOS)</h1>
-                        <p className="text-sm text-slate-400">Instant help when you need it most. We're here to keep you safe.</p>
+                        <p className="text-sm text-white font-bold">Instant help when you need it most. We're here to keep you safe.</p>
                     </div>
                 </div>
                 
@@ -107,7 +107,7 @@ export default function ResidentEmergencyPage() {
                     <div className="mt-0.5"><ShieldCheck className="w-5 h-5 text-indigo-400" /></div>
                     <div>
                         <h4 className="text-sm font-bold text-white">Your safety is our priority</h4>
-                        <p className="text-xs text-slate-400 mt-1">SOS alerts will be shared with security and relevant authorities.</p>
+                        <p className="text-xs text-white font-bold mt-1">SOS alerts will be shared with security and relevant authorities.</p>
                     </div>
                 </div>
             </div>
@@ -168,15 +168,15 @@ export default function ResidentEmergencyPage() {
 
                     <div className="text-center mt-6 z-10">
                         <p className="text-lg font-bold text-white mb-1">Press and hold for 3 seconds</p>
-                        <p className="text-sm text-slate-400">Release to cancel</p>
+                        <p className="text-sm text-white font-bold">Release to cancel</p>
                     </div>
 
                     {/* Warning Banner inside the card */}
                     <div className="mt-8 bg-red-500/5 border border-red-500/10 rounded-xl p-4 w-full flex items-center gap-4 z-10">
                         <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
                         <div>
-                            <p className="text-sm text-slate-300">False alarms will be recorded.</p>
-                            <p className="text-sm text-slate-400">Use only in genuine emergencies.</p>
+                            <p className="text-sm text-white font-bold">False alarms will be recorded.</p>
+                            <p className="text-sm text-white font-bold">Use only in genuine emergencies.</p>
                         </div>
                     </div>
                 </div>
@@ -185,21 +185,21 @@ export default function ResidentEmergencyPage() {
                 <div className="bg-[#131525] border border-white/5 rounded-3xl p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-white">Quick Contacts</h2>
-                        <button className="text-sm text-indigo-400 font-medium hover:text-indigo-300 transition-colors">View All</button>
+                        <button className="text-sm text-indigo-400 font-bold hover:text-indigo-300 transition-colors">View All</button>
                     </div>
 
                     <div className="flex-1 space-y-3">
                         {displayContacts.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 px-4 text-center rounded-2xl border border-dashed border-white/10 bg-[#1A1C2A]">
                                 <AlertCircle className="w-8 h-8 text-slate-500 mb-3" />
-                                <h3 className="text-sm font-bold text-slate-300">No Emergency Contacts</h3>
+                                <h3 className="text-sm font-bold text-white font-bold">No Emergency Contacts</h3>
                                 <p className="text-xs text-slate-500 mt-1">Your society admin hasn't added any quick contacts yet.</p>
                             </div>
                         ) : (
                             displayContacts.map((contact, idx) => {
                                 const { icon, bg } = getContactIcon(contact.type);
                                 // Badge colors
-                                let badgeClass = "bg-slate-500/10 text-slate-400";
+                                let badgeClass = "bg-slate-500/10 text-white font-bold";
                                 if (contact.type === 'SECURITY') badgeClass = "bg-blue-500/10 text-blue-400";
                                 else if (contact.type === 'FIRE') badgeClass = "bg-orange-500/10 text-orange-400";
                                 else if (contact.type === 'HOSPITAL') badgeClass = "bg-emerald-500/10 text-emerald-400";
@@ -221,7 +221,7 @@ export default function ResidentEmergencyPage() {
                                                         {contact.type}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-slate-400 font-medium">{phoneNumber}</p>
+                                                <p className="text-xs text-white font-bold font-bold">{phoneNumber}</p>
                                             </div>
                                         </div>
                                         <a 
@@ -257,7 +257,7 @@ export default function ResidentEmergencyPage() {
                                 <ShieldAlert className="w-6 h-6 text-red-400" />
                             </div>
                             <h4 className="text-sm font-bold text-white mb-1.5">Alert Sent</h4>
-                            <p className="text-xs text-slate-400 leading-relaxed max-w-[150px]">Instant alert is sent to security and emergency contacts.</p>
+                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Instant alert is sent to security and emergency contacts.</p>
                         </div>
 
                         {/* Step 2 */}
@@ -267,7 +267,7 @@ export default function ResidentEmergencyPage() {
                                 <Navigation className="w-6 h-6 text-red-400" />
                             </div>
                             <h4 className="text-sm font-bold text-white mb-1.5">Location Shared</h4>
-                            <p className="text-xs text-slate-400 leading-relaxed max-w-[150px]">Your location is shared for quick response.</p>
+                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Your location is shared for quick response.</p>
                         </div>
 
                         {/* Step 3 */}
@@ -277,7 +277,7 @@ export default function ResidentEmergencyPage() {
                                 <Users className="w-6 h-6 text-red-400" />
                             </div>
                             <h4 className="text-sm font-bold text-white mb-1.5">Help On The Way</h4>
-                            <p className="text-xs text-slate-400 leading-relaxed max-w-[150px]">Our team and authorities will reach you as soon as possible.</p>
+                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Our team and authorities will reach you as soon as possible.</p>
                         </div>
 
                         {/* Step 4 */}
@@ -287,7 +287,7 @@ export default function ResidentEmergencyPage() {
                                 <ShieldCheck className="w-6 h-6 text-purple-400" />
                             </div>
                             <h4 className="text-sm font-bold text-white mb-1.5">Stay Safe</h4>
-                            <p className="text-xs text-slate-400 leading-relaxed max-w-[150px]">We'll stay connected until you're safe.</p>
+                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">We'll stay connected until you're safe.</p>
                         </div>
                     </div>
                 </div>
@@ -302,19 +302,19 @@ export default function ResidentEmergencyPage() {
                     <ul className="space-y-4">
                         <li className="flex items-start gap-3">
                             <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <span className="text-sm text-slate-300">Use SOS only in genuine emergencies</span>
+                            <span className="text-sm text-white font-bold">Use SOS only in genuine emergencies</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <span className="text-sm text-slate-300">Stay calm and provide accurate information</span>
+                            <span className="text-sm text-white font-bold">Stay calm and provide accurate information</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <span className="text-sm text-slate-300">Keep your location services enabled</span>
+                            <span className="text-sm text-white font-bold">Keep your location services enabled</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <span className="text-sm text-slate-300">Save emergency contacts for quick access</span>
+                            <span className="text-sm text-white font-bold">Save emergency contacts for quick access</span>
                         </li>
                     </ul>
                 </div>

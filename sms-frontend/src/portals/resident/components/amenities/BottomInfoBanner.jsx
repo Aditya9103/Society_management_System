@@ -9,7 +9,7 @@ export function BottomInfoBanner() {
                     <Calendar className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-200 mb-0.5 truncate">Easy Booking</p>
+                    <p className="text-xs font-bold text-slate-200 mb-0.5 break-words whitespace-normal">Easy Booking</p>
                     <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Book your favorite amenities in just a few clicks</p>
                 </div>
             </div>
@@ -19,7 +19,7 @@ export function BottomInfoBanner() {
                     <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-200 mb-0.5 truncate">Secure Payment</p>
+                    <p className="text-xs font-bold text-slate-200 mb-0.5 break-words whitespace-normal">Secure Payment</p>
                     <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Safe and secure online payments</p>
                 </div>
             </div>
@@ -29,7 +29,7 @@ export function BottomInfoBanner() {
                     <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-200 mb-0.5 truncate">Instant Confirmation</p>
+                    <p className="text-xs font-bold text-slate-200 mb-0.5 break-words whitespace-normal">Instant Confirmation</p>
                     <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Get immediate confirmation for your bookings</p>
                 </div>
             </div>
@@ -39,7 +39,7 @@ export function BottomInfoBanner() {
                     <Star className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-200 mb-0.5 truncate">Best Experience</p>
+                    <p className="text-xs font-bold text-slate-200 mb-0.5 break-words whitespace-normal">Best Experience</p>
                     <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Enjoy premium facilities with great experience</p>
                 </div>
             </div>

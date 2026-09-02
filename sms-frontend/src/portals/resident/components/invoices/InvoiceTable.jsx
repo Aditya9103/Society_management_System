@@ -77,7 +77,7 @@ export function InvoiceTable({
 
                                         {/* Billing Period */}
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <p className="text-sm font-medium text-slate-300">{format(new Date(inv.billingPeriodStart), 'MMM yyyy')}</p>
+                                            <p className="text-sm font-bold text-white font-bold">{format(new Date(inv.billingPeriodStart), 'MMM yyyy')}</p>
                                             <p className="text-xs text-slate-500">
                                                 {format(new Date(inv.billingPeriodStart), 'dd MMM')} - {format(new Date(inv.billingPeriodEnd), 'dd MMM')}
                                             </p>
@@ -85,7 +85,7 @@ export function InvoiceTable({
 
                                         {/* Due Date */}
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <p className="text-sm font-medium text-slate-300">{format(dueDate, 'dd MMM yyyy')}</p>
+                                            <p className="text-sm font-bold text-white font-bold">{format(dueDate, 'dd MMM yyyy')}</p>
                                             {isOverdue && <p className="text-xs font-bold text-rose-400">Overdue</p>}
                                         </td>
 
@@ -114,7 +114,7 @@ export function InvoiceTable({
                                                 ) : (
                                                     <button 
                                                         onClick={handleDownload}
-                                                        className="p-1.5 border border-white/10 hover:border-white/20 text-slate-400 hover:text-white rounded-lg transition-colors"
+                                                        className="p-1.5 border border-white/10 hover:border-white/20 text-white font-bold hover:text-white rounded-lg transition-colors"
                                                         title="Download PDF"
                                                     >
                                                         <Download className="w-4 h-4" />
@@ -143,7 +143,7 @@ export function InvoiceTable({
                         <button 
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="p-1.5 rounded-lg border border-white/5 text-slate-400 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1.5 rounded-lg border border-white/5 text-white font-bold hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
@@ -154,7 +154,7 @@ export function InvoiceTable({
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-semibold border transition-colors ${
                                     currentPage === i + 1 
                                     ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400' 
-                                    : 'border-transparent text-slate-400 hover:bg-white/5'
+                                    : 'border-transparent text-white font-bold hover:bg-white/5'
                                 }`}
                             >
                                 {i + 1}
@@ -163,7 +163,7 @@ export function InvoiceTable({
                         <button 
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
-                            className="p-1.5 rounded-lg border border-white/5 text-slate-400 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1.5 rounded-lg border border-white/5 text-white font-bold hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>

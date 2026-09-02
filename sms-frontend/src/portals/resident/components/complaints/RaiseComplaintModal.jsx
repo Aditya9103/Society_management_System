@@ -58,7 +58,7 @@ export function RaiseComplaintModal({ onClose }) {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="relative z-10 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+                    className="relative z-10 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-800/50 text-white font-bold hover:bg-slate-700 hover:text-white transition-colors"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -75,7 +75,7 @@ export function RaiseComplaintModal({ onClose }) {
                 <form onSubmit={e => handleSubmit(e, 'OPEN')} className="space-y-5">
                     
                     <div className="space-y-1.5">
-                        <label className="text-[13px] font-bold text-slate-300">Title <span className="text-red-400">*</span></label>
+                        <label className="text-[13px] font-bold text-white font-bold">Title <span className="text-red-400">*</span></label>
                         <input 
                             className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] placeholder:text-slate-600 outline-none transition-all"
                             value={form.title} 
@@ -86,7 +86,7 @@ export function RaiseComplaintModal({ onClose }) {
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[13px] font-bold text-slate-300">Description <span className="text-red-400">*</span></label>
+                        <label className="text-[13px] font-bold text-white font-bold">Description <span className="text-red-400">*</span></label>
                         <textarea 
                             className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-white text-[14px] placeholder:text-slate-600 outline-none transition-all resize-none"
                             value={form.description} 
@@ -98,7 +98,7 @@ export function RaiseComplaintModal({ onClose }) {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div className="space-y-1.5">
-                            <label className="text-[13px] font-bold text-slate-300">Category <span className="text-red-400">*</span></label>
+                            <label className="text-[13px] font-bold text-white font-bold">Category <span className="text-red-400">*</span></label>
                             <select 
                                 className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] outline-none transition-all appearance-none"
                                 value={form.category} 
@@ -110,7 +110,7 @@ export function RaiseComplaintModal({ onClose }) {
                         
                         {form.category === 'OTHER' ? (
                             <div className="space-y-1.5">
-                                <label className="text-[13px] font-bold text-slate-300">Specify Category <span className="text-red-400">*</span></label>
+                                <label className="text-[13px] font-bold text-white font-bold">Specify Category <span className="text-red-400">*</span></label>
                                 <input
                                     className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] placeholder:text-slate-600 outline-none transition-all"
                                     value={form.customCategory}
@@ -120,7 +120,7 @@ export function RaiseComplaintModal({ onClose }) {
                             </div>
                         ) : (
                             <div className="space-y-1.5">
-                                <label className="text-[13px] font-bold text-slate-300">Subcategory <span className="text-red-400">*</span></label>
+                                <label className="text-[13px] font-bold text-white font-bold">Subcategory <span className="text-red-400">*</span></label>
                                 <select 
                                     className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] outline-none transition-all appearance-none"
                                     value={form.subcategory} 
@@ -134,7 +134,7 @@ export function RaiseComplaintModal({ onClose }) {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div className="space-y-1.5">
-                            <label className="text-[13px] font-bold text-slate-300">Priority</label>
+                            <label className="text-[13px] font-bold text-white font-bold">Priority</label>
                             <select 
                                 className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] outline-none transition-all appearance-none"
                                 value={form.priority} 
@@ -155,14 +155,14 @@ export function RaiseComplaintModal({ onClose }) {
                                     />
                                     <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-500 scale-0 peer-checked:scale-100 transition-transform"></div>
                                 </div>
-                                <span className="text-[14px] font-medium text-slate-300">This is a common area issue</span>
+                                <span className="text-[14px] font-bold text-white font-bold">This is a common area issue</span>
                             </label>
                         </div>
                     </div>
 
                     {form.isCommonArea && (
                         <div className="space-y-1.5">
-                            <label className="text-[13px] font-bold text-slate-300">Location</label>
+                            <label className="text-[13px] font-bold text-white font-bold">Location</label>
                             <input 
                                 className="w-full bg-[#151722] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-2.5 text-white text-[14px] placeholder:text-slate-600 outline-none transition-all"
                                 value={form.commonAreaLocation} 
@@ -173,7 +173,7 @@ export function RaiseComplaintModal({ onClose }) {
                     )}
 
                     <div className="space-y-1.5">
-                        <label className="text-[13px] font-bold text-slate-300">Upload Image (Optional)</label>
+                        <label className="text-[13px] font-bold text-white font-bold">Upload Image (Optional)</label>
                         <div className="relative overflow-hidden rounded-xl bg-[#151722] border border-dashed border-slate-700 hover:border-indigo-500/50 transition-colors">
                             <input 
                                 type="file" 
@@ -196,7 +196,7 @@ export function RaiseComplaintModal({ onClose }) {
                     <div className="flex justify-end gap-3 pt-4 border-t border-slate-800/50 mt-6">
                         <button 
                             type="button" 
-                            className="px-5 py-2.5 rounded-xl bg-transparent hover:bg-slate-800 text-slate-300 text-[13px] font-bold transition-colors" 
+                            className="px-5 py-2.5 rounded-xl bg-transparent hover:bg-slate-800 text-white font-bold text-[13px] font-bold transition-colors" 
                             onClick={onClose}
                         >
                             Cancel

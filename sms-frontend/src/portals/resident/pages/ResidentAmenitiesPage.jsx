@@ -72,7 +72,7 @@ export default function ResidentAmenitiesPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Amenities Booking</h1>
-                        <p className="text-slate-400 text-sm">Book and manage your community amenities</p>
+                        <p className="text-white font-bold text-sm">Book and manage your community amenities</p>
                     </div>
                     <button 
                         onClick={scrollToBookings}
@@ -97,7 +97,7 @@ export default function ResidentAmenitiesPage() {
                                 <h2 className="text-3xl font-bold text-white mb-3 leading-tight text-shadow-sm">
                                     Book Your Favorite <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Amenities</span>
                                 </h2>
-                                <p className="text-slate-300 text-sm mb-6 leading-relaxed font-medium">
+                                <p className="text-white font-bold text-sm mb-6 leading-relaxed font-bold">
                                     From clubhouse to sports courts, enjoy world-class facilities at your convenience.
                                 </p>
                                 <button 
@@ -126,7 +126,7 @@ export default function ResidentAmenitiesPage() {
                                     className="w-full bg-[#0B0D17] border border-white/5 text-white rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:border-indigo-500/50 shadow-inner" 
                                 />
                             </div>
-                            <button className="w-full md:w-auto bg-[#0B0D17] hover:bg-white/5 border border-white/5 text-slate-300 px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shrink-0 shadow-sm">
+                            <button className="w-full md:w-auto bg-[#0B0D17] hover:bg-white/5 border border-white/5 text-white font-bold px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shrink-0 shadow-sm">
                                 <SlidersHorizontal className="w-4 h-4" /> Filters
                             </button>
                         </div>
@@ -138,7 +138,7 @@ export default function ResidentAmenitiesPage() {
                                     key={tab.id}
                                     onClick={() => setFilter(tab.id)}
                                     className={`flex items-center gap-2 px-5 py-3 text-sm font-bold transition-all whitespace-nowrap border-b-2
-                                        ${filter === tab.id ? 'text-indigo-400 border-indigo-500 bg-indigo-500/5 rounded-t-lg' : 'text-slate-400 border-transparent hover:text-slate-300 hover:bg-white/5 rounded-t-lg'}`}
+                                        ${filter === tab.id ? 'text-indigo-400 border-indigo-500 bg-indigo-500/5 rounded-t-lg' : 'text-white font-bold border-transparent hover:text-white font-bold hover:bg-white/5 rounded-t-lg'}`}
                                 >
                                     <span className={filter === tab.id ? '' : 'opacity-70 grayscale'}>{tab.icon}</span> {tab.label}
                                 </button>
@@ -149,7 +149,7 @@ export default function ResidentAmenitiesPage() {
                         <div>
                             <div className="flex justify-between items-center mb-5">
                                 <h3 className="text-white font-bold">Popular Amenities</h3>
-                                <button onClick={() => { setFilter('ALL'); setSearchQuery(''); }} className="text-purple-400 text-xs font-medium hover:text-purple-300">View All</button>
+                                <button onClick={() => { setFilter('ALL'); setSearchQuery(''); }} className="text-purple-400 text-xs font-bold hover:text-purple-300">View All</button>
                             </div>
                             
                             {aLoading ? (
@@ -171,7 +171,7 @@ export default function ResidentAmenitiesPage() {
                         <div className="mt-8">
                             <div className="flex justify-between items-center mb-5">
                                 <h3 className="text-white font-bold">Your Upcoming Bookings</h3>
-                                <button onClick={scrollToBookings} className="text-purple-400 text-xs font-medium hover:text-purple-300">View All</button>
+                                <button onClick={scrollToBookings} className="text-purple-400 text-xs font-bold hover:text-purple-300">View All</button>
                             </div>
                             
                             {bLoading ? (

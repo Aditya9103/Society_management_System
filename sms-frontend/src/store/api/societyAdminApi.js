@@ -69,6 +69,42 @@ export const societyAdminApi = createApi({
             invalidatesTags: (_result, _error, id) => [{ type: 'Staff', id }, 'DashboardStats'],
         }),
 
+        deleteStaff: builder.mutation({
+            query: (id) => ({ url: `/societies/staff/${id}`, method: 'DELETE' }),
+            invalidatesTags: [{ type: 'Staff', id: 'LIST' }, 'DashboardStats'],
+        }),
+        
+        resetStaffPassword: builder.mutation({
+            query: (id) => ({ url: `/societies/staff/${id}/reset-password`, method: 'PATCH' }),
+        }),
+
+        getStaffDetails: builder.query({
+            query: (id) => ({ url: `/societies/staff/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'Staff', id }],
+        }),
+
+        updateStaffProfile: builder.mutation({
+            query: ({ id, data }) => ({ url: `/societies/staff/${id}`, method: 'PUT', data }),
+            invalidatesTags: (result, error, { id }) => [{ type: 'Staff', id }, { type: 'Staff', id: 'LIST' }],
+        }),
+
+        verifyStaffDocument: builder.mutation({
+            query: ({ id, docId }) => ({ url: `/societies/staff/${id}/documents/${docId}/verify`, method: 'PATCH' }),
+            invalidatesTags: (result, error, { id }) => [{ type: 'Staff', id }],
+        }),
+
+        uploadStaffDocument: builder.mutation({
+            query: ({ id, formData }) => ({
+                url: `/societies/staff/${id}/documents`,
+                method: 'POST',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }),
+            invalidatesTags: (result, error, { id }) => [{ type: 'Staff', id }],
+        }),
+
         // ── Residents ────────────────────────────────────────────────────────
 
         listResidents: builder.query({
@@ -359,6 +395,12 @@ export const {
     useListStaffQuery,
     useCreateStaffMutation,
     useDeactivateStaffMutation,
+    useDeleteStaffMutation,
+    useResetStaffPasswordMutation,
+    useGetStaffDetailsQuery,
+    useUpdateStaffProfileMutation,
+    useVerifyStaffDocumentMutation,
+    useUploadStaffDocumentMutation,
     useListResidentsQuery,
     useListResidentProfilesQuery,
     useGetResidentProfileQuery,

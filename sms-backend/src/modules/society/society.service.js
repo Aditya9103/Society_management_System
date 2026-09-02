@@ -23,6 +23,7 @@ import { ROLES } from '../../config/constants.js';
 import User from '../auth/user.model.js';
 import Resident from '../resident/resident.model.js';
 import Complaint from '../complaint/complaint.model.js';
+import StaffProfile from './staffProfile.model.js';
 import Notice from '../notice/notice.model.js';
 import VisitorLog from '../visitor/visitorLog.model.js';
 import VehicleLog from '../vehicle/vehicleLog.model.js';
@@ -141,20 +142,25 @@ export const createStaff = async (staffData) => {
  * List all staff members for a society (excluding RESIDENT and SOCIETY_ADMIN).
  */
 export const listStaff = async (societyId, query = {}) => {
-    const { page = 1, limit = 20, search = '', role: roleFilter } = query;
+    const { page = 1, limit = 20, search = '', role: roleFilter, status } = query;
     const skip = (page - 1) * limit;
 
     const filter = {
         societyId,
-        role: { $in: ALLOWED_STAFF_ROLES },
-        ...(roleFilter && ALLOWED_STAFF_ROLES.includes(roleFilter) && { role: roleFilter }),
+        role: (roleFilter && ALLOWED_STAFF_ROLES.includes(roleFilter))
+            ? roleFilter
+            : { $in: ALLOWED_STAFF_ROLES },
         ...(search && {
             $or: [
                 { firstName: { $regex: search, $options: 'i' } },
                 { lastName: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } },
+                { phone: { $regex: search, $options: 'i' } },
+                { role: { $regex: search, $options: 'i' } },
             ],
         }),
+        ...(status === 'active' && { isActive: true }),
+        ...(status === 'inactive' && { isActive: false }),
     };
 
     const [staff, total] = await Promise.all([
@@ -167,6 +173,27 @@ export const listStaff = async (societyId, query = {}) => {
         User.countDocuments(filter),
     ]);
 
+    // Calculate real stats for the UI
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const baseStaffFilter = { societyId, role: { $in: ALLOWED_STAFF_ROLES } };
+
+    const [totalStaff, activeStaff, departmentsArr, thisMonthJoined] = await Promise.all([
+        User.countDocuments(baseStaffFilter),
+        User.countDocuments({ ...baseStaffFilter, isActive: true }),
+        User.distinct('role', baseStaffFilter),
+        User.countDocuments({ ...baseStaffFilter, createdAt: { $gte: startOfMonth } })
+    ]);
+
+    const stats = {
+        totalStaff,
+        activeStaff,
+        departments: departmentsArr.length,
+        thisMonthJoined
+    };
+
     return {
         data: staff,
         pagination: {
@@ -175,6 +202,7 @@ export const listStaff = async (societyId, query = {}) => {
             total,
             totalPages: Math.ceil(total / limit),
         },
+        stats
     };
 };
 
@@ -191,6 +219,148 @@ export const deactivateStaff = async (userId, societyId) => {
         throw ApiError.badRequest('User is not a staff member.');
     }
     return userRepo.updateUser(userId, { isActive: false });
+};
+
+/**
+ * Deactivate a staff member (set isActive = false).
+ */
+export const deleteStaff = async (userId, societyId) => {
+    const staff = await userRepo.findById(userId);
+    if (!staff) throw ApiError.notFound('Staff member');
+    if (staff.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Staff does not belong to your society.');
+    }
+    if (!ALLOWED_STAFF_ROLES.includes(staff.role)) {
+        throw ApiError.forbidden('Cannot delete non-staff user via this endpoint.');
+    }
+
+    if (staff.isActive) {
+        throw ApiError.badRequest('Cannot delete an active staff member. Please deactivate them first.');
+    }
+
+    await userRepo.deleteUser(userId);
+    return { message: 'Staff member deleted successfully' };
+};
+
+/**
+ * Reset staff password
+ */
+export const resetStaffPassword = async (userId, societyId) => {
+    const user = await userRepo.findById(userId);
+    if (!user) throw ApiError.notFound('Staff member');
+    if (user.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Staff does not belong to your society.');
+    }
+    if (!ALLOWED_STAFF_ROLES.includes(user.role)) {
+        throw ApiError.forbidden('Cannot reset password for non-staff user via this endpoint.');
+    }
+
+    const generatedPassword = Math.random().toString(36).slice(-8) + 'B2@';
+    const passwordHash = await bcrypt.hash(generatedPassword, 10);
+
+    await userRepo.updateUser(userId, { passwordHash });
+
+    return { message: 'Password reset successfully', newPassword: generatedPassword };
+};
+
+/**
+ * Get detailed staff profile
+ */
+export const getStaffDetails = async (userId, societyId) => {
+    const user = await userRepo.findById(userId);
+    if (!user) throw ApiError.notFound('Staff member');
+    if (user.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Staff does not belong to your society.');
+    }
+    
+    let staffProfile = await StaffProfile.findOne({ userId });
+    
+    // Auto-create an empty profile if one doesn't exist
+    if (!staffProfile) {
+        staffProfile = await StaffProfile.create({
+            userId,
+            societyId
+        });
+    }
+    
+    return {
+        user,
+        profile: staffProfile
+    };
+};
+
+/**
+ * Update staff profile
+ */
+export const updateStaffProfile = async (userId, societyId, data) => {
+    const user = await userRepo.findById(userId);
+    if (!user) throw ApiError.notFound('Staff member');
+    if (user.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.forbidden('Staff does not belong to your society.');
+    }
+    
+    const { userUpdates, profileUpdates } = data;
+    
+    if (userUpdates && Object.keys(userUpdates).length > 0) {
+        await userRepo.updateUser(userId, userUpdates);
+    }
+    
+    if (profileUpdates && Object.keys(profileUpdates).length > 0) {
+        await StaffProfile.findOneAndUpdate(
+            { userId },
+            { $set: profileUpdates },
+            { new: true, upsert: true }
+        );
+    }
+    
+    return { message: 'Staff profile updated successfully' };
+};
+
+/**
+ * Verify staff document
+ */
+export const verifyStaffDocument = async (userId, societyId, documentId, adminUserId) => {
+    const user = await userRepo.findById(userId);
+    if (!user || user.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.notFound('Staff member');
+    }
+    
+    const profile = await StaffProfile.findOne({ userId });
+    if (!profile) throw ApiError.notFound('Staff profile not found');
+    
+    const doc = profile.documents.id(documentId);
+    if (!doc) throw ApiError.notFound('Document not found');
+    
+    doc.verified = true;
+    doc.verifiedBy = adminUserId;
+    doc.verifiedAt = new Date();
+    
+    await profile.save();
+    return { message: 'Document verified successfully', doc };
+};
+
+/**
+ * Upload staff document
+ */
+export const uploadStaffDocument = async (userId, societyId, file, type) => {
+    const user = await userRepo.findById(userId);
+    if (!user || user.societyId?.toString() !== societyId.toString()) {
+        throw ApiError.notFound('Staff member');
+    }
+    
+    const profile = await StaffProfile.findOne({ userId });
+    if (!profile) throw ApiError.notFound('Staff profile not found');
+    
+    const newDoc = {
+        type,
+        url: file.path,
+        verified: false,
+    };
+    
+    profile.documents.push(newDoc);
+    await profile.save();
+    
+    return { message: 'Document uploaded successfully', document: profile.documents[profile.documents.length - 1] };
 };
 
 // ── Resident Approval ─────────────────────────────────────────────────────────

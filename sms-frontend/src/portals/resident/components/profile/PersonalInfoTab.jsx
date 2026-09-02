@@ -29,7 +29,7 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                             </button>
                         ) : (
                             <div className="flex gap-2">
-                                <button onClick={() => setEditing(false)} className="rounded-[10px] border border-slate-700 bg-slate-800 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700">Cancel</button>
+                                <button onClick={() => setEditing(false)} className="rounded-[10px] border border-slate-700 bg-slate-800 px-4 py-1.5 text-xs font-bold text-white font-bold hover:bg-slate-700">Cancel</button>
                                 <button onClick={handleSave} disabled={isSaving}
                                     className="flex items-center gap-1.5 rounded-[10px] bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 shadow-lg shadow-indigo-600/20">
                                     {isSaving ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
@@ -42,25 +42,25 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                         <div className="grid gap-4 sm:grid-cols-2">
                             {[['firstName', 'First Name'], ['lastName', 'Last Name']].map(([key, label]) => (
                                 <div key={key}>
-                                    <label className="block text-[13px] font-bold text-slate-300 mb-1">{label}</label>
+                                    <label className="block text-[13px] font-bold text-white font-bold mb-1">{label}</label>
                                     <input value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                        className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                        className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                                 </div>
                             ))}
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Phone</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Phone</label>
                                 <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Date of Birth</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Date of Birth</label>
                                 <input type="date" value={form.dateOfBirth} onChange={e => setForm(f => ({ ...f, dateOfBirth: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 [color-scheme:dark]" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 [color-scheme:dark]" />
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Gender</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Gender</label>
                                 <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                                     <option value="">Select Gender</option>
                                     <option value="MALE">Male</option>
                                     <option value="FEMALE">Female</option>
@@ -68,9 +68,9 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Marital Status</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Marital Status</label>
                                 <select value={form.maritalStatus} onChange={e => setForm(f => ({ ...f, maritalStatus: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                                     <option value="">Select Status</option>
                                     <option value="Single">Single</option>
                                     <option value="Married">Married</option>
@@ -79,19 +79,19 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Nationality</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Nationality</label>
                                 <input value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Occupation</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Occupation</label>
                                 <input value={form.occupation} onChange={e => setForm(f => ({ ...f, occupation: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Blood Group</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Blood Group</label>
                                 <select value={form.bloodGroup} onChange={e => setForm(f => ({ ...f, bloodGroup: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                                     <option value="">Select</option>
                                     <option value="A+">A+</option><option value="A-">A-</option>
                                     <option value="B+">B+</option><option value="B-">B-</option>
@@ -100,14 +100,14 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">PAN Number</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">PAN Number</label>
                                 <input value={form.panNumber} onChange={e => setForm(f => ({ ...f, panNumber: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 uppercase" />
                             </div>
                             <div>
-                                <label className="block text-[13px] font-bold text-slate-300 mb-1">Aadhaar Number</label>
+                                <label className="block text-[13px] font-bold text-white font-bold mb-1">Aadhaar Number</label>
                                 <input value={form.aadhaarNumber} onChange={e => setForm(f => ({ ...f, aadhaarNumber: e.target.value }))}
-                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-medium text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                             </div>
                         </div>
                     ) : (
@@ -123,8 +123,8 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3.5 border-b border-slate-800/60 gap-1 sm:gap-0">
                                 <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Mail className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Email Address</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
-                                    <div className="text-white text-[14px] sm:text-[15px] font-bold truncate pr-2">{user?.email}</div>
-                                    <button onClick={() => handleCopy(user?.email)} className="text-slate-400 hover:text-white transition-colors shrink-0 p-1 -mr-1"><Copy size={18} /></button>
+                                    <div className="text-white text-[14px] sm:text-[15px] font-bold break-words whitespace-normal pr-2">{user?.email}</div>
+                                    <button onClick={() => handleCopy(user?.email)} className="text-white font-bold hover:text-white transition-colors shrink-0 p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Mobile Number */}
@@ -132,7 +132,7 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Phone className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Mobile Number</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
                                     <div className="text-white text-[14px] sm:text-[15px] font-bold">{user?.phone}</div>
-                                    <button onClick={() => handleCopy(user?.phone)} className="text-slate-400 hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
+                                    <button onClick={() => handleCopy(user?.phone)} className="text-white font-bold hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Resident ID */}
@@ -140,7 +140,7 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                                 <div className="flex items-center gap-2 sm:gap-3 text-slate-200 w-full sm:w-1/3"><Building2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> <span className="text-[13px] sm:text-[14px] font-semibold">Resident ID</span></div>
                                 <div className="flex items-center justify-between w-full sm:flex-1 sm:pl-4">
                                     <div className="text-white text-[14px] sm:text-[15px] font-bold">{profile?.residentCode ?? 'RES-702110-301'}</div>
-                                    <button onClick={() => handleCopy(profile?.residentCode ?? 'RES-702110-301')} className="text-slate-400 hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
+                                    <button onClick={() => handleCopy(profile?.residentCode ?? 'RES-702110-301')} className="text-white font-bold hover:text-white transition-colors p-1 -mr-1"><Copy size={18} /></button>
                                 </div>
                             </div>
                             {/* Role */}
@@ -237,7 +237,7 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                         <div className="flex items-end justify-between relative z-10 mt-6">
                             <div>
                                 <p className="text-[40px] font-bold text-white leading-none tracking-tighter mb-2">{unit?.unitNumber ?? '1008'}</p>
-                                <p className="text-[11px] font-bold text-slate-300 tracking-widest uppercase">{unit?.bhkType ?? '2BHK'} · {unit?.unitType ?? 'RESIDENTIAL'}</p>
+                                <p className="text-[11px] font-bold text-white font-bold tracking-widest uppercase">{unit?.bhkType ?? '2BHK'} · {unit?.unitType ?? 'RESIDENTIAL'}</p>
                             </div>
                             <div className="h-16 w-24 rounded-xl overflow-hidden border border-white/10 opacity-80 mix-blend-luminosity">
                                 <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200&auto=format&fit=crop" className="w-full h-full object-cover" alt="Unit" />
@@ -260,7 +260,7 @@ export function PersonalInfoTab({ user, profile, editing, setEditing, startEdit,
                         <div className="flex items-end justify-between relative z-10 mt-6">
                             <div>
                                 <p className="text-[17px] font-bold text-white leading-tight mb-1">{society?.name ?? 'Green Valley Apartment'}</p>
-                                <p className="text-[13px] text-slate-300">{society?.city ?? 'Delhi'}, {society?.state ?? 'Delhi'}</p>
+                                <p className="text-[13px] text-white font-bold">{society?.city ?? 'Delhi'}, {society?.state ?? 'Delhi'}</p>
                             </div>
                             <div className="h-16 w-24 rounded-xl overflow-hidden border border-white/10 opacity-80 mix-blend-luminosity">
                                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&auto=format&fit=crop" className="w-full h-full object-cover" alt="Society" />

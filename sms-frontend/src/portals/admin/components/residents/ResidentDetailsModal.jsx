@@ -146,7 +146,7 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <button 
                         onClick={onClose}
-                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-semibold w-fit cursor-pointer"
+                        className="flex items-center gap-2 text-white font-bold hover:text-white transition-colors text-sm font-semibold w-fit cursor-pointer"
                     >
                         <ArrowLeft className="w-4 h-4" /> Back to Residents
                     </button>
@@ -170,7 +170,7 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                 {/* Page Title */}
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-tight">Resident Details</h1>
-                    <p className="text-gray-400 text-sm mt-1">Complete resident information and management</p>
+                    <p className="text-white font-bold text-sm mt-1 font-bold">Complete resident information and management</p>
                 </div>
 
                 {/* Profile Banner */}
@@ -193,31 +193,31 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-2">
                                 <h2 className="text-xl md:text-2xl font-bold text-white">{user.firstName} {user.lastName}</h2>
                                 {user.registrationStatus === 'APPROVED' ? (
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#052e16] text-[#4ade80] tracking-wider border border-[#166534]">APPROVED</span>
+                                    <span className="px-2 py-0.5 rounded text-[12px] font-bold bg-[#052e16] text-[#4ade80] tracking-wider border border-[#166534]">APPROVED</span>
                                 ) : (
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#422006] text-[#fbbf24] tracking-wider border border-[#713f12]">{user.registrationStatus}</span>
+                                    <span className="px-2 py-0.5 rounded text-[12px] font-bold bg-[#422006] text-[#fbbf24] tracking-wider border border-[#713f12]">{user.registrationStatus}</span>
                                 )}
                             </div>
-                            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-sm text-gray-400 font-medium mb-5">
-                                <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-[#b388ff]" /> <span className="truncate max-w-[200px] md:max-w-none">{user.email}</span></span>
+                            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-sm text-white font-bold font-bold mb-5">
+                                <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-[#b388ff]" /> <span className="break-words whitespace-normal max-w-[200px] md:max-w-none">{user.email}</span></span>
                                 <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-[#b388ff]" /> {user.phone || 'N/A'}</span>
                             </div>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-4 text-xs w-full">
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-4 text-sm w-full">
                                 <div className="bg-[#0c0d14]/50 border border-white/5 rounded-lg px-3 md:px-4 py-2 flex-1 md:flex-none min-w-[45%] md:min-w-0">
-                                    <span className="text-gray-500 block mb-0.5 text-center md:text-left">Resident ID</span>
-                                    <span className="text-gray-200 font-bold block text-center md:text-left">{rd.residentCode || 'RES-' + user._id.slice(-6).toUpperCase()}</span>
+                                    <span className="text-white font-bold text-xs block mb-0.5 text-center md:text-left">Resident ID</span>
+                                    <span className="text-white font-bold block text-center md:text-left">{rd.residentCode || 'RES-' + user._id.slice(-6).toUpperCase()}</span>
                                 </div>
                                 <div className="bg-[#0c0d14]/50 border border-white/5 rounded-lg px-3 md:px-4 py-2 flex-1 md:flex-none min-w-[45%] md:min-w-0">
-                                    <span className="text-gray-500 block mb-0.5 text-center md:text-left">Unit No.</span>
-                                    <span className="text-gray-200 font-bold block text-center md:text-left">{rd.unitId?.unitNumber || 'N/A'}</span>
+                                    <span className="text-white font-bold text-xs block mb-0.5 text-center md:text-left">Unit No.</span>
+                                    <span className="text-white font-bold block text-center md:text-left">{rd.unitId?.unitNumber || 'N/A'}</span>
                                 </div>
                                 <div className="bg-[#0c0d14]/50 border border-white/5 rounded-lg px-3 md:px-4 py-2 flex-1 md:flex-none min-w-[45%] md:min-w-0">
-                                    <span className="text-gray-500 block mb-0.5 text-center md:text-left">Tower / Floor</span>
-                                    <span className="text-gray-200 font-bold block text-center md:text-left">T{rd.unitId?.towerId?.name || 'N/A'} / F{rd.unitId?.floorId?.floorNumber || rd.unitId?.floorId?.floorName || 'N/A'}</span>
+                                    <span className="text-white font-bold text-xs block mb-0.5 text-center md:text-left">Tower / Floor</span>
+                                    <span className="text-white font-bold block text-center md:text-left">T{rd.unitId?.towerId?.name || 'N/A'} / F{rd.unitId?.floorId?.floorNumber || rd.unitId?.floorId?.floorName || 'N/A'}</span>
                                 </div>
                                 <div className="bg-[#0c0d14]/50 border border-white/5 rounded-lg px-3 md:px-4 py-2 flex-1 md:flex-none min-w-[45%] md:min-w-0">
-                                    <span className="text-gray-500 block mb-0.5 text-center md:text-left">Type</span>
-                                    <span className="text-gray-200 font-bold uppercase block text-center md:text-left">{rd.ownershipType || 'RESIDENTIAL'}</span>
+                                    <span className="text-white font-bold text-xs block mb-0.5 text-center md:text-left">Type</span>
+                                    <span className="text-white font-bold uppercase block text-center md:text-left">{rd.ownershipType || 'RESIDENTIAL'}</span>
                                 </div>
                             </div>
                         </div>
@@ -225,7 +225,7 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
 
                     <div className="relative z-10 flex flex-col gap-4 min-w-[200px]">
                         <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                            <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
                                 <Calendar className="w-4 h-4" /> Joined On
                             </div>
                             <div className="text-white text-sm font-semibold">
@@ -233,13 +233,13 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                             </div>
                         </div>
                         <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                            <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
                                 <UserIcon className="w-4 h-4" /> Role
                             </div>
                             <div className="text-white text-sm font-semibold uppercase">{rd.ownershipType || 'OWNER'}</div>
                         </div>
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
                                 <CheckCircle className="w-4 h-4" /> Status
                             </div>
                             <div className="text-[#4ade80] text-sm font-semibold">{user.registrationStatus === 'APPROVED' ? 'Active Resident' : 'Pending'}</div>
@@ -256,13 +256,13 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                             className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
                                 activeTab === tab.id 
                                     ? 'bg-[#2e1d5e]/30 text-[#b388ff] border border-[#6338f0]/30 shadow-[0_0_15px_rgba(99,56,240,0.15)]' 
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                                    : 'text-white font-bold hover:text-white hover:bg-white/5 border border-transparent'
                             }`}
                         >
                             {tab.icon}
                             {tab.label}
                             {tab.badge !== undefined && (
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === tab.id ? 'bg-[#6338f0] text-white' : 'bg-[#151722] text-gray-500'}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-[12px] ${activeTab === tab.id ? 'bg-[#6338f0] text-white' : 'bg-[#151722] text-white font-bold'}`}>
                                     {tab.badge}
                                 </span>
                             )}
@@ -351,7 +351,7 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                             {rd.idCardUrl ? 'Regenerate' : 'Generate'}
                                         </button>
                                         {rd.idCardUrl && (
-                                            <a href={rd.idCardUrl} download={`Resident_ID_${user.firstName}.png`} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors cursor-pointer">
+                                            <a href={rd.idCardUrl} download={`Resident_ID_${user.firstName}.png`} target="_blank" rel="noreferrer" className="text-white font-bold hover:text-white transition-colors cursor-pointer">
                                                 <Download className="w-4 h-4" />
                                             </a>
                                         )}
@@ -379,8 +379,8 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                     ) : (
                                         <div className="w-full aspect-[0.63] bg-[#151722] relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
                                             <ShieldAlert className="w-12 h-12 text-gray-600 mb-4" />
-                                            <h3 className="text-gray-300 font-bold mb-1">No ID Card</h3>
-                                            <p className="text-xs text-gray-500 mb-6">Digital ID Card has not been generated for this resident yet.</p>
+                                            <h3 className="text-white font-bold font-bold mb-1">No ID Card</h3>
+                                            <p className="text-xs text-white font-bold mb-6">Digital ID Card has not been generated for this resident yet.</p>
                                             <button onClick={handleGenerateIdCard} className="px-5 py-2.5 bg-[#6338f0]/10 text-[#b388ff] text-xs font-bold rounded-xl hover:bg-[#6338f0]/20 transition-colors border border-[#6338f0]/30 w-full cursor-pointer">
                                                 Generate ID Card Now
                                             </button>
@@ -398,17 +398,17 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                     Quick Actions
                                 </div>
                                 <div className="p-4 grid grid-cols-2 gap-3">
-                                    <button onClick={() => setShowEditModal(true)} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-gray-300 cursor-pointer">
-                                        <Edit2 className="w-4 h-4 text-gray-400" /> Edit Resident
+                                    <button onClick={() => setShowEditModal(true)} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-white font-bold cursor-pointer">
+                                        <Edit2 className="w-4 h-4 text-white font-bold" /> Edit Resident
                                     </button>
-                                    <button onClick={handleResetPassword} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-gray-300 cursor-pointer">
-                                        <Lock className="w-4 h-4 text-gray-400" /> Reset Password
+                                    <button onClick={handleResetPassword} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-white font-bold cursor-pointer">
+                                        <Lock className="w-4 h-4 text-white font-bold" /> Reset Password
                                     </button>
-                                    <button onClick={() => setActiveTab('DOCUMENTS')} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-gray-300 cursor-pointer">
-                                        <FileText className="w-4 h-4 text-gray-400" /> View Documents
+                                    <button onClick={() => setActiveTab('DOCUMENTS')} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-white font-bold cursor-pointer">
+                                        <FileText className="w-4 h-4 text-white font-bold" /> View Documents
                                     </button>
-                                    <button onClick={() => setActiveTab('ACTIVITY')} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-gray-300 cursor-pointer">
-                                        <ActivityIcon className="w-4 h-4 text-gray-400" /> View Activity Log
+                                    <button onClick={() => setActiveTab('ACTIVITY')} className="flex items-center gap-2 p-3 rounded-xl bg-[#151722] border border-white/5 hover:bg-white/5 transition-colors text-xs font-semibold text-white font-bold cursor-pointer">
+                                        <ActivityIcon className="w-4 h-4 text-white font-bold" /> View Activity Log
                                     </button>
                                 </div>
                             </div>
@@ -431,22 +431,22 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                         <div className="mt-1"><CheckCircle className="w-5 h-5 text-[#4ade80]" /></div>
                                         <div>
                                             <div className="text-gray-200 text-sm font-semibold">Resident Approved</div>
-                                            <div className="text-gray-500 text-xs mt-0.5">Resident account was approved by admin</div>
+                                            <div className="text-white font-bold text-xs mt-0.5">Resident account was approved by admin</div>
                                         </div>
                                         <div className="ml-auto text-right">
-                                            <div className="text-gray-400 text-xs font-medium">{new Date(user.createdAt).toLocaleDateString()}</div>
-                                            <div className="text-gray-500 text-[10px] mt-0.5">Admin</div>
+                                            <div className="text-white font-bold text-xs font-bold">{new Date(user.createdAt).toLocaleDateString()}</div>
+                                            <div className="text-white font-bold text-[12px] mt-0.5">Admin</div>
                                         </div>
                                     </div>
                                     <div className="flex gap-3">
                                         <div className="mt-1"><FileText className="w-5 h-5 text-[#b388ff]" /></div>
                                         <div>
                                             <div className="text-gray-200 text-sm font-semibold">ID Card Generated</div>
-                                            <div className="text-gray-500 text-xs mt-0.5">Digital ID card was generated</div>
+                                            <div className="text-white font-bold text-xs mt-0.5">Digital ID card was generated</div>
                                         </div>
                                         <div className="ml-auto text-right">
-                                            <div className="text-gray-400 text-xs font-medium">{new Date().toLocaleDateString()}</div>
-                                            <div className="text-gray-500 text-[10px] mt-0.5">System</div>
+                                            <div className="text-white font-bold text-xs font-bold">{new Date().toLocaleDateString()}</div>
+                                            <div className="text-white font-bold text-[12px] mt-0.5">System</div>
                                         </div>
                                     </div>
                                 </div>
@@ -466,30 +466,30 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                         <UsersIcon className="w-6 h-6 text-[#b388ff]" />
                                     </div>
                                     <div>
-                                        <h3 className="text-gray-200 font-bold text-[15px]">{member.name}</h3>
-                                        <div className="text-gray-500 text-xs font-semibold uppercase">{member.relation}</div>
+                                        <h3 className="text-white font-bold text-base">{member.name}</h3>
+                                        <div className="text-white font-bold text-xs font-semibold uppercase">{member.relation}</div>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                                     {member.phone && (
                                         <div>
-                                            <div className="text-gray-500 text-[10px] uppercase tracking-wider mb-0.5">Phone</div>
-                                            <div className="text-gray-300 text-xs font-semibold">{member.phone}</div>
+                                            <div className="text-white font-bold text-xs uppercase tracking-wider mb-0.5">Phone</div>
+                                            <div className="text-white text-sm font-semibold">{member.phone}</div>
                                         </div>
                                     )}
                                     {member.gender && (
                                         <div>
-                                            <div className="text-gray-500 text-[10px] uppercase tracking-wider mb-0.5">Gender</div>
-                                            <div className="text-gray-300 text-xs font-semibold">{member.gender}</div>
+                                            <div className="text-white font-bold text-xs uppercase tracking-wider mb-0.5">Gender</div>
+                                            <div className="text-white text-sm font-semibold">{member.gender}</div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         )) : (
                             <div className="col-span-full flex flex-col items-center justify-center py-20 bg-[#11131c] rounded-2xl border border-white/5">
-                                <UsersIcon className="w-12 h-12 text-gray-500 mb-4" />
-                                <h3 className="text-lg font-bold text-gray-300">No Family Members</h3>
-                                <p className="text-sm text-gray-500 mt-2">No family members have been added to this profile.</p>
+                                <UsersIcon className="w-12 h-12 text-white font-bold mb-4" />
+                                <h3 className="text-lg font-bold text-white font-bold">No Family Members</h3>
+                                <p className="text-sm text-white font-bold mt-2">No family members have been added to this profile.</p>
                             </div>
                         )}
                     </div>
@@ -505,7 +505,7 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="text-gray-200 font-bold text-sm">{doc.documentType}</h3>
-                                        <div className="text-gray-500 text-xs mt-0.5">Verified Document</div>
+                                        <div className="text-white font-bold text-xs mt-0.5">Verified Document</div>
                                     </div>
                                 </div>
                                 <a href={doc.documentUrl} target="_blank" rel="noreferrer" className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-[#151722] text-[#6338f0] text-xs font-bold hover:bg-[#6338f0]/10 transition-colors border border-white/5 cursor-pointer">
@@ -514,9 +514,9 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                             </div>
                         )) : (
                             <div className="col-span-full flex flex-col items-center justify-center py-20 bg-[#11131c] rounded-2xl border border-white/5">
-                                <FileText className="w-12 h-12 text-gray-500 mb-4" />
-                                <h3 className="text-lg font-bold text-gray-300">No Documents</h3>
-                                <p className="text-sm text-gray-500 mt-2">No documents have been uploaded.</p>
+                                <FileText className="w-12 h-12 text-white font-bold mb-4" />
+                                <h3 className="text-lg font-bold text-white font-bold">No Documents</h3>
+                                <p className="text-sm text-white font-bold mt-2">No documents have been uploaded.</p>
                             </div>
                         )}
                     </div>
@@ -529,8 +529,8 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                 <div className="mt-1"><UserIcon className="w-5 h-5 text-[#3b82f6]" /></div>
                                 <div>
                                     <div className="text-gray-200 text-sm font-semibold">Account Created</div>
-                                    <div className="text-gray-500 text-xs mt-0.5">Resident completed registration</div>
-                                    <div className="text-gray-400 text-xs font-medium mt-1">{new Date(user.createdAt).toLocaleString()}</div>
+                                    <div className="text-white font-bold text-xs mt-0.5">Resident completed registration</div>
+                                    <div className="text-white font-bold text-xs font-bold mt-1">{new Date(user.createdAt).toLocaleString()}</div>
                                 </div>
                             </div>
                             {rd.approvedAt && (
@@ -538,8 +538,8 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                     <div className="mt-1"><CheckCircle className="w-5 h-5 text-[#4ade80]" /></div>
                                     <div>
                                         <div className="text-gray-200 text-sm font-semibold">Profile Approved</div>
-                                        <div className="text-gray-500 text-xs mt-0.5">Admin verified and approved this profile</div>
-                                        <div className="text-gray-400 text-xs font-medium mt-1">{new Date(rd.approvedAt).toLocaleString()}</div>
+                                        <div className="text-white font-bold text-xs mt-0.5">Admin verified and approved this profile</div>
+                                        <div className="text-white font-bold text-xs font-bold mt-1">{new Date(rd.approvedAt).toLocaleString()}</div>
                                     </div>
                                 </div>
                             )}
@@ -548,8 +548,8 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                                     <div className="mt-1"><FileText className="w-5 h-5 text-[#b388ff]" /></div>
                                     <div>
                                         <div className="text-gray-200 text-sm font-semibold">ID Card Generated</div>
-                                        <div className="text-gray-500 text-xs mt-0.5">Digital Identity Card was successfully generated</div>
-                                        <div className="text-gray-400 text-xs font-medium mt-1">{new Date(rd.idCardGeneratedAt).toLocaleString()}</div>
+                                        <div className="text-white font-bold text-xs mt-0.5">Digital Identity Card was successfully generated</div>
+                                        <div className="text-white font-bold text-xs font-bold mt-1">{new Date(rd.idCardGeneratedAt).toLocaleString()}</div>
                                     </div>
                                 </div>
                             )}
@@ -561,11 +561,11 @@ export default function ResidentDetailsModal({ residentId, onClose }) {
                 {(activeTab === 'ACCESS' || activeTab === 'NOTES') && (
                     <div className="flex flex-col items-center justify-center py-20 bg-[#11131c] rounded-2xl border border-white/5">
                         <div className="w-16 h-16 rounded-full bg-[#151722] flex items-center justify-center mb-4 border border-white/5">
-                            {activeTab === 'ACCESS' && <Lock className="w-8 h-8 text-gray-500" />}
-                            {activeTab === 'NOTES' && <FileText className="w-8 h-8 text-gray-500" />}
+                            {activeTab === 'ACCESS' && <Lock className="w-8 h-8 text-white font-bold" />}
+                            {activeTab === 'NOTES' && <FileText className="w-8 h-8 text-white font-bold" />}
                         </div>
-                        <h3 className="text-lg font-bold text-gray-300">Coming Soon</h3>
-                        <p className="text-sm text-gray-500 mt-2 max-w-sm text-center">
+                        <h3 className="text-lg font-bold text-white font-bold">Coming Soon</h3>
+                        <p className="text-sm text-white font-bold mt-2 max-w-sm text-center">
                             This section is under development and will be available soon.
                         </p>
                     </div>
@@ -597,8 +597,8 @@ function InfoCard({ title, icon, children }) {
 function InfoRow({ label, value }) {
     return (
         <div className="p-4 flex flex-row items-center justify-between border-b border-white/5 last:border-b-0 md:border-b-0 md:odd:border-r md:odd:border-white/5 md:[&:nth-child(n+3)]:border-t md:[&:nth-child(n+3)]:border-white/5">
-            <span className="text-gray-500 text-xs font-semibold max-w-[50%]">{label}</span>
-            <span className="text-gray-200 text-sm font-bold text-right truncate max-w-[50%]">{value}</span>
+            <span className="text-white font-bold text-sm font-bold max-w-[50%]">{label}</span>
+            <span className="text-white text-base font-bold text-right break-words whitespace-normal max-w-[50%]">{value}</span>
         </div>
     );
 }

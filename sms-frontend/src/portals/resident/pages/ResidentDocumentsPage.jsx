@@ -18,6 +18,32 @@ import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
 import toast from 'react-hot-toast';
 
+const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradient, onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
+    >
+        {/* Abstract Background Waves (CSS based) */}
+        <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+            </svg>
+        </div>
+        
+        <div className="relative z-10 flex items-start gap-4">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
+                <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
+            <div>
+                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
+                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+            </div>
+        </div>
+    </div>
+);
+
 export default function ResidentDocumentsPage() {
     const user = useSelector((state) => state.auth.user);
     const { data: documentsData, isLoading: isLoadingDocs } = useGetDocumentsQuery();
@@ -166,7 +192,7 @@ export default function ResidentDocumentsPage() {
                     <FileText className="w-8 h-8 text-indigo-400" />
                     <div>
                         <h1 className="text-2xl font-bold text-white">My Documents</h1>
-                        <p className="text-slate-400 text-sm mt-1">Store and manage all your personal and society documents securely.</p>
+                        <p className="text-white font-bold text-sm mt-1">Store and manage all your personal and society documents securely.</p>
                     </div>
                 </div>
                 <Button
@@ -179,60 +205,57 @@ export default function ResidentDocumentsPage() {
 
             {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                        <Folder className="w-6 h-6 text-indigo-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-0.5">Total Documents</p>
-                        <h3 className="text-2xl font-bold text-white">{totalDocsCount}</h3>
-                        <p className="text-[10px] text-slate-500 mt-1">All uploaded documents</p>
-                    </div>
-                </div>
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-0.5">Verified</p>
-                        <h3 className="text-2xl font-bold text-white">{verifiedCount}</h3>
-                        <p className="text-[10px] text-slate-500 mt-1">Documents verified</p>
-                    </div>
-                </div>
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                        <Clock className="w-6 h-6 text-amber-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-0.5">Pending Review</p>
-                        <h3 className="text-2xl font-bold text-white">{pendingCount}</h3>
-                        <p className="text-[10px] text-slate-500 mt-1">Awaiting verification</p>
-                    </div>
-                </div>
-                <div className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex items-center gap-4 shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
-                        <FileWarning className="w-6 h-6 text-red-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium mb-0.5">Expired</p>
-                        <h3 className="text-2xl font-bold text-white">{expiredCount}</h3>
-                        <p className="text-[10px] text-slate-500 mt-1">Requires attention</p>
-                    </div>
-                </div>
+                <StatCard 
+                    icon={Folder}
+                    title="Total Documents"
+                    value={totalDocsCount}
+                    subtitle="All uploaded documents"
+                    iconBg="bg-[#3e248a]/50"
+                    iconColor="text-[#b388ff]"
+                    gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                    onClick={() => setActiveTab('MY_DOCS')}
+                />
+                <StatCard 
+                    icon={ShieldCheck}
+                    title="Verified"
+                    value={verifiedCount}
+                    subtitle="Documents verified"
+                    iconBg="bg-[#1a4d35]/50"
+                    iconColor="text-[#4ade80]"
+                    gradient="from-[#123625]/80 to-[#0a1f15]"
+                />
+                <StatCard 
+                    icon={Clock}
+                    title="Pending Review"
+                    value={pendingCount}
+                    subtitle="Awaiting verification"
+                    iconBg="bg-[#6b4819]/50"
+                    iconColor="text-[#f59e0b]"
+                    gradient="from-[#4a3212]/80 to-[#261909]"
+                />
+                <StatCard 
+                    icon={FileWarning}
+                    title="Expired"
+                    value={expiredCount}
+                    subtitle="Requires attention"
+                    iconBg="bg-[#6b1e28]/50"
+                    iconColor="text-[#f87171]"
+                    gradient="from-[#4a1216]/80 to-[#2b0a0d]"
+                />
             </div>
 
             {/* Tabs */}
             <div className="flex border-b border-white/10 mt-6 gap-6">
                 <button
                     onClick={() => setActiveTab('MY_DOCS')}
-                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'MY_DOCS' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'MY_DOCS' ? 'text-indigo-400' : 'text-white font-bold hover:text-white font-bold'}`}
                 >
                     My Documents
                     {activeTab === 'MY_DOCS' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
                 </button>
                 <button
                     onClick={() => setActiveTab('SOCIETY')}
-                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'SOCIETY' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+                    className={`pb-3 text-sm font-semibold transition-all relative ${activeTab === 'SOCIETY' ? 'text-indigo-400' : 'text-white font-bold hover:text-white font-bold'}`}
                 >
                     Society Documents
                     {activeTab === 'SOCIETY' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-t-full"></div>}
@@ -257,7 +280,7 @@ export default function ResidentDocumentsPage() {
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-sm font-medium text-slate-300 focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
+                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-white font-bold focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
                         >
                             <option value="ALL">All Categories</option>
                             <option value="IDENTITY">Identity Proof</option>
@@ -271,7 +294,7 @@ export default function ResidentDocumentsPage() {
                         <select
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value)}
-                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm font-medium text-slate-300 focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
+                            className="appearance-none w-full bg-[#131525] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm font-bold text-white font-bold focus:outline-none hover:bg-white/5 transition-colors cursor-pointer"
                         >
                             <option value="NEWEST">Sort By: Newest</option>
                             <option value="OLDEST">Sort By: Oldest</option>
@@ -283,13 +306,13 @@ export default function ResidentDocumentsPage() {
                     <div className="flex items-center gap-1 bg-[#131525] border border-white/10 p-1 rounded-xl shrink-0">
                         <button
                             onClick={() => setViewMode('GRID')}
-                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'GRID' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'GRID' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-white font-bold'}`}
                         >
                             <LayoutGrid size={16} />
                         </button>
                         <button
                             onClick={() => setViewMode('LIST')}
-                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'LIST' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-colors ${viewMode === 'LIST' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-white font-bold'}`}
                         >
                             <List size={16} />
                         </button>
@@ -304,19 +327,19 @@ export default function ResidentDocumentsPage() {
                         <table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
                                 <tr className="bg-white/5 border-b border-white/10">
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Document</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Category</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Type</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Uploaded On</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider">Document</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider">Type</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider">Uploaded On</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-white font-bold uppercase tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {isLoadingDocs ? (
-                                    <tr><td colSpan="6" className="py-12 text-center text-slate-500 font-medium"><div className="flex justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div></td></tr>
+                                    <tr><td colSpan="6" className="py-12 text-center text-slate-500 font-bold"><div className="flex justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div></td></tr>
                                 ) : filteredDocs.length === 0 ? (
-                                    <tr><td colSpan="6" className="py-16 text-center text-slate-400 font-medium">No documents found.</td></tr>
+                                    <tr><td colSpan="6" className="py-16 text-center text-white font-bold font-bold">No documents found.</td></tr>
                                 ) : filteredDocs.map(d => {
                                     const docStatus = getDocStatus(d);
                                     const ext = getFileExtension(d.fileUrl);
@@ -346,10 +369,10 @@ export default function ResidentDocumentsPage() {
                                                     {d.category.replace('_', ' ')}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-medium text-slate-300">
+                                            <td className="px-6 py-4 text-sm font-bold text-white font-bold">
                                                 {(d.documentType === 'OTHER' && d.customDocumentType) ? d.customDocumentType : d.documentType.replace('_', ' ')}
                                             </td>
-                                            <td className="px-6 py-4 text-xs text-slate-400">
+                                            <td className="px-6 py-4 text-xs text-white font-bold">
                                                 {new Date(d.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 <br />
                                                 <span className="text-slate-500">{new Date(d.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -365,10 +388,10 @@ export default function ResidentDocumentsPage() {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <button onClick={() => handleDownload(d._id)} className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
+                                                    <button onClick={() => handleDownload(d._id)} className="p-1.5 text-white font-bold hover:text-indigo-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
                                                         <Download className="h-4 w-4" />
                                                     </button>
-                                                    <button onClick={() => handleDelete(d._id)} className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
+                                                    <button onClick={() => handleDelete(d._id)} className="p-1.5 text-white font-bold hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10">
                                                         <MoreVertical className="h-4 w-4" />
                                                     </button>
                                                 </div>
@@ -398,7 +421,7 @@ export default function ResidentDocumentsPage() {
                     {isLoadingDocs ? (
                         <div className="col-span-full py-12 flex justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div>
                     ) : filteredDocs.length === 0 ? (
-                        <div className="col-span-full py-16 text-center text-slate-400 font-medium">No documents found.</div>
+                        <div className="col-span-full py-16 text-center text-white font-bold font-bold">No documents found.</div>
                     ) : filteredDocs.map(d => {
                         const docStatus = getDocStatus(d);
                         const ext = getFileExtension(d.fileUrl);
@@ -414,12 +437,12 @@ export default function ResidentDocumentsPage() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <button onClick={() => handleDownload(d._id)} className="p-1.5 text-slate-400 hover:text-indigo-400 bg-white/5 rounded-lg transition-colors"><Download className="h-3.5 w-3.5" /></button>
-                                        <button onClick={() => handleDelete(d._id)} className="p-1.5 text-slate-400 hover:text-red-400 bg-white/5 rounded-lg transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
+                                        <button onClick={() => handleDownload(d._id)} className="p-1.5 text-white font-bold hover:text-indigo-400 bg-white/5 rounded-lg transition-colors"><Download className="h-3.5 w-3.5" /></button>
+                                        <button onClick={() => handleDelete(d._id)} className="p-1.5 text-white font-bold hover:text-red-400 bg-white/5 rounded-lg transition-colors"><Trash2 className="h-3.5 w-3.5" /></button>
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-white text-base truncate">{d.title}</h3>
-                                <p className="text-xs text-slate-400 mt-1 truncate">{(d.documentType === 'OTHER' && d.customDocumentType) ? d.customDocumentType : d.documentType.replace('_', ' ')} • {d.category.replace('_', ' ')}</p>
+                                <h3 className="font-bold text-white text-base break-words whitespace-normal">{d.title}</h3>
+                                <p className="text-xs text-white font-bold mt-1 break-words whitespace-normal">{(d.documentType === 'OTHER' && d.customDocumentType) ? d.customDocumentType : d.documentType.replace('_', ' ')} • {d.category.replace('_', ' ')}</p>
 
                                 <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
                                     <span className="text-[10px] text-slate-500">{new Date(d.createdAt).toLocaleDateString('en-GB')}</span>
@@ -520,20 +543,20 @@ export default function ResidentDocumentsPage() {
                         </Select>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-300 mb-1.5">File (Max 10MB)</label>
+                            <label className="block text-sm font-semibold text-white font-bold mb-1.5">File (Max 10MB)</label>
                             <input
                                 required
                                 onChange={(e) => setFileList(e.target.files)}
                                 type="file"
-                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
+                                className="block w-full text-sm text-white font-bold file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
                             />
                         </div>
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
-                            <Button type="button" variant="outline" className="border-white/20 text-slate-300 hover:bg-white/5" onClick={() => setUploadModalVisible(false)} disabled={isUploading}>
+                            <Button type="button" variant="outline" className="border-white/20 text-white font-bold hover:bg-white/5" onClick={() => setUploadModalVisible(false)} disabled={isUploading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isUploading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-medium">
+                            <Button type="submit" disabled={isUploading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-bold">
                                 {isUploading ? 'Uploading...' : 'Upload Document'}
                             </Button>
                         </div>

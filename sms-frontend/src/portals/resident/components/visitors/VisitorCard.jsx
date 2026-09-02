@@ -20,7 +20,7 @@ export function VisitorCard({ visitor }) {
             case 'APPROVED': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
             case 'COMPLETED': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
             case 'CANCELLED': return 'bg-red-500/20 text-red-400 border-red-500/30';
-            default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+            default: return 'bg-slate-500/20 text-white font-bold border-slate-500/30';
         }
     };
     const getDisplayStatus = (status) => {
@@ -49,11 +49,11 @@ export function VisitorCard({ visitor }) {
                 <div className="flex-1">
                     <p className="text-white font-bold text-[15px] mb-1">{visitor.visitorName}</p>
                     {visitor.visitorPhone && (
-                        <p className="text-slate-400 text-xs flex items-center gap-1.5 mb-2">
+                        <p className="text-white font-bold text-xs flex items-center gap-1.5 mb-2">
                             <Phone className="w-3 h-3" /> {visitor.visitorPhone}
                         </p>
                     )}
-                    <p className="text-slate-500 text-[11px] font-medium uppercase flex items-center gap-2">
+                    <p className="text-slate-500 text-[11px] font-bold uppercase flex items-center gap-2">
                         <span className="flex items-center gap-1">
                             <span className="w-4 h-4 rounded bg-slate-800 flex items-center justify-center text-[8px]">G</span>
                             {(visitor.visitorType === 'OTHER' ? (visitor.customVisitorType || 'OTHER') : visitor.visitorType).replace('_', ' ')}
@@ -65,12 +65,12 @@ export function VisitorCard({ visitor }) {
             <div className="flex-1 border-l border-r border-slate-800/50 px-6 mx-6 min-h-[60px] hidden md:block space-y-3">
                 <div>
                     <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Visit Date & Time</p>
-                    <p className="text-slate-300 text-xs">{formattedDate}</p>
-                    <p className="text-slate-400 text-xs">{formattedTime} - {(new Date(new Date(visitor.expectedArrival).getTime() + 2*60*60*1000)).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</p>
+                    <p className="text-white font-bold text-xs">{formattedDate}</p>
+                    <p className="text-white font-bold text-xs">{formattedTime} - {(new Date(new Date(visitor.expectedArrival).getTime() + 2*60*60*1000)).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
                 <div>
                     <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Gate Entry</p>
-                    <p className="text-slate-300 text-xs">Main Gate</p>
+                    <p className="text-white font-bold text-xs">Main Gate</p>
                 </div>
             </div>
 

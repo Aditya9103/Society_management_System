@@ -135,9 +135,9 @@ export default function SocietyProfilePage() {
         );
     }
 
-    const inputClasses = "w-full bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
+    const inputClasses = "w-full bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-300 font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
     const selectClasses = "w-full bg-[#0b0c10] border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer appearance-none";
-    const labelClasses = "block text-[11px] uppercase tracking-wider text-gray-400 mb-1.5 font-medium";
+    const labelClasses = "block text-[12px] uppercase tracking-wider text-white font-bold mb-1.5 font-bold";
 
     return (
         <>
@@ -146,12 +146,12 @@ export default function SocietyProfilePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
                 <div>
                     <h1 className="text-2xl font-bold text-white">Society Profile</h1>
-                    <p className="text-gray-400 text-sm mt-1">Update your society's information and configuration</p>
+                    <p className="text-white font-bold text-sm mt-1">Update your society's information and configuration</p>
                 </div>
                 <button 
                     type="submit" 
                     disabled={isSaving}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors disabled:opacity-50"
                 >
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Save Changes
@@ -168,7 +168,7 @@ export default function SocietyProfilePage() {
                         {society?.logoUrl ? (
                             <img src={society.logoUrl} alt="Logo" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-500 bg-[#0b0c10]">
+                            <div className="w-full h-full flex items-center justify-center text-white font-bold bg-[#0b0c10]">
                                 <Camera className="w-6 h-6 opacity-50" />
                             </div>
                         )}
@@ -192,7 +192,7 @@ export default function SocietyProfilePage() {
                             placeholder="Society Name"
                             defaultValue={society?.name}
                         />
-                        <span className="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-medium border border-indigo-500/30 whitespace-nowrap">
+                        <span className="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[12px] font-bold border border-indigo-500/30 whitespace-nowrap">
                             Registered Society
                         </span>
                     </div>
@@ -201,10 +201,10 @@ export default function SocietyProfilePage() {
                         <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
                             <Calendar className="w-4 h-4 text-indigo-400" />
                             <div>
-                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Est. Year</p>
+                                <p className="text-[9px] text-white font-bold uppercase tracking-wide">Est. Year</p>
                                 <input 
                                     {...register('establishmentYear')}
-                                    className="bg-transparent text-xs font-medium text-white focus:outline-none w-12"
+                                    className="bg-transparent text-xs font-bold text-white focus:outline-none w-12"
                                     placeholder="2010"
                                     defaultValue={society?.establishmentYear}
                                 />
@@ -214,10 +214,10 @@ export default function SocietyProfilePage() {
                         <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
                             <FileText className="w-4 h-4 text-blue-400" />
                             <div>
-                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Registration No.</p>
+                                <p className="text-[9px] text-white font-bold uppercase tracking-wide">Registration No.</p>
                                 <input 
                                     {...register('registrationNumber')}
-                                    className="bg-transparent text-xs font-medium text-white focus:outline-none w-28"
+                                    className="bg-transparent text-xs font-bold text-white focus:outline-none w-28"
                                     placeholder="REG-0000"
                                     defaultValue={society?.registrationNumber}
                                 />
@@ -227,10 +227,10 @@ export default function SocietyProfilePage() {
                         <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
                             <IndianRupee className="w-4 h-4 text-emerald-400" />
                             <div>
-                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Currency</p>
+                                <p className="text-[9px] text-white font-bold uppercase tracking-wide">Currency</p>
                                 <select 
                                     {...register('currency')}
-                                    className="bg-transparent text-xs font-medium text-white focus:outline-none appearance-none cursor-pointer"
+                                    className="bg-transparent text-xs font-bold text-white focus:outline-none appearance-none cursor-pointer"
                                     defaultValue={society?.settings?.currency ?? 'INR'}
                                 >
                                     <option value="INR" className="bg-[#1a1d24]">INR - Indian Rupee</option>
@@ -240,12 +240,12 @@ export default function SocietyProfilePage() {
                         </div>
 
                         <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 rounded-xl px-3 py-2 shrink-0">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold overflow-hidden border border-white/10 shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[12px] font-bold overflow-hidden border border-white/10 shrink-0">
                                 {user?.profilePhotoUrl ? <img src={user.profilePhotoUrl} className="w-full h-full object-cover" alt="" /> : user?.firstName?.[0]}
                             </div>
                             <div>
-                                <p className="text-[9px] text-gray-400 uppercase tracking-wide">Society Admin</p>
-                                <p className="text-xs font-medium text-white">{user?.firstName} {user?.lastName}</p>
+                                <p className="text-[9px] text-white font-bold uppercase tracking-wide">Society Admin</p>
+                                <p className="text-xs font-bold text-white">{user?.firstName} {user?.lastName}</p>
                             </div>
                         </div>
                     </div>
@@ -263,7 +263,7 @@ export default function SocietyProfilePage() {
                         </div>
                         <div>
                             <h3 className="text-white font-semibold">Address</h3>
-                            <p className="text-xs text-gray-400">Society's physical location</p>
+                            <p className="text-xs text-white font-bold">Society's physical location</p>
                         </div>
                     </div>
 
@@ -301,7 +301,7 @@ export default function SocietyProfilePage() {
                         </div>
                         <div>
                             <h3 className="text-white font-semibold">Contact Details</h3>
-                            <p className="text-xs text-gray-400">How residents and visitors can reach the society</p>
+                            <p className="text-xs text-white font-bold">How residents and visitors can reach the society</p>
                         </div>
                     </div>
 
@@ -334,7 +334,7 @@ export default function SocietyProfilePage() {
                         </div>
                         <div>
                             <h3 className="text-white font-semibold">Billing & Finance Settings</h3>
-                            <p className="text-xs text-gray-400">Configure billing cycles, late fees, and maintenance</p>
+                            <p className="text-xs text-white font-bold">Configure billing cycles, late fees, and maintenance</p>
                         </div>
                     </div>
 
@@ -386,7 +386,7 @@ export default function SocietyProfilePage() {
                         </div>
                         <div>
                             <h3 className="text-white font-semibold">Visitor & Resident Settings</h3>
-                            <p className="text-xs text-gray-400">Control visitor access and resident directory</p>
+                            <p className="text-xs text-white font-bold">Control visitor access and resident directory</p>
                         </div>
                     </div>
 
@@ -430,39 +430,39 @@ export default function SocietyProfilePage() {
                             </div>
                             <div>
                                 <h3 className="text-white font-semibold">Emergency Contacts</h3>
-                                <p className="text-xs text-gray-400">Quick-dial numbers for emergencies</p>
+                                <p className="text-xs text-white font-bold">Quick-dial numbers for emergencies</p>
                             </div>
                         </div>
                         <button 
                             type="button" 
                             onClick={openAddContactModal}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-200 text-sm font-medium hover:bg-white/10 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-200 text-sm font-bold hover:bg-white/10 transition-colors"
                         >
                             <Plus className="w-4 h-4" /> Add Contact
                         </button>
                     </div>
 
                     <div className="overflow-x-auto w-full">
-                        <table className="w-full text-left text-sm text-gray-400">
-                            <thead className="text-[10px] uppercase tracking-wider text-gray-500 bg-white/5 border-b border-white/10">
+                        <table className="w-full text-left text-sm text-white font-bold">
+                            <thead className="text-[12px] uppercase tracking-wider text-white font-bold bg-white/5 border-b border-white/10">
                                 <tr>
-                                    <th className="px-4 py-3 font-medium rounded-tl-lg">Name / Department</th>
-                                    <th className="px-4 py-3 font-medium">Phone Number</th>
-                                    <th className="px-4 py-3 font-medium">Type</th>
-                                    <th className="px-4 py-3 font-medium rounded-tr-lg w-24">Actions</th>
+                                    <th className="px-4 py-3 font-bold rounded-tl-lg">Name / Department</th>
+                                    <th className="px-4 py-3 font-bold">Phone Number</th>
+                                    <th className="px-4 py-3 font-bold">Type</th>
+                                    <th className="px-4 py-3 font-bold rounded-tr-lg w-24">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {emergencyContacts.map((contact, i) => (
                                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 group transition-colors">
-                                        <td className="px-4 py-3 text-gray-200 font-medium">
+                                        <td className="px-4 py-3 text-gray-200 font-bold">
                                             {contact.name}
                                         </td>
-                                        <td className="px-4 py-3 text-gray-300">
+                                        <td className="px-4 py-3 text-white font-bold">
                                             {contact.phone}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-gray-300">
+                                            <span className="bg-[#0b0c10] border border-white/10 rounded px-2 py-1 text-[12px] uppercase font-bold tracking-wider text-white font-bold">
                                                 {contact.type === 'OTHER' ? contact.customContactType : contact.type}
                                             </span>
                                         </td>
@@ -471,7 +471,7 @@ export default function SocietyProfilePage() {
                                                 <button 
                                                     type="button"
                                                     onClick={() => openEditContactModal(i)}
-                                                    className="w-7 h-7 rounded bg-white/5 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+                                                    className="w-7 h-7 rounded bg-white/5 flex items-center justify-center text-white font-bold hover:bg-white/10 hover:text-white transition-colors"
                                                 >
                                                     <Edit3 className="w-3.5 h-3.5" />
                                                 </button>
@@ -488,7 +488,7 @@ export default function SocietyProfilePage() {
                                 ))}
                                 {emergencyContacts.length === 0 && (
                                     <tr>
-                                        <td colSpan="4" className="px-4 py-8 text-center text-gray-500">
+                                        <td colSpan="4" className="px-4 py-8 text-center text-white font-bold">
                                             No emergency contacts configured yet.
                                         </td>
                                     </tr>

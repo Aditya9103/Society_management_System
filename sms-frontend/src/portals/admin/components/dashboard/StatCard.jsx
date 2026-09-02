@@ -2,9 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../../../components/ui/Button';
 
-export default function StatCard({ label, value, icon: Icon, gradient, subLabel, subValue, to }) {
+export default function StatCard({ label, value, icon: Icon, gradient, subLabel, subValue, to, onClick }) {
     const content = (
-        <div className={cn('relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:shadow-xl', gradient)}>
+        <div 
+            onClick={onClick}
+            className={cn(
+                'relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:shadow-xl', 
+                gradient,
+                (onClick || to) ? 'cursor-pointer' : ''
+            )}
+        >
             <div className="flex items-start justify-between">
                 <div>
                     <p className="text-sm font-medium text-white/75">{label}</p>

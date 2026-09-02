@@ -10,7 +10,7 @@ const getIconConfig = (title) => {
     if (t.includes('garden') || t.includes('tree')) return { Icon: Leaf, color: 'text-emerald-400', bg: 'bg-emerald-500/20' };
     if (t.includes('parking') || t.includes('car')) return { Icon: Car, color: 'text-orange-400', bg: 'bg-orange-500/20' };
     if (t.includes('meeting') || t.includes('agm')) return { Icon: Megaphone, color: 'text-violet-400', bg: 'bg-violet-500/20' };
-    return { Icon: Bell, color: 'text-gray-400', bg: 'bg-gray-500/20' };
+    return { Icon: Bell, color: 'text-gray-300', bg: 'bg-gray-500/20' };
 };
 
 export default function RecentNoticesList({ notices = [] }) {
@@ -44,16 +44,16 @@ export default function RecentNoticesList({ notices = [] }) {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-medium text-gray-100 truncate">{notice.title}</h4>
-                                <p className="text-xs text-gray-400 truncate">{notice.description || 'Notice details available in portal.'}</p>
+                                <p className="text-xs text-gray-300 truncate">{notice.description || 'Notice details available in portal.'}</p>
                             </div>
-                            <div className="text-[10px] text-gray-400 shrink-0 whitespace-nowrap pt-1">
+                            <div className="text-[12px] text-gray-300 shrink-0 whitespace-nowrap pt-1">
                                 {formatDate(notice.createdAt)}
                             </div>
                         </div>
                     );
                 })}
                 {displayNotices.length === 0 && (
-                    <div className="text-center text-sm text-gray-500 mt-10">No recent notices.</div>
+                    <div className="text-center text-sm text-gray-400 mt-10">No recent notices.</div>
                 )}
             </div>
             

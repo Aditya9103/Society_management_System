@@ -173,7 +173,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+                        <label className="block text-sm font-semibold text-white font-bold mb-1.5">
                             Vehicle Document (Any)
                         </label>
                         <div className="flex flex-col gap-2">
@@ -181,15 +181,15 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                                 type="file" 
                                 accept="image/*,.pdf"
                                 onChange={handleRcUpload}
-                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
+                                className="block w-full text-sm text-white font-bold file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
                             />
                             {isUploadingRc && <span className="text-sm text-indigo-400 animate-pulse">Uploading...</span>}
-                            {form.rcPhotoUrl && !isUploadingRc && <span className="text-sm text-emerald-400 font-medium">✓ Document Uploaded</span>}
+                            {form.rcPhotoUrl && !isUploadingRc && <span className="text-sm text-emerald-400 font-bold">✓ Document Uploaded</span>}
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-slate-300 mb-1.5">
+                        <label className="block text-sm font-semibold text-white font-bold mb-1.5">
                             Vehicle Image
                         </label>
                         <div className="flex flex-col gap-2">
@@ -197,10 +197,10 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                                 type="file" 
                                 accept="image/*"
                                 onChange={handleVehiclePhotoUpload}
-                                className="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
+                                className="block w-full text-sm text-white font-bold file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-indigo-400 hover:file:bg-white/10 transition-all cursor-pointer"
                             />
                             {isUploadingVehicle && <span className="text-sm text-indigo-400 animate-pulse">Uploading...</span>}
-                            {form.vehiclePhotoUrl && !isUploadingVehicle && <span className="text-sm text-emerald-400 font-medium">✓ Image Uploaded</span>}
+                            {form.vehiclePhotoUrl && !isUploadingVehicle && <span className="text-sm text-emerald-400 font-bold">✓ Image Uploaded</span>}
                         </div>
                     </div>
                 </div>
@@ -213,7 +213,7 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                         onChange={e => setForm({...form, isPrimary: e.target.checked})}
                         className="w-4 h-4 rounded border-white/20 bg-white/5 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0 transition-all cursor-pointer"
                     />
-                    <label htmlFor="isPrimary" className="text-sm font-medium text-slate-300 cursor-pointer select-none">
+                    <label htmlFor="isPrimary" className="text-sm font-bold text-white font-bold cursor-pointer select-none">
                         Set as Primary Vehicle
                     </label>
                 </div>
@@ -232,10 +232,10 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
-                    <Button type="button" variant="outline" className="border-white/20 text-slate-300 hover:bg-white/5" onClick={onClose} disabled={isLoading}>
+                    <Button type="button" variant="outline" className="border-white/20 text-white font-bold hover:bg-white/5" onClick={onClose} disabled={isLoading}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-medium">
+                    <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-bold">
                         {isLoading ? 'Registering...' : 'Register Vehicle'}
                     </Button>
                 </div>

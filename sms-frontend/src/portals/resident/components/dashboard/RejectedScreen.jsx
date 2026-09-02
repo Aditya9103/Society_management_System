@@ -31,14 +31,14 @@ export function RejectedScreen({ reason }) {
             )}
             <a
                 href="mailto:admin@society.com"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-indigo-700"
             >
                 Contact Admin
             </a>
             
             <button 
                 onClick={handleLogout}
-                className="mt-8 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                className="mt-8 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors"
             >
                 Sign out
             </button>

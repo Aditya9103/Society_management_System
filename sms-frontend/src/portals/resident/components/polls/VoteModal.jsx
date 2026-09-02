@@ -47,7 +47,7 @@ export default function VoteModal({ initialPoll, onClose }) {
                 <div className="bg-[#131525] p-6 rounded-2xl border border-white/5 text-center">
                     <h3 className="text-2xl font-bold text-white mb-2">{poll.title}</h3>
                     {poll.description && (
-                        <p className="text-slate-400 font-medium text-sm lg:text-base">{poll.description}</p>
+                        <p className="text-white font-bold font-bold text-sm lg:text-base">{poll.description}</p>
                     )}
                     <div className="mt-4 flex items-center justify-center gap-2">
                         <span className="bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">
@@ -73,7 +73,7 @@ export default function VoteModal({ initialPoll, onClose }) {
                                         <img src={opt.photoUrl} alt={opt.text} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                                     </div>
                                 )}
-                                <span className={`text-xl font-bold transition-colors ${isSelected ? 'text-indigo-400' : 'text-slate-300'}`}>
+                                <span className={`text-xl font-bold transition-colors ${isSelected ? 'text-indigo-400' : 'text-white font-bold'}`}>
                                     {opt.text}
                                 </span>
 
@@ -88,7 +88,7 @@ export default function VoteModal({ initialPoll, onClose }) {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
-                    <Button variant="outline" onClick={onClose} className="px-6 rounded-xl border-white/10 text-slate-300 hover:text-white hover:bg-white/5">Cancel</Button>
+                    <Button variant="outline" onClick={onClose} className="px-6 rounded-xl border-white/10 text-white font-bold hover:text-white hover:bg-white/5">Cancel</Button>
                     <Button
                         onClick={handleSubmit}
                         isLoading={isLoading}

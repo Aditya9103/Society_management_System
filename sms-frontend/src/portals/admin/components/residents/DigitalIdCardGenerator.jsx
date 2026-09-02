@@ -170,7 +170,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-[10.5px] leading-tight truncate" style={{ color: '#ffffff' }}>
+                        <h3 className="font-bold text-[10.5px] leading-tight break-words whitespace-normal" style={{ color: '#ffffff' }}>
                             {society?.name || 'Society Management'}
                         </h3>
                         <p className="text-[6px] font-semibold uppercase tracking-[0.12em]" style={{ color: '#e0d4fd' }}>
@@ -209,25 +209,25 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                 {/* ===== DETAILS  ===== */}
                 <div className="px-5 mt-2.5 flex flex-col gap-1">
                     <div className="flex items-baseline justify-between">
-                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Unit No.</span>
-                        <span className="text-[10px] font-bold" style={{ color: '#1e1b4b' }}>
+                        <span className="text-[7.5px] font-bold" style={{ color: '#94a3b8' }}>Unit No.</span>
+                        <span className="text-[12px] font-bold" style={{ color: '#1e1b4b' }}>
                             {unit?.unitNumber || '—'}
                         </span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Card No.</span>
-                        <span className="text-[10px] font-bold font-mono" style={{ color: '#4338ca' }}>
+                        <span className="text-[7.5px] font-bold" style={{ color: '#94a3b8' }}>Card No.</span>
+                        <span className="text-[12px] font-bold font-mono" style={{ color: '#4338ca' }}>
                             {idNumber}
                         </span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Issue Date</span>
+                        <span className="text-[7.5px] font-bold" style={{ color: '#94a3b8' }}>Issue Date</span>
                         <span className="text-[9px] font-bold" style={{ color: '#1e1b4b' }}>
                             {issueDateStr}
                         </span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                        <span className="text-[7.5px] font-medium" style={{ color: '#94a3b8' }}>Valid Until</span>
+                        <span className="text-[7.5px] font-bold" style={{ color: '#94a3b8' }}>Valid Until</span>
                         <span className="text-[9px] font-bold text-red-600">
                             {validUntilStr}
                         </span>
@@ -242,7 +242,7 @@ export function DigitalIdCardGenerator({ user, profile, society, unit, onComplet
                     className="w-full flex items-center justify-between gap-2 px-3.5 py-1.5 mt-auto"
                     style={{ background: brandGradient }}
                 >
-                    <p className="text-[6px] font-medium leading-snug max-w-[100px]" style={{ color: '#e0d4fd' }}>
+                    <p className="text-[6px] font-bold leading-snug max-w-[100px]" style={{ color: '#e0d4fd' }}>
                         Scan this code at the gate to verify identity &amp; residency.
                     </p>
                     <div className="shrink-0 p-1 rounded-md" style={{ backgroundColor: '#ffffff' }}>

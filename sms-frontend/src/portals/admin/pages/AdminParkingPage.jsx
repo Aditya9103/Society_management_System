@@ -50,7 +50,7 @@ export default function AdminParkingPage() {
                         <div key={slot._id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-xl font-black text-slate-800">{slot.slotNumber}</h3>
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider 
+                                <span className={`px-2 py-0.5 rounded text-[12px] font-bold tracking-wider 
                                     ${slot.type === 'VISITOR' ? 'bg-amber-100 text-amber-700' :
                                       slot.type === 'EV_CHARGING' ? 'bg-emerald-100 text-emerald-700' :
                                       slot.type === 'DISABLED' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>

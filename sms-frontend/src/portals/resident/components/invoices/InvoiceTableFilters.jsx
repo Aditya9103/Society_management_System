@@ -23,7 +23,7 @@ export function InvoiceTableFilters({
                     <button
                         key={tab}
                         onClick={() => handleTabChange(tab)}
-                        className={`pb-3 md:pb-0 text-sm font-semibold transition-colors relative ${activeTab === tab ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`pb-3 md:pb-0 text-sm font-semibold transition-colors relative ${activeTab === tab ? 'text-indigo-400' : 'text-white font-bold hover:text-white font-bold'}`}
                     >
                         {tab === 'ALL' ? 'All Invoices' : tab === 'PAID' ? 'Paid Invoices' : 'Unpaid Invoices'}
                         {activeTab === tab && (
@@ -40,7 +40,7 @@ export function InvoiceTableFilters({
                 <div className="relative flex-1 md:flex-none">
                     <button 
                         onClick={() => { setStatusDropdownOpen(!statusDropdownOpen); setDateDropdownOpen(false); }}
-                        className="w-full flex items-center justify-between gap-3 px-4 py-2 bg-[#0B0D17] border border-white/5 rounded-xl text-xs text-slate-300 hover:border-white/10 transition-colors"
+                        className="w-full flex items-center justify-between gap-3 px-4 py-2 bg-[#0B0D17] border border-white/5 rounded-xl text-xs text-white font-bold hover:border-white/10 transition-colors"
                     >
                         <span>{statusFilter === 'ALL' ? 'All Status' : statusFilter === 'UNPAID' ? 'Unpaid' : statusFilter === 'PAID' ? 'Paid' : statusFilter === 'OVERDUE' ? 'Overdue' : 'Draft'}</span>
                         <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${statusDropdownOpen ? 'rotate-180' : ''}`} />
@@ -51,7 +51,7 @@ export function InvoiceTableFilters({
                                 <button 
                                     key={s}
                                     onClick={() => handleStatusDropdownChange(s)}
-                                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 ${statusFilter === s ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300'}`}
+                                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 ${statusFilter === s ? 'text-indigo-400 bg-indigo-500/10' : 'text-white font-bold'}`}
                                 >
                                     {s === 'ALL' ? 'All Status' : s === 'UNPAID' ? 'Unpaid' : s === 'PAID' ? 'Paid' : s === 'OVERDUE' ? 'Overdue' : 'Draft'}
                                 </button>
@@ -64,7 +64,7 @@ export function InvoiceTableFilters({
                 <div className="relative flex-1 md:flex-none">
                     <button 
                         onClick={() => { setDateDropdownOpen(!dateDropdownOpen); setStatusDropdownOpen(false); }}
-                        className="w-full flex items-center justify-between gap-3 px-4 py-2 bg-[#0B0D17] border border-white/5 rounded-xl text-xs text-slate-300 hover:border-white/10 transition-colors"
+                        className="w-full flex items-center justify-between gap-3 px-4 py-2 bg-[#0B0D17] border border-white/5 rounded-xl text-xs text-white font-bold hover:border-white/10 transition-colors"
                     >
                         <div className="flex items-center gap-2">
                             <CalendarClock className="w-4 h-4 text-slate-500" />
@@ -78,7 +78,7 @@ export function InvoiceTableFilters({
                                 <button 
                                     key={year}
                                     onClick={() => { setSelectedYear(year); setDateDropdownOpen(false); setCurrentPage(1); }}
-                                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 ${selectedYear === year ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300'}`}
+                                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 ${selectedYear === year ? 'text-indigo-400 bg-indigo-500/10' : 'text-white font-bold'}`}
                                 >
                                     Apr {year} - Mar {year + 1}
                                 </button>
@@ -87,7 +87,7 @@ export function InvoiceTableFilters({
                     )}
                 </div>
 
-                <button className="p-2 bg-[#0B0D17] border border-white/5 rounded-xl text-slate-400 hover:text-white hover:border-white/10 transition-colors shrink-0">
+                <button className="p-2 bg-[#0B0D17] border border-white/5 rounded-xl text-white font-bold hover:text-white hover:border-white/10 transition-colors shrink-0">
                     <Download className="w-4 h-4" />
                 </button>
             </div>

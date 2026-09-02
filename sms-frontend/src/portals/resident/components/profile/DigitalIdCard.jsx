@@ -28,7 +28,7 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 {/* The ID Card Visual Preview */}
                 <div className="relative shrink-0 w-full max-w-[320px] rounded-[16px] bg-[#1a1147] shadow-[0_0_20px_rgba(168,85,247,0.15)] ring-1 ring-purple-500/30 overflow-hidden flex flex-col mx-auto md:mx-0 group">
-                    <div className="absolute inset-0 flex items-center justify-center text-slate-400 z-0">
+                    <div className="absolute inset-0 flex items-center justify-center text-white font-bold z-0">
                         <RefreshCw className="h-6 w-6 animate-spin opacity-50 text-purple-500" />
                     </div>
                     
@@ -41,7 +41,7 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
 
                 {/* Actions and Info */}
                 <div className="flex-1 space-y-4">
-                    <p className="text-[13px] text-slate-400 leading-relaxed max-w-lg mb-2">
+                    <p className="text-[13px] text-white font-bold leading-relaxed max-w-lg mb-2">
                         This is your official society digital ID card. You can use it to verify your identity at the main gate, access clubhouse facilities, and authenticate yourself within the society premises.
                     </p>
 
@@ -59,7 +59,7 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
                                 </div>
                                 <div className="text-left">
                                     <p className="text-sm font-bold text-white">Download PDF</p>
-                                    <p className="text-[11px] text-slate-400 mt-0.5">Save to your device for offline use</p>
+                                    <p className="text-[11px] text-white font-bold mt-0.5">Save to your device for offline use</p>
                                 </div>
                             </div>
                             <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-blue-400 transition-colors" />
@@ -76,7 +76,7 @@ export function DigitalIdCard({ user, profile, onEmail, isEmailing }) {
                                 </div>
                                 <div className="text-left">
                                     <p className="text-sm font-bold text-white">Email ID Card</p>
-                                    <p className="text-[11px] text-slate-400 mt-0.5">Send a copy to {user?.email}</p>
+                                    <p className="text-[11px] text-white font-bold mt-0.5">Send a copy to {user?.email}</p>
                                 </div>
                             </div>
                             <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-purple-400 transition-colors" />

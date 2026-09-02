@@ -76,11 +76,11 @@ export function CommandPaletteModal({ isOpen, onClose }) {
                         placeholder="Search for amenities, invoices, visitors..."
                         value={query}
                         onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
-                        className="w-full bg-transparent border-none text-white px-4 py-5 text-lg focus:outline-none focus:ring-0 placeholder-slate-500 font-medium"
+                        className="w-full bg-transparent border-none text-white px-4 py-5 text-lg focus:outline-none focus:ring-0 placeholder-slate-500 font-bold"
                     />
                     <div className="flex items-center gap-2">
                         <span className="hidden sm:inline-block text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-1 rounded border border-white/10">ESC</span>
-                        <button onClick={onClose} className="p-1 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors">
+                        <button onClick={onClose} className="p-1 hover:bg-white/5 rounded-lg text-white font-bold hover:text-white transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -104,10 +104,10 @@ export function CommandPaletteModal({ isOpen, onClose }) {
                                         key={result.id}
                                         onClick={() => { navigate(result.path); onClose(); }}
                                         onMouseEnter={() => setSelectedIndex(idx)}
-                                        className={`flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all ${isSelected ? 'bg-indigo-600/10 text-white' : 'text-slate-300 hover:bg-white/5'}`}
+                                        className={`flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all ${isSelected ? 'bg-indigo-600/10 text-white' : 'text-white font-bold hover:bg-white/5'}`}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-lg ${isSelected ? 'bg-indigo-500/20 text-indigo-400' : 'bg-[#131525] text-slate-400'}`}>
+                                            <div className={`p-2 rounded-lg ${isSelected ? 'bg-indigo-500/20 text-indigo-400' : 'bg-[#131525] text-white font-bold'}`}>
                                                 <Icon className="w-5 h-5" />
                                             </div>
                                             <span className="font-semibold">{result.label}</span>
@@ -121,7 +121,7 @@ export function CommandPaletteModal({ isOpen, onClose }) {
                 </div>
                 
                 {/* Footer hints */}
-                <div className="bg-[#131525] px-4 py-3 border-t border-white/5 flex items-center justify-center sm:justify-between text-xs text-slate-500 font-medium">
+                <div className="bg-[#131525] px-4 py-3 border-t border-white/5 flex items-center justify-center sm:justify-between text-xs text-slate-500 font-bold">
                     <div className="hidden sm:flex items-center gap-4">
                         <span className="flex items-center gap-1">Use <kbd className="bg-white/5 px-1.5 py-0.5 rounded border border-white/10 font-sans">↑</kbd> <kbd className="bg-white/5 px-1.5 py-0.5 rounded border border-white/10 font-sans">↓</kbd> to navigate</span>
                         <span className="flex items-center gap-1"><kbd className="bg-white/5 px-1.5 py-0.5 rounded border border-white/10 font-sans">↵</kbd> to select</span>

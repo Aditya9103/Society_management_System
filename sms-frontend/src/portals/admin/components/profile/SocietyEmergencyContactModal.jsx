@@ -105,7 +105,7 @@ export default function SocietyEmergencyContactModal({ isOpen, onClose, onSave, 
                     <button 
                         type="button" 
                         onClick={handleClose} 
-                        className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white hover:rotate-90 transition-all duration-300"
+                        className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white hover:rotate-90 transition-all duration-300"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -119,11 +119,11 @@ export default function SocietyEmergencyContactModal({ isOpen, onClose, onSave, 
                             <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Name / Department</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Shield className={`w-5 h-5 transition-colors ${errors.name ? 'text-red-400' : 'text-gray-400 group-focus-within:text-indigo-400'}`} />
+                                    <Shield className={`w-5 h-5 transition-colors ${errors.name ? 'text-red-400' : 'text-gray-300 group-focus-within:text-indigo-400'}`} />
                                 </div>
                                 <input 
                                     {...register('name', { required: 'Name is required' })}
-                                    className={`w-full bg-[#151722] border ${errors.name ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl pl-12 pr-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-4 ${errors.name ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
+                                    className={`w-full bg-[#151722] border ${errors.name ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl pl-12 pr-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:ring-4 ${errors.name ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
                                     placeholder="e.g. City Police Station"
                                 />
                             </div>
@@ -135,11 +135,11 @@ export default function SocietyEmergencyContactModal({ isOpen, onClose, onSave, 
                             <label className="block text-[13px] font-black text-gray-200 uppercase tracking-widest">Phone Number</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Phone className={`w-5 h-5 transition-colors ${errors.phone ? 'text-red-400' : 'text-gray-400 group-focus-within:text-indigo-400'}`} />
+                                    <Phone className={`w-5 h-5 transition-colors ${errors.phone ? 'text-red-400' : 'text-gray-300 group-focus-within:text-indigo-400'}`} />
                                 </div>
                                 <input 
                                     {...register('phone', { required: 'Phone number is required' })}
-                                    className={`w-full bg-[#151722] border ${errors.phone ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl pl-12 pr-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-4 ${errors.phone ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
+                                    className={`w-full bg-[#151722] border ${errors.phone ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl pl-12 pr-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:ring-4 ${errors.phone ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
                                     placeholder="e.g. 100 or +91 9999999999"
                                 />
                             </div>
@@ -164,7 +164,7 @@ export default function SocietyEmergencyContactModal({ isOpen, onClose, onSave, 
                                                 flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-200
                                                 ${isSelected 
                                                     ? 'bg-indigo-500/20 border-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                                                    : 'bg-[#151722] border-white/10 text-gray-400 hover:bg-[#1c1f2e] hover:border-white/20 hover:text-white'
+                                                    : 'bg-[#151722] border-white/10 text-gray-300 hover:bg-[#1c1f2e] hover:border-white/20 hover:text-white'
                                                 }
                                             `}>
                                                 <span className="text-[12px] font-black uppercase tracking-wider text-center">{type.label}</span>
@@ -183,7 +183,7 @@ export default function SocietyEmergencyContactModal({ isOpen, onClose, onSave, 
                                     {...register('customContactType', { 
                                         required: watchType === 'OTHER' ? 'Custom type is required' : false 
                                     })}
-                                    className={`w-full bg-[#151722] border ${errors.customContactType ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-500 focus:outline-none focus:ring-4 ${errors.customContactType ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
+                                    className={`w-full bg-[#151722] border ${errors.customContactType ? 'border-red-500/50 focus:border-red-500/50' : 'border-white/10 focus:border-indigo-500/50'} rounded-2xl px-4 py-3.5 text-[15px] font-bold text-white placeholder-gray-300 font-bold focus:outline-none focus:ring-4 ${errors.customContactType ? 'focus:ring-red-500/10' : 'focus:ring-indigo-500/10'} transition-all`}
                                     placeholder="e.g. Plumber, Electrician"
                                 />
                                 {errors.customContactType && <p className="text-xs font-medium text-red-400 mt-1 pl-1">{errors.customContactType.message}</p>}

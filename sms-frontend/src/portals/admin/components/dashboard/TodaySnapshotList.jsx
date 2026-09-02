@@ -17,7 +17,7 @@ export default function TodaySnapshotList({ snapshot }) {
                 {items.map((item, i) => (
                     <div key={i} className="flex items-center justify-between group-hover:bg-white/5 -mx-2 px-2 py-1 rounded transition-colors">
                         <div className="flex items-center gap-3">
-                            <item.icon className="w-4 h-4 text-gray-400" />
+                            <item.icon className="w-4 h-4 text-gray-300" />
                             <span className="text-sm text-gray-200">{item.label}</span>
                         </div>
                         <span className="text-sm font-semibold text-white">{item.value}</span>

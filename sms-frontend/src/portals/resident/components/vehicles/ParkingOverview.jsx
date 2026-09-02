@@ -36,30 +36,30 @@ export default function ParkingOverview({ vehicles, parkingData = [] }) {
                     <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
-                            <span className="text-slate-300">Occupied</span>
+                            <span className="text-white font-bold">Occupied</span>
                         </div>
-                        <span className="text-slate-400 tabular-nums">{stats.occupied.count} ({stats.occupied.percentage}%)</span>
+                        <span className="text-white font-bold tabular-nums">{stats.occupied.count} ({stats.occupied.percentage}%)</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]"></span>
-                            <span className="text-slate-300">Available</span>
+                            <span className="text-white font-bold">Available</span>
                         </div>
-                        <span className="text-slate-400 tabular-nums">{stats.available.count} ({stats.available.percentage}%)</span>
+                        <span className="text-white font-bold tabular-nums">{stats.available.count} ({stats.available.percentage}%)</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.6)]"></span>
-                            <span className="text-slate-300">Reserved</span>
+                            <span className="text-white font-bold">Reserved</span>
                         </div>
-                        <span className="text-slate-400 tabular-nums">{stats.reserved.count} ({stats.reserved.percentage}%)</span>
+                        <span className="text-white font-bold tabular-nums">{stats.reserved.count} ({stats.reserved.percentage}%)</span>
                     </div>
                 </div>
             </div>
 
             {/* Right side: Graphical Grid */}
             <div className="flex-1 w-full flex flex-col items-end relative">
-                <button className="flex items-center gap-2 text-xs font-medium text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors mb-4 mt-8 md:mt-0">
+                <button className="flex items-center gap-2 text-xs font-bold text-white font-bold bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors mb-4 mt-8 md:mt-0">
                     Basement Floor 1 <ChevronDown className="w-3.5 h-3.5" />
                 </button>
                 

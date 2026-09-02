@@ -86,10 +86,47 @@ router.get('/staff', validate(listQuerySchema), societyController.listStaff);
 router.post('/staff', validate(createStaffSchema), societyController.createStaff);
 
 /**
+ * DELETE /api/v1/societies/staff/:id
+ * Delete a staff member permanently.
+ */
+router.delete('/staff/:id', societyController.deleteStaff);
+
+
+/**
  * PATCH /api/v1/societies/staff/:id/deactivate
  * Deactivate a staff member.
  */
 router.patch('/staff/:id/deactivate', societyController.deactivateStaff);
+
+/**
+ * PATCH /api/v1/societies/staff/:id/reset-password
+ * Reset a staff member's password.
+ */
+router.patch('/staff/:id/reset-password', societyController.resetStaffPassword);
+
+/**
+ * GET /api/v1/societies/staff/:id
+ * Get detailed staff profile.
+ */
+router.get('/staff/:id', societyController.getStaffDetails);
+
+/**
+ * PUT /api/v1/societies/staff/:id
+ * Update staff profile.
+ */
+router.put('/staff/:id', societyController.updateStaffProfile);
+
+/**
+ * PATCH /api/v1/societies/staff/:id/documents/:docId/verify
+ * Verify a staff document.
+ */
+router.patch('/staff/:id/documents/:docId/verify', societyController.verifyStaffDocument);
+
+/**
+ * POST /api/v1/societies/staff/:id/documents
+ * Upload a staff document.
+ */
+router.post('/staff/:id/documents', uploadSingle('document'), societyController.uploadStaffDocument);
 
 // ── Residents ─────────────────────────────────────────────────────────────────
 

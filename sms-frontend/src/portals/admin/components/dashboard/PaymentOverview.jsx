@@ -37,7 +37,7 @@ export default function PaymentOverview({ payment }) {
                     <h2 className="text-white font-semibold mb-1">Payment Overview</h2>
                     <p className="text-xs text-gray-300 flex items-center gap-2">
                         {formatCurrency(collected)} collected of {formatCurrency(expected)}
-                        <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded text-[10px]">↑ {percent}% vs last month</span>
+                        <span className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded text-[12px]">↑ {percent}% vs last month</span>
                     </p>
                 </div>
                 <select className="bg-[#1a1d24] text-xs text-gray-200 border border-white/10 rounded-lg px-2 py-1 outline-none focus:border-indigo-500 cursor-pointer hover:bg-white/5 transition-colors">
@@ -90,11 +90,11 @@ export default function PaymentOverview({ payment }) {
             <div className="flex justify-center gap-6 mt-2 relative z-10">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-1 bg-violet-500 rounded-full"></div>
-                    <span className="text-[10px] text-gray-400">Collected</span>
+                    <span className="text-[12px] text-gray-300">Collected</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-1 bg-gray-500 border border-gray-400 border-dashed rounded-full bg-transparent"></div>
-                    <span className="text-[10px] text-gray-400">Expected</span>
+                    <span className="text-[12px] text-gray-300">Expected</span>
                 </div>
             </div>
             

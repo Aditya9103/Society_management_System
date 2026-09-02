@@ -35,21 +35,34 @@ const Sparkline = ({ data, color }) => {
     );
 };
 
-const StatCard = ({ icon: Icon, title, value, subtitle, color, bg, border, sparklineData, sparklineColor }) => (
-    <div className={`rounded-[20px] bg-[#0f111a] border border-slate-800 p-5 flex flex-col justify-between transition-all hover:border-slate-700`}>
-        <div className="flex items-start gap-4">
-            <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${bg} ${border} border shrink-0`}>
+const StatCard = ({ icon: Icon, title, value, subtitle, color, bg, border, sparklineData, sparklineColor, gradient = "from-[#1e293b]/80 to-[#0f172a]", onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg ${onClick ? 'cursor-pointer' : ''}`}
+    >
+        {/* Abstract Background Waves (CSS based) */}
+        <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+            </svg>
+        </div>
+        
+        <div className="relative z-10 flex items-start gap-4">
+            <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${bg} ${border} border shrink-0 backdrop-blur-md`}>
                 <Icon className={`h-5 w-5 ${color}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-slate-400 mb-0.5">{title}</p>
+                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
                 <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-bold text-white">{value}</h3>
+                    <h3 className="text-2xl font-bold text-white tracking-tight">{value}</h3>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-0.5">{subtitle}</p>
+                <p className="text-[10px] text-white font-bold mt-0.5 font-bold">{subtitle}</p>
             </div>
         </div>
-        {sparklineData && <Sparkline data={sparklineData} color={sparklineColor} />}
+        <div className="relative z-10">
+            {sparklineData && <Sparkline data={sparklineData} color={sparklineColor} />}
+        </div>
     </div>
 );
 
@@ -92,10 +105,10 @@ export default function ResidentComplaintsPage() {
     };
     
     const stats = [
-        { title: 'Total Complaints', value: total, subtitle: 'All time', icon: MessageSquareWarning, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', sparklineData: getTrendData(null), sparklineColor: '#a855f7' },
-        { title: 'Open', value: open, subtitle: 'Needs attention', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', sparklineData: getTrendData(['OPEN', 'ASSIGNED', 'PENDING_RESIDENT']), sparklineColor: '#f87171' },
-        { title: 'In Progress', value: inProgress, subtitle: 'Being resolved', icon: Clock, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', sparklineData: getTrendData(['IN_PROGRESS']), sparklineColor: '#fb923c' },
-        { title: 'Resolved', value: resolved, subtitle: 'Completed', icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', sparklineData: getTrendData(['RESOLVED', 'CLOSED']), sparklineColor: '#34d399' },
+        { title: 'Total Complaints', value: total, subtitle: 'All time', icon: MessageSquareWarning, color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/30', sparklineData: getTrendData(null), sparklineColor: '#a855f7', gradient: 'from-[#2e1d5e]/80 to-[#1c1439]', onClick: () => setActiveTab('All') },
+        { title: 'Open', value: open, subtitle: 'Needs attention', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/30', sparklineData: getTrendData(['OPEN', 'ASSIGNED', 'PENDING_RESIDENT']), sparklineColor: '#f87171', gradient: 'from-[#4a1216]/80 to-[#2b0a0d]', onClick: () => setActiveTab('Open') },
+        { title: 'In Progress', value: inProgress, subtitle: 'Being resolved', icon: Clock, color: 'text-orange-400', bg: 'bg-orange-500/20', border: 'border-orange-500/30', sparklineData: getTrendData(['IN_PROGRESS']), sparklineColor: '#fb923c', gradient: 'from-[#4a3212]/80 to-[#261909]', onClick: () => setActiveTab('In Progress') },
+        { title: 'Resolved', value: resolved, subtitle: 'Completed', icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', sparklineData: getTrendData(['RESOLVED', 'CLOSED']), sparklineColor: '#34d399', gradient: 'from-[#123625]/80 to-[#0a1f15]', onClick: () => setActiveTab('Resolved') },
     ];
 
     const tabs = [
@@ -147,7 +160,7 @@ export default function ResidentComplaintsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Complaints</h1>
-                    <p className="text-[13px] text-slate-400 mt-1">Raise, track and resolve issues in your society</p>
+                    <p className="text-[13px] text-white font-bold mt-1">Raise, track and resolve issues in your society</p>
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -161,7 +174,7 @@ export default function ResidentComplaintsPage() {
                             className="w-full bg-[#0f111a] border border-slate-800 text-white text-[13px] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-slate-600"
                         />
                     </div>
-                    <button className="h-[42px] w-[42px] rounded-xl bg-[#0f111a] border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 transition-colors shrink-0">
+                    <button className="h-[42px] w-[42px] rounded-xl bg-[#0f111a] border border-slate-800 flex items-center justify-center text-white font-bold hover:text-white hover:border-slate-700 transition-colors shrink-0">
                         <Filter className="h-4 w-4" />
                     </button>
                     <button onClick={() => setShowModal(true)} className="h-[42px] px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-[13px] font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(147,51,234,0.3)] shrink-0">
@@ -197,7 +210,7 @@ export default function ResidentComplaintsPage() {
                                 <button onClick={() => setShowModal(true)} className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(79,70,229,0.4)]">
                                     <Plus className="h-4 w-4" /> Raise a New Complaint
                                 </button>
-                                <span className="text-[11px] text-indigo-400/80 font-medium hidden sm:flex items-center gap-1.5"><Clock className="h-3 w-3" /> Usually responded in 24 hrs</span>
+                                <span className="text-[11px] text-indigo-400/80 font-bold hidden sm:flex items-center gap-1.5"><Clock className="h-3 w-3" /> Usually responded in 24 hrs</span>
                             </div>
                         </div>
                     </div>
@@ -209,7 +222,7 @@ export default function ResidentComplaintsPage() {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold whitespace-nowrap transition-all snap-start ${activeTab === tab.id ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold whitespace-nowrap transition-all snap-start ${activeTab === tab.id ? 'bg-slate-800 text-white shadow-md' : 'text-white font-bold hover:text-slate-200 hover:bg-slate-800/50'}`}
                                 >
                                     {tab.label}
                                     <span className={`px-1.5 py-0.5 rounded-md text-[10px] flex items-center justify-center ${activeTab === tab.id ? 'bg-slate-600 text-white' : 'bg-slate-800 text-slate-500'}`}>
@@ -222,7 +235,7 @@ export default function ResidentComplaintsPage() {
                             <select 
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="bg-transparent text-[12px] font-bold text-slate-400 hover:text-white focus:outline-none cursor-pointer appearance-none pr-5 z-10"
+                                className="bg-transparent text-[12px] font-bold text-white font-bold hover:text-white focus:outline-none cursor-pointer appearance-none pr-5 z-10"
                             >
                                 <option value="newest" className="bg-slate-900">Newest First</option>
                                 <option value="oldest" className="bg-slate-900">Oldest First</option>
@@ -280,15 +293,15 @@ export default function ResidentComplaintsPage() {
 
                         <div className="space-y-3">
                             <div className="flex items-center justify-between text-[13px]">
-                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div><span className="text-slate-300">Open</span></div>
+                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div><span className="text-white font-bold">Open</span></div>
                                 <span className="font-bold text-white">{open} <span className="text-slate-500 text-[11px] font-normal ml-1">({Math.round(pOpen)}%)</span></span>
                             </div>
                             <div className="flex items-center justify-between text-[13px]">
-                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></div><span className="text-slate-300">In Progress</span></div>
+                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></div><span className="text-white font-bold">In Progress</span></div>
                                 <span className="font-bold text-white">{inProgress} <span className="text-slate-500 text-[11px] font-normal ml-1">({Math.round(pProg)}%)</span></span>
                             </div>
                             <div className="flex items-center justify-between text-[13px]">
-                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div><span className="text-slate-300">Resolved</span></div>
+                                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div><span className="text-white font-bold">Resolved</span></div>
                                 <span className="font-bold text-white">{resolved} <span className="text-slate-500 text-[11px] font-normal ml-1">({Math.round(pRes)}%)</span></span>
                             </div>
                         </div>

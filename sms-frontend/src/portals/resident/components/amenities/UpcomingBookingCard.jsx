@@ -16,7 +16,7 @@ export function UpcomingBookingCard({ booking, onViewDetails }) {
         switch (status) {
             case 'CONFIRMED': return 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
             case 'PENDING_APPROVAL': return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
-            default: return 'text-slate-400 border-slate-500/30 bg-slate-500/10';
+            default: return 'text-white font-bold border-slate-500/30 bg-slate-500/10';
         }
     };
 
@@ -42,7 +42,7 @@ export function UpcomingBookingCard({ booking, onViewDetails }) {
                 {/* Details */}
                 <div>
                     <h3 className="text-white font-bold text-lg mb-1">{amenity?.name || 'Amenity'}</h3>
-                    <div className="flex items-center gap-2 text-slate-400 text-xs mb-2">
+                    <div className="flex items-center gap-2 text-white font-bold text-xs mb-2">
                         <Clock className="w-3.5 h-3.5" />
                         <span>{booking.startTime} - {booking.endTime}</span>
                     </div>

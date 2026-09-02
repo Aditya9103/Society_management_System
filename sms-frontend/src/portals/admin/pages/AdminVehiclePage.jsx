@@ -151,7 +151,7 @@ export default function AdminVehiclePage() {
                                     <td className="p-4 hidden sm:table-cell font-medium">{v.residentId?.firstName} {v.residentId?.lastName}</td>
                                     <td className="p-4 hidden sm:table-cell">{v.unitId?.unitNumber}</td>
                                     <td className="p-4">
-                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold
+                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[12px] sm:text-xs font-semibold
                                             ${v.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' :
                                               v.status === 'PENDING_APPROVAL' ? 'bg-amber-100 text-amber-700' :
                                               v.status === 'BLOCKED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
@@ -200,13 +200,13 @@ export default function AdminVehiclePage() {
                                     <td className="p-4">
                                         <div className="font-bold text-slate-800">{log.vehicleNumber}</div>
                                         {/* Mobile only info */}
-                                        <div className="sm:hidden mt-1 text-[10px] text-slate-500">
+                                        <div className="sm:hidden mt-1 text-[12px] text-slate-500">
                                             <div>{log.gateId?.name || 'Gate'}</div>
                                             <div>({log.guardId?.name || 'Guard'})</div>
                                         </div>
                                     </td>
                                     <td className="p-4">
-                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold ${log.status === 'ENTRY' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
+                                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[12px] sm:text-xs font-semibold ${log.status === 'ENTRY' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
                                             {log.status}
                                         </span>
                                     </td>

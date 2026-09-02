@@ -9,7 +9,7 @@ export function MyBookingsList({ bookings, onViewAll }) {
             case 'CONFIRMED': return 'text-emerald-400 bg-emerald-500/10';
             case 'PENDING_APPROVAL': return 'text-amber-400 bg-amber-500/10';
             case 'COMPLETED': return 'text-blue-400 bg-blue-500/10';
-            default: return 'text-slate-400 bg-slate-500/10';
+            default: return 'text-white font-bold bg-slate-500/10';
         }
     };
 
@@ -17,7 +17,7 @@ export function MyBookingsList({ bookings, onViewAll }) {
         <div className="bg-[#151822] border border-slate-800 rounded-3xl p-6">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-white font-bold">My Bookings</h3>
-                <button onClick={onViewAll} className="text-purple-400 text-xs font-medium hover:text-purple-300">View All</button>
+                <button onClick={onViewAll} className="text-purple-400 text-xs font-bold hover:text-purple-300">View All</button>
             </div>
             
             <div className="space-y-4">

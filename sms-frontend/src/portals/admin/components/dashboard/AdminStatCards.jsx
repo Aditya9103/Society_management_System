@@ -10,10 +10,9 @@ export default function AdminStatCards({ stats }) {
             value: stats.totalResidents || 0,
             subtitle: `+${Math.max(0, (stats.totalResidents || 0) - (stats.residentsLastMonth || 0))} vs last month`,
             icon: Users,
-            iconColor: 'text-indigo-400',
-            iconBg: 'bg-indigo-500/10',
-            trend: 'up',
-            trendColor: 'text-emerald-400',
+            iconColor: 'text-[#b388ff]',
+            iconBg: 'bg-[#3e248a]/50',
+            colors: 'from-[#2e1d5e]/80 to-[#1c1439]',
             to: '/admin/residents'
         },
         {
@@ -21,10 +20,9 @@ export default function AdminStatCards({ stats }) {
             value: stats.totalUnits || 0,
             subtitle: `${stats.occupiedUnits || 0} Occupied`,
             icon: Building2,
-            iconColor: 'text-blue-400',
-            iconBg: 'bg-blue-500/10',
-            progress: stats.totalUnits ? Math.round((stats.occupiedUnits / stats.totalUnits) * 100) : 0,
-            progressColor: 'bg-blue-500',
+            iconColor: 'text-[#60a5fa]',
+            iconBg: 'bg-[#1d488c]/50',
+            colors: 'from-[#143261]/80 to-[#0b1c36]',
             to: '/admin/units'
         },
         {
@@ -32,8 +30,9 @@ export default function AdminStatCards({ stats }) {
             value: stats.totalStaff || 0,
             subtitle: 'Active Personnel',
             icon: UserCog,
-            iconColor: 'text-emerald-400',
-            iconBg: 'bg-emerald-500/10',
+            iconColor: 'text-[#4ade80]',
+            iconBg: 'bg-[#1a4d35]/50',
+            colors: 'from-[#123625]/80 to-[#0a1f15]',
             to: '/admin/staff'
         },
         {
@@ -41,9 +40,9 @@ export default function AdminStatCards({ stats }) {
             value: stats.pendingResidents || 0,
             subtitle: 'Requires attention',
             icon: ClipboardList,
-            iconColor: 'text-orange-400',
-            iconBg: 'bg-orange-500/10',
-            highlight: stats.pendingResidents > 0,
+            iconColor: 'text-[#f59e0b]',
+            iconBg: 'bg-[#6b4819]/50',
+            colors: 'from-[#4a3212]/80 to-[#261909]',
             to: '/admin/pending'
         },
         {
@@ -51,9 +50,9 @@ export default function AdminStatCards({ stats }) {
             value: (stats.complaints?.open || 0) + (stats.complaints?.inProgress || 0),
             subtitle: `${stats.complaints?.escalated || 0} Escalated`,
             icon: AlertCircle,
-            iconColor: 'text-rose-400',
-            iconBg: 'bg-rose-500/10',
-            subtitleColor: (stats.complaints?.escalated || 0) > 0 ? 'text-rose-400' : 'text-gray-500',
+            iconColor: 'text-[#ef4444]',
+            iconBg: 'bg-[#701c22]/50',
+            colors: 'from-[#4a1216]/80 to-[#2b0a0d]',
             to: '/admin/complaints'
         },
         {
@@ -61,50 +60,39 @@ export default function AdminStatCards({ stats }) {
             value: stats.snapshot?.serviceRequests || 0,
             subtitle: 'Upcoming tasks',
             icon: Wrench,
-            iconColor: 'text-cyan-400',
-            iconBg: 'bg-cyan-500/10',
+            iconColor: 'text-[#2dd4bf]',
+            iconBg: 'bg-[#0f3d38]/50',
+            colors: 'from-[#0b2926]/80 to-[#051413]',
             to: '/admin/emergencies' // Or '/admin/complaints' depending on context
         }
     ];
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
             {cards.map((card, index) => (
                 <Link 
                     key={index} 
                     to={card.to}
-                    className="bg-[#13151a] border border-white/5 rounded-2xl p-3 lg:p-4 flex flex-col justify-between hover:bg-[#1a1d24] transition-colors relative overflow-hidden group block"
+                    className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.colors} p-5 border border-white/5 shadow-lg hover:scale-[1.02] transition-transform block`}
                 >
-                    <div className="flex justify-between items-start mb-2 lg:mb-4">
-                        <div className={cn("p-1.5 lg:p-2 rounded-lg", card.iconBg)}>
-                            <card.icon className={cn("w-4 h-4 lg:w-5 lg:h-5", card.iconColor)} />
-                        </div>
+                    {/* Abstract Background Waves (CSS based) */}
+                    <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
+                        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 80C30 50 60 80 120 20L120 80H0Z" fill="currentColor" className="text-white" />
+                            <path d="M20 80C50 40 80 70 120 0L120 80H20Z" fill="currentColor" className="text-white opacity-50" />
+                        </svg>
                     </div>
-                    
-                    <div>
-                        <p className="text-gray-300 text-[10px] lg:text-xs font-medium mb-0.5 lg:mb-1">{card.title}</p>
-                        <h3 className="text-xl lg:text-2xl font-bold text-white mb-1.5 lg:mb-2">{card.value}</h3>
-                        
-                        {card.progress !== undefined ? (
-                            <div className="w-full mt-auto">
-                                <div className="flex justify-between text-[9px] lg:text-[10px] text-gray-400 mb-1">
-                                    <span>{card.subtitle}</span>
-                                    <span>{card.progress}%</span>
-                                </div>
-                                <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                                    <div className={cn("h-full rounded-full", card.progressColor)} style={{ width: `${card.progress}%` }}></div>
-                                </div>
+
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center backdrop-blur-md`}>
+                                <card.icon className={`w-5 h-5 ${card.iconColor}`} />
                             </div>
-                        ) : (
-                            <p className={cn("text-[9px] lg:text-[11px] mt-auto", card.subtitleColor || "text-gray-400")}>
-                                {card.trend === 'up' && <span className={card.trendColor}>↑ </span>}
-                                {card.subtitle}
-                            </p>
-                        )}
+                            <h3 className="text-gray-300 text-[12px] lg:text-[13px] font-bold tracking-wide leading-tight">{card.title}</h3>
+                        </div>
+                        <div className="text-white text-2xl lg:text-3xl font-black mb-1 tracking-tight">{card.value}</div>
+                        <div className="text-gray-300 text-[12px] lg:text-[12px] font-medium">{card.subtitle}</div>
                     </div>
-                    
-                    {/* Subtle top gradient glow on hover */}
-                    <div className={cn("absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b opacity-0 group-hover:opacity-10 transition-opacity", card.iconBg.replace('/10', ''))}></div>
                 </Link>
             ))}
         </div>

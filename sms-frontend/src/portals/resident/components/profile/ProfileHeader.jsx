@@ -34,12 +34,12 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-1.5 text-white text-[11px] font-medium mb-2 bg-indigo-500/30 px-3 py-1 rounded-full border border-indigo-400/50">
+                    <div className="flex items-center gap-1.5 text-white text-[11px] font-bold mb-2 bg-indigo-500/30 px-3 py-1 rounded-full border border-indigo-400/50">
                         <CheckCircle2 size={14} className="text-white" /> Verified Resident
                     </div>
                     
                     <h1 className="text-2xl font-extrabold text-white mb-0.5 tracking-tight">{user?.firstName} {user?.lastName}</h1>
-                    <p className="text-sm text-white/90 font-medium mb-3">{profile?.residentCode ?? 'RES-702110-301'}</p>
+                    <p className="text-sm text-white font-bold font-bold mb-3">{profile?.residentCode ?? 'RES-702110-301'}</p>
                     
                     <span className="rounded-full px-4 py-1 text-[12px] font-bold tracking-widest bg-[#ffe082] text-amber-900 shadow-sm uppercase">
                         {profile?.ownershipType ?? 'TENANT'}
@@ -48,13 +48,13 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                     {/* Stats List (Vertical Stack) */}
                     <div className="w-full mt-6 flex flex-col gap-2">
                         <div className="flex items-center justify-between bg-white/10 border border-white/10 rounded-[14px] p-3.5 backdrop-blur-sm">
-                            <div className="flex items-center gap-2 text-white/90 text-[13px] font-semibold">
+                            <div className="flex items-center gap-2 text-white font-bold text-[13px] font-semibold">
                                 <Calendar size={16} className="text-indigo-200" /> Member Since
                             </div>
                             <div className="text-white text-[15px] font-bold">Jul 2024</div>
                         </div>
                         <div className="flex items-center justify-between bg-white/10 border border-white/10 rounded-[14px] p-3.5 backdrop-blur-sm">
-                            <div className="flex items-center gap-2 text-white/90 text-[13px] font-semibold">
+                            <div className="flex items-center gap-2 text-white font-bold text-[13px] font-semibold">
                                 <User size={16} className="text-indigo-200" /> Account Type
                             </div>
                             <div className="text-white text-[15px] font-bold">Resident</div>
@@ -84,11 +84,11 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                         </div>
 
                         <div className="flex flex-col items-start min-w-0">
-                            <div className="flex items-center gap-1.5 text-white text-[12px] font-medium mb-1.5 bg-indigo-500/30 px-3 py-1 rounded-full border border-indigo-400/50">
+                            <div className="flex items-center gap-1.5 text-white text-[12px] font-bold mb-1.5 bg-indigo-500/30 px-3 py-1 rounded-full border border-indigo-400/50">
                                 <CheckCircle2 size={14} className="text-white shrink-0" /> <span>Verified Resident</span>
                             </div>
-                            <h1 className="text-3xl font-bold text-white mb-0.5 tracking-tight truncate w-full">{user?.firstName} {user?.lastName}</h1>
-                            <p className="text-[15px] text-white/90 font-medium mb-2 truncate w-full">{profile?.residentCode ?? 'RES-702110-301'}</p>
+                            <h1 className="text-3xl font-bold text-white mb-0.5 tracking-tight break-words whitespace-normal w-full">{user?.firstName} {user?.lastName}</h1>
+                            <p className="text-[15px] text-white font-bold font-bold mb-2 break-words whitespace-normal w-full">{profile?.residentCode ?? 'RES-702110-301'}</p>
                             
                             <span className="rounded-full px-3 py-0.5 text-[12px] font-bold tracking-wider bg-[#ffe082] text-amber-900 shadow-sm shrink-0 uppercase">
                                 {profile?.ownershipType ?? 'TENANT'}
@@ -99,7 +99,7 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                     {/* Right/Bottom Section: Desktop Stats Blocks */}
                     <div className="flex items-center gap-4 justify-end w-auto shrink-0">
                         <div className="shrink-0 flex flex-col items-start min-w-[140px] bg-white/10 border border-white/10 rounded-[16px] px-4 py-3 backdrop-blur-md">
-                            <span className="text-[12px] text-white/90 font-semibold mb-1.5">Member Since</span>
+                            <span className="text-[12px] text-white font-bold font-semibold mb-1.5">Member Since</span>
                             <div className="flex items-center gap-2 font-bold text-white text-[16px]">
                                 <Calendar size={16} className="text-indigo-200" />
                                 Jul 2024
@@ -107,7 +107,7 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                         </div>
                         
                         <div className="shrink-0 flex flex-col items-start min-w-[140px] bg-white/10 border border-white/10 rounded-[16px] px-4 py-3 backdrop-blur-md">
-                            <span className="text-[12px] text-white/90 font-semibold mb-1.5">Status</span>
+                            <span className="text-[12px] text-white font-bold font-semibold mb-1.5">Status</span>
                             <div className="flex items-center gap-2 font-bold text-white text-[16px]">
                                 <div className="h-4 w-4 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
                                 Active
@@ -115,7 +115,7 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                         </div>
                         
                         <div className="shrink-0 flex flex-col items-start min-w-[140px] bg-white/10 border border-white/10 rounded-[16px] px-4 py-3 backdrop-blur-md">
-                            <span className="text-[12px] text-white/90 font-semibold mb-1.5">Account Type</span>
+                            <span className="text-[12px] text-white font-bold font-semibold mb-1.5">Account Type</span>
                             <div className="flex items-center gap-2 font-bold text-white text-[16px]">
                                 <User size={16} className="text-indigo-200 shrink-0" />
                                 Resident

@@ -40,8 +40,8 @@ export default function PendingApprovalsList({ approvals = [] }) {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-medium text-gray-100 truncate">{name}</h4>
-                                <p className="text-[11px] text-gray-400 truncate mb-0.5">{unitInfo}</p>
-                                <p className="text-[10px] text-gray-500 truncate">{dateStr}</p>
+                                <p className="text-[12px] text-gray-300 truncate mb-0.5">{unitInfo}</p>
+                                <p className="text-[12px] text-gray-400 truncate">{dateStr}</p>
                             </div>
                             <div className="shrink-0 px-2 py-1 rounded border border-amber-500/20 bg-amber-500/10 text-[9px] font-medium text-amber-500 tracking-wider">
                                 PENDING
@@ -50,7 +50,7 @@ export default function PendingApprovalsList({ approvals = [] }) {
                     );
                 })}
                 {displayApprovals.length === 0 && (
-                    <div className="text-center text-sm text-gray-500 mt-10">No pending approvals.</div>
+                    <div className="text-center text-sm text-gray-400 mt-10">No pending approvals.</div>
                 )}
             </div>
         </div>

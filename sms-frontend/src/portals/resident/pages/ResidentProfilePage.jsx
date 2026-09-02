@@ -161,9 +161,9 @@ export default function ResidentProfilePage() {
         <div className="pb-24 lg:pb-8 text-white relative z-10 max-w-full overflow-hidden w-full overflow-y-auto"> 
             {/* Mobile Header (Sticky) */}
             <div className="lg:hidden flex items-center justify-between py-4 sticky top-0 z-50 bg-[#0a0b12]/95 backdrop-blur-md mb-2">
-                <button className="text-white hover:text-slate-300 transition-colors"><ChevronLeft size={24} /></button>
+                <button className="text-white hover:text-white font-bold transition-colors"><ChevronLeft size={24} /></button>
                 <h1 className="text-[17px] font-bold text-white tracking-wide">My Profile</h1>
-                <button className="text-white hover:text-slate-300 transition-colors">
+                <button className="text-white hover:text-white font-bold transition-colors">
                     <Settings size={22} />
                 </button>
             </div>
@@ -172,7 +172,7 @@ export default function ResidentProfilePage() {
             <div className="hidden lg:flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">My Profile</h1>
-                    <p className="text-sm text-slate-400">Manage your account, personal details and preferences.</p>
+                    <p className="text-sm text-white font-bold">Manage your account, personal details and preferences.</p>
                 </div>
                 <button 
                     onClick={startEdit}
@@ -196,7 +196,7 @@ export default function ResidentProfilePage() {
                     <button 
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 pb-4 text-sm font-bold transition-colors relative ${activeTab === tab.id ? 'text-purple-400' : 'text-slate-400 hover:text-slate-200'}`}
+                        className={`flex items-center gap-2 pb-4 text-sm font-bold transition-colors relative ${activeTab === tab.id ? 'text-purple-400' : 'text-white font-bold hover:text-slate-200'}`}
                     >
                         <tab.icon size={18} />
                         {tab.label}
@@ -216,8 +216,8 @@ export default function ResidentProfilePage() {
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex flex-col items-center justify-center gap-1.5 min-w-[70px] flex-1 py-3 rounded-[18px] transition-all border ${activeTab === tab.id ? 'bg-gradient-to-br from-[#1a1147]/50 to-transparent border-purple-500/30' : 'bg-[#0a0b12] border-slate-700/80 hover:bg-slate-800/50'}`}
                         >
-                            <tab.icon size={20} className={activeTab === tab.id ? 'text-purple-400' : 'text-slate-300'} />
-                            <span className={`text-[11px] font-bold ${activeTab === tab.id ? 'text-purple-400' : 'text-slate-300'}`}>{tab.label}</span>
+                            <tab.icon size={20} className={activeTab === tab.id ? 'text-purple-400' : 'text-white font-bold'} />
+                            <span className={`text-[11px] font-bold ${activeTab === tab.id ? 'text-purple-400' : 'text-white font-bold'}`}>{tab.label}</span>
                             {activeTab === tab.id && (
                                 <div className="w-8 h-[2px] bg-purple-500 rounded-full shadow-[0_0_5px_rgba(168,85,247,0.5)] mt-1"></div>
                             )}
@@ -253,14 +253,14 @@ export default function ResidentProfilePage() {
                 {activeTab === 'family' && (
                     <div className="rounded-[20px] bg-[#0a0b12] p-5 shadow-sm border border-slate-800/80">
                         <div className="flex items-center justify-between mb-5">
-                            <h2 className="font-bold text-white flex items-center gap-2"><Users className="h-5 w-5 text-indigo-500" /> Family Members <span className="text-xs font-normal text-slate-400">({familyMembers.length})</span></h2>
+                            <h2 className="font-bold text-white flex items-center gap-2"><Users className="h-5 w-5 text-indigo-500" /> Family Members <span className="text-xs font-normal text-white font-bold">({familyMembers.length})</span></h2>
                             <button onClick={() => setShowAddMember(true)}
                                 className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-[0_0_10px_rgba(99,102,241,0.3)]">
                                 <Plus className="h-3.5 w-3.5" /> Add
                             </button>
                         </div>
                         {familyMembers.length === 0 ? (
-                            <p className="text-center text-sm text-slate-400 py-6">No family members added yet.</p>
+                            <p className="text-center text-sm text-white font-bold py-6">No family members added yet.</p>
                         ) : (
                             <div className="space-y-2">
                                 {familyMembers.filter(m => m.isActive !== false).map(m => (
@@ -288,7 +288,7 @@ export default function ResidentProfilePage() {
                             {emergencyContacts.length === 0 ? (
                                 <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-6 text-center">
                                     <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-500" />
-                                    <p className="text-sm font-semibold text-slate-300">No emergency contacts</p>
+                                    <p className="text-sm font-semibold text-white font-bold">No emergency contacts</p>
                                     <p className="mt-1 text-xs text-slate-500">Add family members to receive SOS alerts.</p>
                                 </div>
                             ) : (
@@ -309,7 +309,7 @@ export default function ResidentProfilePage() {
                                 </button>
                             </div>
                             {domesticStaffList.length === 0 ? (
-                                <p className="text-center text-sm text-slate-400 py-6">No domestic staff added yet.</p>
+                                <p className="text-center text-sm text-white font-bold py-6">No domestic staff added yet.</p>
                             ) : (
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     {domesticStaffList.map(s => (
@@ -325,7 +325,7 @@ export default function ResidentProfilePage() {
                     <div className="rounded-[20px] bg-[#0a0b12] p-10 shadow-sm border border-slate-800/80 text-center">
                         <FileText className="mx-auto h-10 w-10 text-slate-600 mb-3" />
                         <h2 className="font-bold text-white text-lg">Coming Soon</h2>
-                        <p className="text-sm text-slate-400 mt-1">This section is currently under development.</p>
+                        <p className="text-sm text-white font-bold mt-1">This section is currently under development.</p>
                     </div>
                 )}
 

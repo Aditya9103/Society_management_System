@@ -188,11 +188,11 @@ export default function LoginPage() {
 
                 <div className="flex flex-col gap-4 mt-8">
                     {loginMethod === 'otp' && !otpSent ? (
-                        <Button type="button" onClick={onSendOtp} disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
+                        <Button type="button" onClick={onSendOtp} disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
                             {loading ? 'Sending...' : 'Send OTP'} <ArrowRight size={18} />
                         </Button>
                     ) : (
-                        <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
+                        <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
                             {loading ? 'Signing in...' : 'Sign in'} <ArrowRight size={18} />
                         </Button>
                     )}

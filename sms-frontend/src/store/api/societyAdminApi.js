@@ -305,6 +305,11 @@ export const societyAdminApi = createApi({
             }
         }),
 
+        getComplaintById: builder.query({
+            query: (id) => ({ url: `/complaints/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'Complaint', id }],
+        }),
+
         changeComplaintStatusAdmin: builder.mutation({
             query: ({ id, ...data }) => ({ url: `/complaints/${id}/status`, method: 'PATCH', data }),
             invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
@@ -317,6 +322,18 @@ export const societyAdminApi = createApi({
 
         // ── Notices (admin view) ──────────────────────────────────────────────
 
+        getNoticeById: builder.query({
+            query: (id) => ({ url: `/notices/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'Notice', id }],
+        }),
+        incrementShare: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/share`, method: 'POST' }),
+            invalidatesTags: (result, error, id) => [{ type: 'Notice', id }],
+        }),
+        incrementDownload: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/download`, method: 'POST' }),
+            invalidatesTags: (result, error, id) => [{ type: 'Notice', id }],
+        }),
         getAllNotices: builder.query({
             query: (params = {}) => ({ url: '/notices', method: 'GET', params }),
             providesTags: [{ type: 'Notice', id: 'LIST' }],
@@ -346,6 +363,15 @@ export const societyAdminApi = createApi({
         createNotice: builder.mutation({
             query: (data) => ({ url: '/notices', method: 'POST', data }),
             invalidatesTags: [{ type: 'Notice', id: 'LIST' }],
+        }),
+
+        updateNotice: builder.mutation({
+            query: ({ id, ...data }) => ({ url: `/notices/${id}`, method: 'PUT', data }),
+            invalidatesTags: [{ type: 'Notice', id: 'LIST' }, (result, error, { id }) => ({ type: 'Notice', id })],
+        }),
+
+        incrementView: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/view`, method: 'POST' }),
         }),
 
         publishNotice: builder.mutation({
@@ -421,11 +447,17 @@ export const {
     useDeleteUnitMutation,
     // Complaints
     useGetAllComplaintsQuery,
+    useGetComplaintByIdQuery,
     useChangeComplaintStatusAdminMutation,
     useDeleteComplaintAdminMutation,
     // Notices
+    useGetNoticeByIdQuery,
+    useIncrementShareMutation,
+    useIncrementDownloadMutation,
+    useIncrementViewMutation,
     useGetAllNoticesQuery,
     useCreateNoticeMutation,
+    useUpdateNoticeMutation,
     usePublishNoticeMutation,
     useUpdateNoticeScheduleMutation,
     useArchiveNoticeMutation,

@@ -44,7 +44,7 @@ export function AuthCard({ title, subtitle, children, className }) {
                   <span>Email:</span> <span className="text-white font-semibold">vonolel118@aratrin.com</span>
                 </p>
                 <p className="flex items-center justify-between">
-                  <span>Pass:</span> <span className="text-white pr-23 font-semibold">password123</span>
+                  <span>Pass:</span> <span className="text-white pr-26.5 font-semibold">password123</span>
                 </p>
               </div>
             </div>

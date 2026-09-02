@@ -18,7 +18,9 @@ import StaffProfilePage from './pages/StaffProfilePage';
 import ResidentsPage from './pages/ResidentsPage';
 import PendingApprovalsPage from './pages/PendingApprovalsPage';
 import AdminComplaintsPage from './pages/AdminComplaintsPage';
+import AdminComplaintDetailsPage from './pages/AdminComplaintDetailsPage';
 import AdminNoticesPage from './pages/AdminNoticesPage';
+import AdminNoticeDetailsPage from './pages/AdminNoticeDetailsPage';
 import AdminInvoicesPage from './pages/AdminInvoicesPage';
 import AdminEmergencyPage from './pages/AdminEmergencyPage';
 import AdminVehiclePage from './pages/AdminVehiclePage';
@@ -67,8 +69,10 @@ export default function AdminApp() {
         <Route path="residents" element={<ResidentsPage />} />
         <Route path="pending" element={<PendingApprovalsPage />} />
         <Route path="complaints" element={<AdminComplaintsPage />} />
+        <Route path="complaints/:id" element={<AdminComplaintDetailsPage />} />
         <Route path="emergencies" element={<AdminEmergencyPage />} />
         <Route path="notices" element={<AdminNoticesPage />} />
+        <Route path="notices/:id" element={<AdminNoticeDetailsPage />} />
         <Route path="invoices" element={<AdminInvoicesPage />} />
         <Route path="vehicles" element={<AdminVehiclePage />} />
         <Route path="parking" element={<AdminParkingPage />} />

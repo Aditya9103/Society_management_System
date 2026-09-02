@@ -218,7 +218,7 @@ export default function ResidentNoticesPage() {
 
                             <div className="relative z-10">
                                 <h3 className="text-[17px] font-bold text-white mb-2 leading-tight">{pinnedNotice.title}</h3>
-                                <p className="text-[13px] text-white font-bold line-clamp-2 leading-relaxed mb-4">{pinnedNotice.content}</p>
+                                <p className="text-[13px] text-white font-bold line-clamp-2 leading-relaxed mb-4">{pinnedNotice.content ? pinnedNotice.content.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ') : ''}</p>
                                 <p className="text-[11px] text-purple-300 font-bold">
                                     {pinnedNotice.publishedAt ? new Date(pinnedNotice.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Recently updated'}
                                 </p>

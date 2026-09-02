@@ -179,7 +179,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 <div className="pt-2">
-                    <Button type="submit" disabled={isSendingOtp || isResetting} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
+                    <Button type="submit" disabled={isSendingOtp || isResetting} className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors">
                         {step === 1
                             ? isSendingOtp ? 'Sending...' : 'Send OTP'
                             : isResetting ? 'Resetting...' : 'Reset Password'}

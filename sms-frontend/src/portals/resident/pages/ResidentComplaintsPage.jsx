@@ -3,7 +3,8 @@ import { useGetMyComplaintsQuery } from '../../../store/api/residentApi';
 import { Plus, Search, Filter, HeadphonesIcon, ShieldAlert, ArrowUpRight, CheckCircle2, Clock, AlertTriangle, MessageSquareWarning, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { RaiseComplaintModal } from '../components/complaints/RaiseComplaintModal';
-import { ComplaintCard } from '../components/complaints/ComplaintCard';
+import ComplaintCard from '../../../components/ui/ComplaintCard';
+import Pagination from '../../../components/ui/Pagination';
 import { Button } from '../../../components/ui/Button';
 
 // ── Dashboard Widgets ────────────────────────────────────────────────────────
@@ -261,7 +262,7 @@ export default function ResidentComplaintsPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {filteredComplaints.map(c => <ComplaintCard key={c._id} complaint={c} />)}
+                            {filteredComplaints.map(c => <ComplaintCard key={c._id} complaint={c} linkPrefix="/resident/complaints" />)}
                         </div>
                     )}
 

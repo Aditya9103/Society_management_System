@@ -46,6 +46,14 @@ export const publishNotice = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { notice }, 'Notice published'));
 });
 
+// ── Admin/Committee — update notice ─────────────────────────────────────────
+
+export const updateNotice = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const notice = await noticeService.updateNotice(req.params.id, societyId, req.body);
+    res.status(200).json(new ApiResponse(200, { notice }, 'Notice updated'));
+});
+
 // ── Admin/Committee — update notice schedule ─────────────────────────────────
 
 export const updateNoticeSchedule = asyncHandler(async (req, res) => {
@@ -83,4 +91,23 @@ export const deleteNotice = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
     await noticeService.deleteNotice(req.params.id, societyId);
     res.status(200).json(new ApiResponse(200, null, 'Notice deleted'));
+});
+
+
+
+// ── Analytics ───────────────────────────────────────────────────────────────
+
+export const incrementShare = asyncHandler(async (req, res) => {
+    await noticeService.incrementStat(req.params.id, 'sharesCount');
+    res.status(200).json(new ApiResponse(200, null, 'Share count incremented'));
+});
+
+export const incrementDownload = asyncHandler(async (req, res) => {
+    await noticeService.incrementStat(req.params.id, 'downloadsCount');
+    res.status(200).json(new ApiResponse(200, null, 'Download count incremented'));
+});
+
+export const incrementView = asyncHandler(async (req, res) => {
+    await noticeService.incrementStat(req.params.id, 'viewsCount');
+    res.status(200).json(new ApiResponse(200, null, 'View count incremented'));
 });

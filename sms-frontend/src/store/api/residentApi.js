@@ -112,6 +112,11 @@ export const residentApi = createApi({
             }
         }),
 
+        getComplaintById: builder.query({
+            query: (id) => ({ url: `/complaints/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'Complaint', id }],
+        }),
+
         raiseComplaint: builder.mutation({
             query: (data) => ({ url: '/complaints', method: 'POST', data }),
             invalidatesTags: [{ type: 'Complaint', id: 'LIST' }],
@@ -124,6 +129,18 @@ export const residentApi = createApi({
 
         // ── Notices ───────────────────────────────────────────────────────────
 
+        incrementShare: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/share`, method: 'POST' }),
+            invalidatesTags: (result, error, id) => [{ type: 'Notice', id }],
+        }),
+        incrementDownload: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/download`, method: 'POST' }),
+            invalidatesTags: (result, error, id) => [{ type: 'Notice', id }],
+        }),
+        incrementView: builder.mutation({
+            query: (id) => ({ url: `/notices/${id}/view`, method: 'POST' }),
+            // don't invalidate LIST to avoid jumping, just the individual notice if needed
+        }),
         getMyNotices: builder.query({
             query: (params = {}) => ({ url: '/notices', method: 'GET', params }),
             providesTags: [{ type: 'Notice', id: 'LIST' }],
@@ -216,9 +233,13 @@ export const {
     useUpdateDomesticStaffMutation,
     useRemoveDomesticStaffMutation,
     useGetMyComplaintsQuery,
+    useGetComplaintByIdQuery,
     useRaiseComplaintMutation,
     useChangeComplaintStatusMutation,
     useGetMyNoticesQuery,
+    useIncrementShareMutation,
+    useIncrementDownloadMutation,
+    useIncrementViewMutation,
     useGetNoticeByIdQuery,
     useAcknowledgeNoticeMutation,
     useGetMyVisitorsQuery,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Pin, CheckCircle2, ArrowRight, Droplet, Calendar, Wrench, Activity, Bell, Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAcknowledgeNoticeMutation } from '../../../../store/api/residentApi';
@@ -117,7 +118,7 @@ export function NoticeCard({ notice }) {
                     </div>
 
                     <p className={`text-[11px] md:text-[13px] text-white font-bold leading-relaxed max-w-2xl mb-3 ${!expanded ? 'line-clamp-2 md:line-clamp-3' : ''}`}>
-                        {notice.content}
+                        {notice.content ? notice.content.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ') : ''}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] md:text-xs font-semibold text-white font-bold">
@@ -153,12 +154,12 @@ export function NoticeCard({ notice }) {
                             </span>
                         )}
                         
-                        <button 
-                            onClick={() => setExpanded(!expanded)}
+                        <Link 
+                            to={`/resident/notices/${notice._id}`}
                             className={`flex items-center justify-center gap-2 rounded-[12px] bg-[#1a1c29]/80 px-4 md:px-5 py-2.5 text-[11px] md:text-[13px] font-bold text-white border border-slate-700/50 hover:bg-slate-800 transition-colors w-full sm:w-auto shadow-lg backdrop-blur-md ${(!notice.requiresAcknowledgement || isAck) ? 'sm:ml-auto' : ''}`}
                         >
-                            {expanded ? 'Show Less' : 'Read More'} {expanded ? <ChevronUp className="h-3.5 w-3.5 md:h-4 md:w-4 text-white font-bold" /> : <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 text-white font-bold" />}
-                        </button>
+                            Read More <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 text-white font-bold" />
+                        </Link>
                     </div>
                 </div>
                 

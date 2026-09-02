@@ -43,6 +43,12 @@ router.get('/', authorize(...CAN_READ), noticeController.listNotices);
 router.get('/:id', authorize(...CAN_READ), noticeController.getNoticeById);
 
 /**
+ * PUT /api/v1/notices/:id
+ * Update a notice.
+ */
+router.put('/:id', authorize(...CAN_PUBLISH), validate(createNoticeSchema), auditLog('UPDATE', 'NOTICE'), noticeController.updateNotice);
+
+/**
  * PATCH /api/v1/notices/:id/publish
  * Publish a DRAFT notice.
  */
@@ -79,3 +85,21 @@ router.post('/:id/acknowledge', authorize(ROLES.RESIDENT), auditLog('ACKNOWLEDGE
 router.get('/:id/acknowledgements', authorize(...CAN_PUBLISH), noticeController.getNoticeAcknowledgements);
 
 export default router;
+
+/**
+ * POST /api/v1/notices/:id/share
+ * Increment share count.
+ */
+router.post('/:id/share', authorize(...CAN_READ), noticeController.incrementShare);
+
+/**
+ * POST /api/v1/notices/:id/download
+ * Increment download count.
+ */
+router.post('/:id/download', authorize(...CAN_READ), noticeController.incrementDownload);
+
+/**
+ * POST /api/v1/notices/:id/view
+ * Increment view count.
+ */
+router.post('/:id/view', authorize(...CAN_READ), noticeController.incrementView);

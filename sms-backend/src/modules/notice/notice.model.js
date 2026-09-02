@@ -113,6 +113,21 @@ const noticeSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        // Shares count
+        sharesCount: {
+            type: Number,
+            default: 0
+        },
+        // Views count
+        viewsCount: {
+            type: Number,
+            default: 0
+        },
+        // Downloads count
+        downloadsCount: {
+            type: Number,
+            default: 0
+        },
         // Status
         status: {
             type: String,

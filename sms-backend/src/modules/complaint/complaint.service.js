@@ -98,6 +98,9 @@ export const getComplaintById = async (id, userId, role) => {
     const complaint = await complaintRepo.findById(id);
     if (!complaint) throw ApiError.notFound('Complaint not found.');
 
+    const comments = await complaintRepo.findCommentsByComplaintId(id);
+    complaint.timeline = comments;
+
     // Staff and admin can read any complaint in their society
     if (STAFF_WHO_CAN_READ.includes(role) || role === ROLES.SOCIETY_ADMIN) {
         return complaint;
@@ -105,8 +108,8 @@ export const getComplaintById = async (id, userId, role) => {
 
     // Resident can only read own complaint
     const resident = await residentRepo.findByUserId(userId);
-    if (!resident || complaint.raisedBy?.toString() !== resident._id.toString()) {
-        throw ApiError.forbidden('You do not have access to this complaint.');
+    if (!resident || (complaint.raisedBy._id || complaint.raisedBy).toString() !== resident._id.toString()) {
+        console.log("Forbidden: ", resident?._id, complaint.raisedBy._id || complaint.raisedBy); throw ApiError.forbidden('You do not have access to this complaint.');
     }
 
     return complaint;
@@ -114,15 +117,53 @@ export const getComplaintById = async (id, userId, role) => {
 
 // ── Admin/Staff — list all society complaints ─────────────────────────────────
 
-export const listAllComplaints = async (societyId, query = {}) => {
-    const { page = 1, limit = 20, status, category, assignedTo } = query;
+export const listAllComplaints = async (societyId, query = {}, role, userId) => {
+    let { page = 1, limit = 20, status, category, assignedTo, priority, search } = query;
+
+    // Enforce visibility for standard staff (only see assigned complaints)
+    if (role && ![ROLES.SOCIETY_ADMIN, ROLES.FACILITY_MANAGER].includes(role)) {
+        assignedTo = userId;
+    }
 
     const { data, total } = await complaintRepo.findBySociety(societyId, {
-        page, limit, status, category, assignedTo,
+        page, limit, status, category, assignedTo, priority, search
+    });
+
+    const mongoose = (await import('mongoose')).default;
+    const Complaint = mongoose.model('Complaint');
+
+    const statsAgg = await Complaint.aggregate([
+        { $match: { 
+            societyId: new mongoose.Types.ObjectId(societyId),
+            ...(assignedTo ? { assignedTo: new mongoose.Types.ObjectId(assignedTo) } : {})
+        } },
+        { 
+            $group: { 
+                _id: "$status", 
+                count: { $sum: 1 } 
+            } 
+        }
+    ]);
+
+    const stats = {
+        total: 0,
+        open: 0,
+        inProgress: 0,
+        resolved: 0,
+        closed: 0,
+    };
+
+    statsAgg.forEach(s => {
+        stats.total += s.count;
+        if (s._id === 'OPEN') stats.open += s.count;
+        if (s._id === 'IN_PROGRESS' || s._id === 'ASSIGNED') stats.inProgress += s.count;
+        if (s._id === 'RESOLVED') stats.resolved += s.count;
+        if (s._id === 'CLOSED') stats.closed += s.count;
     });
 
     return {
         data,
+        stats,
         pagination: {
             page: Number(page),
             limit: Number(limit),
@@ -141,6 +182,21 @@ export const changeStatus = async (id, userId, role, societyId, data) => {
     if (!complaint) throw ApiError.notFound('Complaint not found.');
     if (complaint.societyId?.toString() !== societyId.toString()) {
         throw ApiError.forbidden('Complaint does not belong to your society.');
+    }
+
+    if (status === complaint.status && !assignedTo) {
+        if (!notes) throw ApiError.badRequest('Please provide a note.');
+        
+        await complaintRepo.addComment(id, userId, {
+            content: notes,
+            isInternal: false,
+            statusChangedFrom: null,
+            statusChangedTo: null,
+        });
+
+        await complaintRepo.updateById(id, { latestNote: notes });
+        
+        return await complaintRepo.findById(id);
     }
 
     const updates = { status };

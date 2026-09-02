@@ -119,10 +119,13 @@ export const listPublishedNotices = async (societyId, query = {}) => {
 
 export const listAllNotices = async (societyId, query = {}) => {
     const { page = 1, limit = 20, status, noticeType } = query;
-    const { data, total } = await noticeRepo.findBySociety(societyId, { page, limit, status, noticeType });
+    const { data, total, stats } = await noticeRepo.findBySociety(societyId, { page, limit, status, noticeType });
 
     return {
-        data,
+        data: {
+            data,
+            stats
+        },
         pagination: {
             page: Number(page),
             limit: Number(limit),
@@ -268,4 +271,37 @@ export const deleteNotice = async (id, societyId) => {
 
     await noticeRepo.deleteById(id);
     return true;
+};
+
+export const incrementStat = async (id, statField) => {
+    const validFields = ['sharesCount', 'downloadsCount', 'viewsCount'];
+    if (!validFields.includes(statField)) throw ApiError.badRequest('Invalid stat field');
+
+    const notice = await noticeRepo.findById(id);
+    if (!notice) throw ApiError.notFound('Notice not found.');
+
+    const update = { $inc: { [statField]: 1 } };
+    return noticeRepo.updateById(id, update);
+};
+
+export const updateNotice = async (noticeId, societyId, updateData) => {
+    const notice = await noticeRepo.findById(noticeId);
+    if (!notice || notice.societyId.toString() !== societyId.toString()) throw ApiError.notFound('Notice not found');
+    
+    if (updateData.title) notice.title = updateData.title;
+    if (updateData.content) notice.content = updateData.content;
+    if (updateData.noticeType) notice.noticeType = updateData.noticeType;
+    if (updateData.priority) notice.priority = updateData.priority;
+    if (updateData.validUntil) notice.validUntil = updateData.validUntil;
+    if (updateData.attachmentUrls) notice.attachmentUrls = updateData.attachmentUrls;
+    if (updateData.requiresAcknowledgement !== undefined) notice.requiresAcknowledgement = updateData.requiresAcknowledgement;
+    if (updateData.status && updateData.status !== notice.status) {
+        notice.status = updateData.status;
+        if (updateData.status === 'PUBLISHED' && !notice.publishedAt) {
+            notice.publishedAt = new Date();
+        }
+    }
+    
+    await notice.save();
+    return notice;
 };

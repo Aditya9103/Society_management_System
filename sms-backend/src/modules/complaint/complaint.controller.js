@@ -42,8 +42,9 @@ export const getComplaintById = asyncHandler(async (req, res) => {
 
 export const listAllComplaints = asyncHandler(async (req, res) => {
     const societyId = req.user.societyId;
-    const { data, pagination } = await complaintService.listAllComplaints(societyId, req.query);
-    res.status(200).json(new ApiResponse(200, data, 'All complaints fetched', pagination));
+    const { role, sub: userId } = req.user;
+    const { data, stats, pagination } = await complaintService.listAllComplaints(societyId, req.query, role, userId);
+    res.status(200).json(new ApiResponse(200, { data, stats }, 'All complaints fetched', pagination));
 });
 
 // ── Change Complaint Status ───────────────────────────────────────────────────────────

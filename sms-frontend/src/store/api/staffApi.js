@@ -108,6 +108,11 @@ export const staffApi = createApi({
             }
         }),
 
+        getStaffComplaintById: builder.query({
+            query: (id) => ({ url: `/complaints/${id}`, method: 'GET' }),
+            providesTags: (result, error, id) => [{ type: 'StaffComplaint', id }],
+        }),
+
         /**
          * POST /api/v1/complaints
          * Raise a complaint on behalf of or for the society.
@@ -209,6 +214,7 @@ export const {
     useGetStaffResidentsQuery,
     useGetStaffUnitsQuery,
     useGetStaffComplaintsQuery,
+    useGetStaffComplaintByIdQuery,
     useStaffRaiseComplaintMutation,
     useStaffChangeComplaintStatusMutation,
     useGetStaffNoticesQuery,

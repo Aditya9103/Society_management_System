@@ -30,13 +30,13 @@ function StepDot({ n, current }) {
     const active = current === n;
     return (
         <div className="flex items-center gap-1.5">
-            <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${done ? 'bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)]' :
-                active ? 'bg-indigo-500/20 text-indigo-300 ring-2 ring-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]' :
+            <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${done ? 'bg-indigo-800 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)]' :
+                active ? 'bg-indigo-800/20 text-indigo-300 ring-2 ring-indigo-800 shadow-[0_0_15px_rgba(99,102,241,0.3)]' :
                     'bg-white/5 text-slate-500 border border-white/10'
                 }`}>
                 {done ? <CheckCircle2 className="h-4 w-4" /> : n}
             </div>
-            {n < 3 && <div className={`h-0.5 w-6 rounded ${current > n ? 'bg-indigo-500 shadow-[0_0_5px_rgba(99,102,241,0.5)]' : 'bg-white/10'}`} />}
+            {n < 3 && <div className={`h-0.5 w-6 rounded ${current > n ? 'bg-indigo-800 shadow-[0_0_5px_rgba(99,102,241,0.5)]' : 'bg-white/10'}`} />}
         </div>
     );
 }
@@ -228,7 +228,7 @@ export default function RegisterPage() {
                         })}
                     />
                     <div className="pt-4">
-                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" disabled={isInitiating}>
+                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" disabled={isInitiating}>
                             {isInitiating ? 'Creating Account...' : 'Continue to Verify'} <ArrowRight size={18} />
                         </Button>
                     </div>
@@ -261,7 +261,7 @@ export default function RegisterPage() {
                         })}
                         error={errors.otp?.message}
                     />
-                    <Button type="submit" disabled={isVerifying} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" isLoading={isVerifying}>
+                    <Button type="submit" disabled={isVerifying} className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors" isLoading={isVerifying}>
                         Verify Email <ArrowRight size={18} />
                     </Button>
                     <button
@@ -288,7 +288,7 @@ export default function RegisterPage() {
                                     <User className="w-10 h-10 text-slate-500" />
                                 )}
                             </div>
-                            <label className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-colors">
+                            <label className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-800 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-colors">
                                 <Upload className="w-4 h-4" />
                                 <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
                             </label>
@@ -370,7 +370,7 @@ export default function RegisterPage() {
                         <Button
                             type="submit"
                             disabled={isCompleting || !selectedUnitId}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors"
+                            className="w-full bg-indigo-600 hover:bg-indigo-800 text-white rounded-xl h-12 flex justify-center items-center gap-2 transition-colors"
                             isLoading={isCompleting}
                         >
                             Submit for Approval <ArrowRight size={18} />

@@ -12,7 +12,9 @@ import PortalLayout from '../../components/layout/PortalLayout';
 import ResidentDashboardPage from './pages/ResidentDashboardPage';
 import ResidentProfilePage from './pages/ResidentProfilePage';
 import ResidentComplaintsPage from './pages/ResidentComplaintsPage';
+import ResidentComplaintDetailsPage from './pages/ResidentComplaintDetailsPage';
 import ResidentNoticesPage from './pages/ResidentNoticesPage';
+import ResidentNoticeDetailsPage from './pages/ResidentNoticeDetailsPage';
 import ResidentEmergencyPage from './pages/ResidentEmergencyPage';
 import ResidentVisitorPage from './pages/ResidentVisitorPage';
 import ResidentInvoicesPage from './pages/ResidentInvoicesPage';
@@ -73,8 +75,10 @@ export default function ResidentApp() {
             <Routes>
                 <Route index element={<ResidentDashboardPage />} />
                 <Route path="notices" element={<ResidentNoticesPage />} />
+        <Route path="notices/:id" element={<ResidentNoticeDetailsPage />} />
                 <Route path="profile" element={<ResidentProfilePage />} />
                 <Route path="complaints" element={<ResidentComplaintsPage />} />
+                <Route path="complaints/:id" element={<ResidentComplaintDetailsPage />} />
                 <Route path="emergency" element={<ResidentEmergencyPage />} />
                 <Route path="vehicles" element={<ResidentVehiclePage />} />
                 <Route path="visitors" element={<ResidentVisitorPage />} />

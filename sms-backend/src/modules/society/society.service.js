@@ -500,12 +500,13 @@ export const listResidents = async (societyId, query = {}) => {
  * Get detailed resident profiles with unit + family info.
  */
 export const listResidentProfiles = async (societyId, query = {}) => {
-    const { page = 1, limit = 20, approvalStatus, search = '', towerId } = query;
+    const { page = 1, limit = 20, approvalStatus, search = '', towerId, ownershipType } = query;
     const skip = (page - 1) * limit;
 
     const filter = {
         societyId,
         ...(approvalStatus && { approvalStatus }),
+        ...(ownershipType && { ownershipType }),
     };
 
     let [residents, total] = await Promise.all([

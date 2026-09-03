@@ -59,7 +59,7 @@ export default function ResidentNoticeDetailsPage() {
     };
 
     return (
-        <div className="space-y-6 max-w-4xl mx-auto pb-10">
+        <div className="space-y-6 max-w-4xl mx-auto pb-10 px-4 sm:px-0">
             {/* Header / Nav */}
             <div className="flex items-center justify-between">
                 <Link to="/resident/notices" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-[14px] font-bold">
@@ -73,7 +73,7 @@ export default function ResidentNoticeDetailsPage() {
             </div>
 
             {/* Hero / Details */}
-            <div className="bg-[#0f111a] border border-slate-800/80 rounded-[24px] overflow-hidden">
+            <div className="bg-[#0f111a] border-y sm:border-x border-slate-800/80 rounded-none sm:rounded-[24px] overflow-hidden -mx-4 sm:mx-0">
                 {/* Notice Banner */}
                 <div className="h-32 bg-gradient-to-r from-indigo-900/40 to-purple-900/40 relative overflow-hidden flex items-center px-8">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>

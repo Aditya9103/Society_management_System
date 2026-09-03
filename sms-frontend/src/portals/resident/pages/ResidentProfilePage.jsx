@@ -158,7 +158,7 @@ export default function ResidentProfilePage() {
     ];
 
     return (
-        <div className="pb-24 lg:pb-8 text-white relative z-10 max-w-full overflow-hidden w-full overflow-y-auto"> 
+        <div className="pb-24 lg:pb-8 text-white relative z-10 max-w-full overflow-hidden w-full overflow-y-auto -mx-4 px-4 sm:mx-0 sm:px-0"> 
             {/* Mobile Header (Sticky) */}
             <div className="lg:hidden flex items-center justify-between py-4 sticky top-0 z-50 bg-[#0a0b12]/95 backdrop-blur-md mb-2">
                 <button className="text-white hover:text-white font-bold transition-colors"><ChevronLeft size={24} /></button>
@@ -172,7 +172,7 @@ export default function ResidentProfilePage() {
             <div className="hidden lg:flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">My Profile</h1>
-                    <p className="text-sm text-white font-bold">Manage your account, personal details and preferences.</p>
+                    <p className="hidden text-sm text-white font-bold">Manage your account, personal details and preferences.</p>
                 </div>
                 <button 
                     onClick={startEdit}
@@ -209,12 +209,12 @@ export default function ResidentProfilePage() {
 
             {/* Mobile Tabs */}
             <div className="lg:hidden w-full overflow-hidden mb-6">
-                <div className="flex items-center overflow-x-auto no-scrollbar gap-2 pb-2">
+                <div className="flex items-center overflow-x-auto gap-2 pb-2 -mx-4 px-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     {mobileTabs.map(tab => (
                         <button 
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex flex-col items-center justify-center gap-1.5 min-w-[70px] flex-1 py-3 rounded-[18px] transition-all border ${activeTab === tab.id ? 'bg-gradient-to-br from-[#1a1147]/50 to-transparent border-purple-500/30' : 'bg-[#0a0b12] border-slate-700/80 hover:bg-slate-800/50'}`}
+                            className={`flex flex-col items-center justify-center gap-1.5 min-w-[70px] flex-1 py-3 rounded-[18px] transition-all border snap-start ${activeTab === tab.id ? 'bg-gradient-to-br from-[#1a1147]/50 to-transparent border-purple-500/30' : 'bg-[#0a0b12] border-slate-700/80 hover:bg-slate-800/50'}`}
                         >
                             <tab.icon size={20} className={activeTab === tab.id ? 'text-purple-400' : 'text-white font-bold'} />
                             <span className={`text-[11px] font-bold ${activeTab === tab.id ? 'text-purple-400' : 'text-white font-bold'}`}>{tab.label}</span>
@@ -260,7 +260,7 @@ export default function ResidentProfilePage() {
                             </button>
                         </div>
                         {familyMembers.length === 0 ? (
-                            <p className="text-center text-sm text-white font-bold py-6">No family members added yet.</p>
+                            <p className="hidden md:block text-center text-sm text-white font-bold py-6">No family members added yet.</p>
                         ) : (
                             <div className="space-y-2">
                                 {familyMembers.filter(m => m.isActive !== false).map(m => (
@@ -309,7 +309,7 @@ export default function ResidentProfilePage() {
                                 </button>
                             </div>
                             {domesticStaffList.length === 0 ? (
-                                <p className="text-center text-sm text-white font-bold py-6">No domestic staff added yet.</p>
+                                <p className="hidden md:block text-center text-sm text-white font-bold py-6">No domestic staff added yet.</p>
                             ) : (
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     {domesticStaffList.map(s => (
@@ -325,7 +325,7 @@ export default function ResidentProfilePage() {
                     <div className="rounded-[20px] bg-[#0a0b12] p-10 shadow-sm border border-slate-800/80 text-center">
                         <FileText className="mx-auto h-10 w-10 text-slate-600 mb-3" />
                         <h2 className="font-bold text-white text-lg">Coming Soon</h2>
-                        <p className="text-sm text-white font-bold mt-1">This section is currently under development.</p>
+                        <p className="hidden md:block text-sm text-white font-bold mt-1">This section is currently under development.</p>
                     </div>
                 )}
 

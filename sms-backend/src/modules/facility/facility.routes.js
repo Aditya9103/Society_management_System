@@ -27,6 +27,7 @@ import {
     feedbackSchema,
 } from './facility.validator.js';
 import { auditLog } from '../../middleware/audit.middleware.js';
+import { uploadSingle } from '../../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -56,6 +57,7 @@ router.get('/amenities', authorize(ROLES.RESIDENT, ...ALL_STAFF), facilityContro
 router.post(
     '/amenities',
     authorize(...CAN_MANAGE),
+    uploadSingle('image', 'amenities', 'image'),
     validate(createAmenitySchema),
     auditLog('CREATE', 'AMENITY'),
     facilityController.createAmenity,
@@ -74,6 +76,7 @@ router.get('/amenities/:id', authorize(ROLES.RESIDENT, ...ALL_STAFF), facilityCo
 router.patch(
     '/amenities/:id',
     authorize(...CAN_MANAGE),
+    uploadSingle('image', 'amenities', 'image'),
     validate(updateAmenitySchema),
     auditLog('UPDATE', 'AMENITY'),
     facilityController.updateAmenity,

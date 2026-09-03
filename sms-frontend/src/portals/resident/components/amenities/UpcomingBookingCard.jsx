@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
+import { DEFAULT_AMENITY_IMAGES } from '../../../../components/ui/AmenityCard';
 
 export function UpcomingBookingCard({ booking, onViewDetails }) {
     if (!booking) return null;
@@ -16,8 +17,14 @@ export function UpcomingBookingCard({ booking, onViewDetails }) {
         switch (status) {
             case 'CONFIRMED': return 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
             case 'PENDING_APPROVAL': return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
-            default: return 'text-white font-bold border-slate-500/30 bg-slate-500/10';
+            default: return 'text-slate-300 font-bold border-slate-500/30 bg-slate-500/10';
         }
+    };
+
+    const getBgImage = (amenity) => {
+        if (amenity?.image) return amenity.image;
+        if (amenity?.facilityType) return DEFAULT_AMENITY_IMAGES[amenity.facilityType] || DEFAULT_AMENITY_IMAGES.OTHER;
+        return DEFAULT_AMENITY_IMAGES.OTHER;
     };
 
     return (
@@ -30,11 +37,11 @@ export function UpcomingBookingCard({ booking, onViewDetails }) {
                     <span className="text-indigo-200 text-[10px] font-bold tracking-widest mt-1">{month}</span>
                 </div>
                 
-                {/* Amenity Image (Mock) */}
+                {/* Amenity Image */}
                 <div className="w-24 h-16 rounded-xl bg-slate-800 overflow-hidden hidden md:block shrink-0 border border-slate-700">
                     <img 
-                        src={amenity?.facilityType === 'SWIMMING_POOL' ? 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&q=80&w=400' : 'https://images.unsplash.com/photo-1542314831-c6a4d14eff43?auto=format&fit=crop&q=80&w=400'} 
-                        alt="Amenity" 
+                        src={getBgImage(amenity)} 
+                        alt={amenity?.name || "Amenity"} 
                         className="w-full h-full object-cover" 
                     />
                 </div>

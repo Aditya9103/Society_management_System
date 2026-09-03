@@ -1,437 +1,57 @@
-import { useState } from 'react';
-import {
-    Building2, Plus, Pencil, Trash2, CheckCircle2, XCircle,
-    Clock, Users, ChevronDown, ChevronUp, Calendar, Filter,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
-import {
-    useListAmenitiesQuery,
-    useCreateAmenityMutation,
-    useUpdateAmenityMutation,
+import React, { useState, useMemo } from 'react';
+import { Building2, Plus, Download, Search, Settings } from 'lucide-react';
+import { 
+    useListAmenitiesQuery, 
     useDeleteAmenityMutation,
-    useListBookingsQuery,
-    useApproveBookingMutation,
-    useRejectBookingMutation,
-    useCancelBookingMutation,
-    useMarkCompletedMutation,
-    useMarkNoShowMutation,
+    useListBookingsQuery 
 } from '../../../store/api/facilityApi';
-import { Button } from '../../../components/ui/Button';
+import { toast } from 'react-hot-toast';
+import StatCard from '../components/dashboard/StatCard';
+import AmenityCard from '../../../components/ui/AmenityCard';
+import BookingList from '../components/amenities/BookingList';
+import AmenityFormModal from '../components/amenities/AmenityFormModal';
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-const FACILITY_TYPES = [
-    'CLUBHOUSE', 'SWIMMING_POOL', 'GYM', 'TENNIS_COURT', 'BADMINTON_COURT',
-    'CRICKET_NET', 'PARTY_HALL', 'TERRACE', 'LIBRARY', 'KIDS_PLAY_AREA',
-    'MEDITATION_ROOM', 'CONFERENCE_ROOM', 'BBQ_AREA', 'OTHER',
-];
-
-const FACILITY_ICONS = {
-    CLUBHOUSE: '🏛️', SWIMMING_POOL: '🏊', GYM: '💪', TENNIS_COURT: '🎾',
-    BADMINTON_COURT: '🏸', CRICKET_NET: '🏏', PARTY_HALL: '🎉', TERRACE: '🌆',
-    LIBRARY: '📚', KIDS_PLAY_AREA: '🎠', MEDITATION_ROOM: '🧘', CONFERENCE_ROOM: '📊',
-    BBQ_AREA: '🍖', OTHER: '🏢',
-};
-
-const STATUS_CONFIG = {
-    CONFIRMED: { label: 'Confirmed', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    PENDING_APPROVAL: { label: 'Pending', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-    CANCELLED: { label: 'Cancelled', color: 'bg-red-100 text-red-600 border-red-200' },
-    COMPLETED: { label: 'Completed', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
-    NO_SHOW: { label: 'No Show', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-};
-
-const fmt = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-// ── DAYS OF WEEK ──────────────────────────────────────────────────────────────
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// ── Slot Editor ───────────────────────────────────────────────────────────────
-function SlotEditor({ slots, onChange }) {
-    // slots: { "0": [{startTime, endTime, maxBookings}], ... }
-    const [expanded, setExpanded] = useState(null);
-
-    const addSlot = (day) => {
-        const daySlots = slots[day] ?? [];
-        onChange({ ...slots, [day]: [...daySlots, { startTime: '09:00', endTime: '10:00', maxBookings: 1 }] });
-    };
-    const removeSlot = (day, idx) => {
-        const daySlots = [...(slots[day] ?? [])];
-        daySlots.splice(idx, 1);
-        onChange({ ...slots, [day]: daySlots });
-    };
-    const updateSlot = (day, idx, field, value) => {
-        const daySlots = [...(slots[day] ?? [])];
-        daySlots[idx] = { ...daySlots[idx], [field]: value };
-        onChange({ ...slots, [day]: daySlots });
-    };
-
-    return (
-        <div className="space-y-2">
-            {DAYS.map((dayName, d) => {
-                const dayKey = d.toString();
-                const daySlots = slots[dayKey] ?? [];
-                const isOpen = expanded === d;
-                return (
-                    <div key={d} className="border border-slate-200 rounded-xl overflow-hidden">
-                        <button type="button"
-                            onClick={() => setExpanded(isOpen ? null : d)}
-                            className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition">
-                            <span>{dayName} {daySlots.length > 0 && <span className="ml-1 text-indigo-600 text-xs font-normal">({daySlots.length} slot{daySlots.length > 1 ? 's' : ''})</span>}</span>
-                            {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </button>
-                        {isOpen && (
-                            <div className="p-3 space-y-2 bg-white">
-                                {daySlots.map((slot, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
-                                        <input type="time" value={slot.startTime} onChange={e => updateSlot(dayKey, idx, 'startTime', e.target.value)}
-                                            className="border border-slate-300 rounded-lg px-2 py-1 text-sm" />
-                                        <span className="text-slate-400 text-sm">to</span>
-                                        <input type="time" value={slot.endTime} onChange={e => updateSlot(dayKey, idx, 'endTime', e.target.value)}
-                                            className="border border-slate-300 rounded-lg px-2 py-1 text-sm" />
-                                        <input type="number" min={1} max={50} value={slot.maxBookings} onChange={e => updateSlot(dayKey, idx, 'maxBookings', Number(e.target.value))}
-                                            className="w-16 border border-slate-300 rounded-lg px-2 py-1 text-sm" title="Max bookings" />
-                                        <span className="text-xs text-slate-400">max</span>
-                                        <button type="button" onClick={() => removeSlot(dayKey, idx)} className="text-red-500 hover:text-red-700 ml-1">
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                ))}
-                                <button type="button" onClick={() => addSlot(dayKey)} className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 mt-1">
-                                    <Plus className="w-3 h-3" />Add Slot
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
-
-// ── Amenity Form Modal ────────────────────────────────────────────────────────
-function AmenityFormModal({ existing, onClose }) {
-    const [form, setForm] = useState({
-        name: existing?.name ?? '',
-        facilityType: existing?.facilityType ?? 'CLUBHOUSE',
-        customAmenityType: existing?.customAmenityType ?? '',
-        description: existing?.description ?? '',
-        capacity: existing?.capacity ?? '',
-        isPaid: existing?.isPaid ?? false,
-        hourlyRate: existing?.hourlyRate ?? 0,
-        fullDayRate: existing?.fullDayRate ?? 0,
-        refundableDeposit: existing?.refundableDeposit ?? 0,
-        autoApproval: existing?.autoApproval ?? true,
-        advanceBookingDays: existing?.advanceBookingDays ?? 30,
-        minDurationHours: existing?.minDurationHours ?? 1,
-        maxDurationHours: existing?.maxDurationHours ?? '',
-        cancellationDeadlineHours: existing?.cancellationDeadlineHours ?? 24,
-        cancellationPolicy: existing?.cancellationPolicy ?? '',
-        availableSlots: existing?.availableSlots ?? {},
-        isActive: existing?.isActive ?? true,
-    });
-    const set = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
-
-    const [createAmenity, { isLoading: creating }] = useCreateAmenityMutation();
-    const [updateAmenity, { isLoading: updating }] = useUpdateAmenityMutation();
-    const saving = creating || updating;
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const payload = {
-            ...form,
-            customAmenityType: form.facilityType === 'OTHER' ? form.customAmenityType : null,
-            capacity: form.capacity ? Number(form.capacity) : null,
-            hourlyRate: Number(form.hourlyRate),
-            fullDayRate: Number(form.fullDayRate),
-            refundableDeposit: Number(form.refundableDeposit),
-            advanceBookingDays: Number(form.advanceBookingDays),
-            minDurationHours: Number(form.minDurationHours),
-            maxDurationHours: form.maxDurationHours ? Number(form.maxDurationHours) : null,
-            cancellationDeadlineHours: Number(form.cancellationDeadlineHours),
-        };
-        try {
-            if (existing) {
-                await updateAmenity({ id: existing._id, ...payload }).unwrap();
-                toast.success('Amenity updated successfully!');
-            } else {
-                await createAmenity(payload).unwrap();
-                toast.success('Amenity created successfully!');
-            }
-            onClose(true);
-        } catch (e) {
-            toast.error(e?.data?.message ?? 'Failed to save amenity.');
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8">
-                <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-6 rounded-t-2xl text-white">
-                    <h2 className="text-xl font-bold">{existing ? 'Edit' : 'Add'} Amenity</h2>
-                </div>
-                <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-                    {/* Name & type */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Name *</label>
-                            <input required value={form.name} onChange={set('name')} className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Type *</label>
-                            <select value={form.facilityType} onChange={set('facilityType')} className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                {FACILITY_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
-                            </select>
-                        </div>
-                        {form.facilityType === 'OTHER' && (
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Custom Type *</label>
-                                <input required value={form.customAmenityType} onChange={set('customAmenityType')} placeholder="e.g. Yoga Studio" className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                            </div>
-                        )}
-                    </div>
-                    {/* Description & Capacity */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
-                            <textarea value={form.description} onChange={set('description')} rows={2} className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Capacity</label>
-                            <input type="number" min={0} value={form.capacity} onChange={set('capacity')} className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                        </div>
-                    </div>
-                    {/* Toggles */}
-                    <div className="flex flex-wrap gap-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={form.isPaid} onChange={set('isPaid')} className="w-4 h-4 rounded accent-indigo-600" />
-                            <span className="text-sm font-semibold text-slate-700">Paid Amenity</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={form.autoApproval} onChange={set('autoApproval')} className="w-4 h-4 rounded accent-indigo-600" />
-                            <span className="text-sm font-semibold text-slate-700">Auto Approval</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={form.isActive} onChange={set('isActive')} className="w-4 h-4 rounded accent-indigo-600" />
-                            <span className="text-sm font-semibold text-slate-700">Active</span>
-                        </label>
-                    </div>
-                    {/* Rates (conditional) */}
-                    {form.isPaid && (
-                        <div className="grid grid-cols-3 gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                            <div>
-                                <label className="block text-xs font-semibold text-amber-700 mb-1">Hourly Rate (₹)</label>
-                                <input type="number" min={0} value={form.hourlyRate} onChange={set('hourlyRate')} className="w-full border border-amber-300 rounded-lg px-3 py-1.5 text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-amber-700 mb-1">Full Day Rate (₹)</label>
-                                <input type="number" min={0} value={form.fullDayRate} onChange={set('fullDayRate')} className="w-full border border-amber-300 rounded-lg px-3 py-1.5 text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-amber-700 mb-1">Deposit (₹)</label>
-                                <input type="number" min={0} value={form.refundableDeposit} onChange={set('refundableDeposit')} className="w-full border border-amber-300 rounded-lg px-3 py-1.5 text-sm" />
-                            </div>
-                        </div>
-                    )}
-                    {/* Booking settings */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Advance Days</label>
-                            <input type="number" min={1} max={365} value={form.advanceBookingDays} onChange={set('advanceBookingDays')} className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Min Hrs</label>
-                            <input type="number" min={0.5} step={0.5} value={form.minDurationHours} onChange={set('minDurationHours')} className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Max Hrs</label>
-                            <input type="number" min={0.5} step={0.5} value={form.maxDurationHours} onChange={set('maxDurationHours')} placeholder="None" className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-                        </div>
-                    </div>
-                    {/* Cancellation */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Cancel Deadline (hrs before)</label>
-                            <input type="number" min={0} value={form.cancellationDeadlineHours} onChange={set('cancellationDeadlineHours')} className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Cancellation Policy</label>
-                            <input value={form.cancellationPolicy} onChange={set('cancellationPolicy')} placeholder="e.g., No refund after 24hrs" className="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
-                        </div>
-                    </div>
-                    {/* Slots */}
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Available Slots (per day)</label>
-                        <p className="text-xs text-slate-400 mb-2">Leave empty to allow flexible booking times.</p>
-                        <SlotEditor slots={form.availableSlots} onChange={(s) => setForm(p => ({ ...p, availableSlots: s }))} />
-                    </div>
-                </div>
-                <div className="flex gap-3 p-6 border-t border-slate-100">
-                    <button type="button" onClick={() => onClose(false)} className="flex-1 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                    <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                        {saving ? 'Saving…' : (existing ? 'Update Amenity' : 'Create Amenity')}
-                    </button>
-                </div>
-            </form>
-        </div>
-    );
-}
-
-// ── Booking Table ─────────────────────────────────────────────────────────────
-function BookingTable() {
-    const [filterStatus, setFilterStatus] = useState('');
-    const [filterDate, setFilterDate] = useState('');
-    const { data, isLoading, refetch } = useListBookingsQuery({ status: filterStatus || undefined, date: filterDate || undefined });
-    const [approve] = useApproveBookingMutation();
-    const [reject] = useRejectBookingMutation();
-    const [cancel] = useCancelBookingMutation();
-    const [complete] = useMarkCompletedMutation();
-    const [noShow] = useMarkNoShowMutation();
-    const [rejectId, setRejectId] = useState(null);
-    const [rejectReason, setRejectReason] = useState('');
-
-    const bookings = data?.data?.bookings ?? [];
-
-    const act = async (fn, arg, successMsg) => {
-        try {
-            await fn(arg).unwrap();
-            toast.success(successMsg);
-            refetch();
-        } catch (e) {
-            toast.error(e?.data?.message ?? 'Action failed');
-        }
-    };
-
-    return (
-        <div className="space-y-4">
-            {/* Filters */}
-            <div className="flex gap-3 flex-wrap items-center">
-                <Filter className="w-4 h-4 text-slate-400" />
-                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="border border-slate-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">All Statuses</option>
-                    {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-                </select>
-                <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="border border-slate-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                {(filterStatus || filterDate) && <button onClick={() => { setFilterStatus(''); setFilterDate(''); }} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">Clear</button>}
-            </div>
-
-            {isLoading ? (
-                <div className="space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-200" />)}</div>
-            ) : bookings.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-                    <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-slate-500 text-sm font-medium">No bookings found</p>
-                </div>
-            ) : (
-                <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
-                    <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">
-                            <tr>
-                                <th className="px-4 py-3 text-left hidden sm:table-cell">Booking #</th>
-                                <th className="px-4 py-3 text-left">Amenity</th>
-                                <th className="px-4 py-3 text-left hidden sm:table-cell">Resident</th>
-                                <th className="px-4 py-3 text-left hidden md:table-cell">Date & Time</th>
-                                <th className="px-4 py-3 text-left">Status</th>
-                                <th className="px-4 py-3 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-slate-100">
-                            {bookings.map(b => {
-                                const s = STATUS_CONFIG[b.status] ?? { label: b.status, color: 'bg-slate-100 text-slate-600 border-slate-200' };
-                                return (
-                                    <tr key={b._id} className="hover:bg-slate-50 transition">
-                                        <td className="px-4 py-3 font-mono text-xs text-slate-500 hidden sm:table-cell">{b.bookingNumber}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <span>{FACILITY_ICONS[b.amenityId?.facilityType] ?? '🏢'}</span>
-                                                <span className="font-semibold text-slate-800">{b.amenityId?.name ?? '—'}</span>
-                                            </div>
-                                            {/* Mobile extra info */}
-                                            <div className="mt-1 sm:hidden text-xs text-slate-500 space-y-0.5">
-                                                <p>#{b.bookingNumber}</p>
-                                                <p>{b.residentId?.residentCode ?? '—'} {b.unitId?.unitNumber ? `(${b.unitId.unitNumber})` : ''}</p>
-                                                <p>{fmt(b.bookingDate)} | {b.startTime}–{b.endTime}</p>
-                                            </div>
-                                            {/* Tablet extra info (Date & Time hidden on md) */}
-                                            <div className="mt-1 hidden sm:block md:hidden text-xs text-slate-500">
-                                                <p>{fmt(b.bookingDate)} | {b.startTime}–{b.endTime}</p>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 hidden sm:table-cell">
-                                            <p className="text-slate-700">{b.residentId?.residentCode ?? '—'}</p>
-                                            <p className="text-xs text-slate-400">{b.unitId?.unitNumber ?? ''}</p>
-                                        </td>
-                                        <td className="px-4 py-3 hidden md:table-cell">
-                                            <p className="text-slate-700">{fmt(b.bookingDate)}</p>
-                                            <p className="text-xs text-slate-400">{b.startTime}–{b.endTime}</p>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${s.color}`}>{s.label}</span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex flex-wrap gap-1">
-                                                {b.status === 'PENDING_APPROVAL' && <>
-                                                    <button onClick={() => act(approve, { id: b._id }, 'Booking approved!')} className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-2 py-1 rounded-lg font-medium transition flex items-center gap-1">
-                                                        <CheckCircle2 className="w-3 h-3" />Approve
-                                                    </button>
-                                                    <button onClick={() => setRejectId(b._id)} className="text-xs bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded-lg font-medium transition flex items-center gap-1">
-                                                        <XCircle className="w-3 h-3" />Reject
-                                                    </button>
-                                                </>}
-                                                {b.status === 'CONFIRMED' && <>
-                                                    <button onClick={() => act(complete, b._id, 'Marked as completed!')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded-lg font-medium transition">Done</button>
-                                                    <button onClick={() => act(noShow, b._id, 'Marked as no show!')} className="text-xs bg-slate-100 text-slate-600 hover:bg-slate-200 px-2 py-1 rounded-lg font-medium transition">No Show</button>
-                                                    <button onClick={() => act(cancel, { id: b._id, reason: 'Cancelled by admin' }, 'Booking cancelled!')} className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded-lg font-medium transition">Cancel</button>
-                                                </>}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* Reject modal */}
-            {rejectId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-                        <h2 className="text-lg font-bold text-slate-800">Reason for Rejection</h2>
-                        <input value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Reason (required)" className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
-                        <div className="flex gap-3">
-                            <button onClick={() => { setRejectId(null); setRejectReason(''); }} className="flex-1 py-2 border border-slate-300 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                            <button onClick={async () => {
-                                if (!rejectReason.trim()) {
-                                    toast.error('Rejection reason is required');
-                                    return;
-                                }
-                                await act(reject, { id: rejectId, reason: rejectReason }, 'Booking rejected!');
-                                setRejectId(null); setRejectReason('');
-                            }} className="flex-1 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700">Reject</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// ── Main Admin Page ───────────────────────────────────────────────────────────
 export default function AdminAmenitiesPage() {
-    const [tab, setTab] = useState('amenities');
+    const [tab, setTab] = useState('amenities'); // 'amenities' | 'bookings'
     const [formTarget, setFormTarget] = useState(undefined); // undefined = closed, null = create, object = edit
-    const { data: amenityData, isLoading, refetch } = useListAmenitiesQuery({});
-    const [deleteAmenity] = useDeleteAmenityMutation();
+    const [searchQuery, setSearchQuery] = useState('');
     const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-    const amenities = amenityData?.data?.amenities ?? [];
+    const { data: amenityData, isLoading: loadingAmenities, refetch: refetchAmenities } = useListAmenitiesQuery({});
+    const { data: bookingData } = useListBookingsQuery({ limit: 1000 }); // fetch to get stats
+    
+    const [deleteAmenity] = useDeleteAmenityMutation();
 
-    const handleFormClose = (saved) => { setFormTarget(undefined); if (saved) refetch(); };
+    const amenities = amenityData?.data?.amenities ?? [];
+    const allBookings = bookingData?.data?.bookings ?? [];
+
+    const stats = useMemo(() => {
+        const active = amenities.filter(a => a.isActive).length;
+        const autoApprove = amenities.filter(a => a.autoApproval).length;
+        return {
+            totalAmenities: amenities.length,
+            activeAmenities: active,
+            totalBookings: allBookings.length,
+            autoApproved: autoApprove,
+            manualApproval: amenities.length - autoApprove
+        };
+    }, [amenities, allBookings]);
+
+    const filteredAmenities = amenities.filter(a => 
+        a.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        a.facilityType.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleFormClose = (saved) => { 
+        setFormTarget(undefined); 
+        if (saved) refetchAmenities(); 
+    };
+
     const handleDelete = async (id) => {
         try {
             await deleteAmenity(id).unwrap();
             toast.success('Amenity deleted successfully!');
-            refetch();
+            refetchAmenities();
         } catch (e) {
             toast.error(e?.data?.message ?? 'Delete failed');
         }
@@ -440,101 +60,174 @@ export default function AdminAmenitiesPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-start justify-between flex-wrap gap-3">
+            {/* Header */}
+            <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <Building2 className="w-6 h-6 text-indigo-600" /> Facility Management
+                    <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                        {tab === 'amenities' ? 'Amenities' : 'Bookings'}
                     </h1>
-                    <p className="text-slate-500 text-sm mt-1">Manage amenities and approve bookings</p>
+                    <p className="text-slate-400 text-sm mt-1">
+                        {tab === 'amenities' ? 'Manage all amenities and their booking settings' : 'Manage amenity bookings and resident details'}
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex gap-2 bg-slate-100 rounded-xl p-1">
-                        {[['amenities', 'Amenities'], ['bookings', 'Bookings']].map(([k, l]) => (
-                            <button key={k} onClick={() => setTab(k)}
-                                className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tab === k ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                                {l}
-                            </button>
-                        ))}
+                    <div className="flex bg-[#1a1c29]/50 border border-slate-700/50 rounded-xl p-1">
+                        <button 
+                            onClick={() => setTab('amenities')}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tab === 'amenities' ? 'bg-white text-[#1a1c29]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Amenities
+                        </button>
+                        <button 
+                            onClick={() => setTab('bookings')}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tab === 'bookings' ? 'bg-white text-[#1a1c29]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Bookings
+                        </button>
                     </div>
+                    
                     {tab === 'amenities' && (
-                        <Button size="sm" onClick={() => setFormTarget(null)}>
-                            <Plus className="w-4 h-4 mr-1" /> Add Amenity
-                        </Button>
+                        <>
+                            <button className="flex items-center gap-2 px-4 py-2 border border-slate-700 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 transition">
+                                <Download className="w-4 h-4" /> Export
+                            </button>
+                            <button 
+                                onClick={() => setFormTarget(null)}
+                                className="flex items-center gap-2 px-4 py-2 bg-[#6338f0] text-white rounded-xl text-sm font-semibold hover:bg-[#5229db] shadow-lg shadow-[#6338f0]/25 transition"
+                            >
+                                <Plus className="w-4 h-4" /> Add Amenity
+                            </button>
+                        </>
                     )}
                 </div>
             </div>
 
-            {/* Amenities Tab */}
-            {tab === 'amenities' && (
-                isLoading ? (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[...Array(6)].map((_, i) => <div key={i} className="h-44 animate-pulse rounded-2xl bg-slate-200" />)}</div>
-                ) : amenities.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                        <div className="text-5xl mb-3">🏢</div>
-                        <p className="text-slate-600 font-semibold">No amenities yet</p>
-                        <button onClick={() => setFormTarget(null)} className="mt-3 text-sm text-indigo-600 font-semibold hover:text-indigo-700">+ Add first amenity</button>
+            {tab === 'amenities' ? (
+                <div className="space-y-6">
+                    {/* Stats */}
+                    <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        <div className="w-[80vw] sm:w-[250px] shrink-0 snap-start">
+                            <StatCard 
+                                label="Total Amenities" 
+                            value={stats.totalAmenities} 
+                            icon={Building2}
+                            gradient="bg-gradient-to-br from-indigo-500 to-indigo-600"
+                            subLabel="All amenities"                            />
+                        </div>
+                        <div className="w-[80vw] sm:w-[250px] shrink-0 snap-start">
+                            <StatCard 
+                                label="Active Amenities" 
+                            value={stats.activeAmenities} 
+                            icon={Building2}
+                            gradient="bg-gradient-to-br from-emerald-500 to-emerald-600"
+                            subLabel="Currently active"                            />
+                        </div>
+                        <div className="w-[80vw] sm:w-[250px] shrink-0 snap-start">
+                            <StatCard 
+                                label="Total Bookings" 
+                            value={stats.totalBookings} 
+                            icon={Building2}
+                            gradient="bg-gradient-to-br from-amber-500 to-amber-600"
+                            subLabel="All time"                            />
+                        </div>
+                        <div className="w-[80vw] sm:w-[250px] shrink-0 snap-start">
+                            <StatCard 
+                                label="Auto-Approved" 
+                            value={stats.autoApproved} 
+                            icon={Building2}
+                            gradient="bg-gradient-to-br from-blue-500 to-blue-600"
+                            subLabel="Amenities"                            />
+                        </div>
+                        <div className="w-[80vw] sm:w-[250px] shrink-0 snap-start">
+                            <StatCard 
+                                label="Manual Approval" 
+                            value={stats.manualApproval} 
+                            icon={Building2}
+                            gradient="bg-gradient-to-br from-rose-500 to-rose-600"
+                            subLabel="Amenities"                            />
+                        </div>
                     </div>
-                ) : (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {amenities.map(a => (
-                            <div key={a._id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden">
-                                <div className="h-1.5 bg-gradient-to-r from-indigo-500 to-violet-500" />
-                                <div className="p-5">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center text-xl">
-                                                {FACILITY_ICONS[a.facilityType] ?? '🏢'}
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-slate-800">{a.name}</h3>
-                                                <p className="text-xs text-slate-400 capitalize">{a.facilityType.replace(/_/g, ' ')}</p>
-                                            </div>
-                                        </div>
-                                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${a.isActive ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
-                                            {a.isActive ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </div>
-                                    {a.description && <p className="text-xs text-slate-500 mb-3 line-clamp-2">{a.description}</p>}
-                                    <div className="flex flex-wrap gap-2 mb-4 text-xs text-slate-500">
-                                        {a.capacity && <span className="flex items-center gap-1"><Users className="w-3 h-3" />{a.capacity}</span>}
-                                        {a.isPaid && <span className="flex items-center gap-1 text-amber-600">₹{a.hourlyRate}/hr</span>}
-                                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{a.autoApproval ? 'Auto-approved' : 'Needs approval'}</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setFormTarget(a)} className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl py-2 transition">
-                                            <Pencil className="w-3.5 h-3.5" />Edit
-                                        </button>
-                                        <button onClick={() => setDeleteConfirm(a)} className="flex items-center justify-center gap-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl py-2 px-3 transition">
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+
+                    {/* Controls & Search */}
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div className="relative flex-1 min-w-[200px]">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input 
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search amenities..."
+                                className="w-full bg-[#1a1c29]/50 border border-slate-700/50 rounded-xl pl-9 pr-3 py-2.5 text-sm text-slate-200 focus:border-[#6338f0] focus:outline-none"
+                            />
+                        </div>
+                        <select className="bg-[#1a1c29]/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-400 focus:outline-none min-w-[150px]">
+                            <option>All Statuses</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <select className="bg-[#1a1c29]/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-400 focus:outline-none min-w-[150px]">
+                            <option>All Locations</option>
+                        </select>
+                        <button className="p-2.5 bg-[#6338f0] text-white rounded-xl shadow-lg shadow-[#6338f0]/25">
+                            <Settings className="w-4 h-4" />
+                        </button>
                     </div>
-                )
+
+                    {/* Grid */}
+                    {loadingAmenities ? (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-800/50 border border-slate-700/50" />
+                            ))}
+                        </div>
+                    ) : filteredAmenities.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center bg-[#1a1c29]/50 border border-slate-700/50 rounded-2xl p-16 text-center">
+                            <Building2 className="w-16 h-16 text-slate-600 mb-4" />
+                            <p className="text-lg font-bold text-slate-300">No amenities found</p>
+                            <p className="text-sm text-slate-500 mt-2">Get started by creating your first amenity.</p>
+                            <button 
+                                onClick={() => setFormTarget(null)}
+                                className="mt-6 flex items-center gap-2 px-6 py-2.5 bg-[#6338f0] text-white rounded-xl text-sm font-semibold hover:bg-[#5229db] shadow-lg shadow-[#6338f0]/25 transition"
+                            >
+                                <Plus className="w-4 h-4" /> Add Amenity
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                            {filteredAmenities.map(amenity => (
+                                <AmenityCard 
+                                    key={amenity._id} 
+                                    amenity={amenity}
+                                    isAdmin={true}
+                                    onEdit={() => setFormTarget(amenity)}
+                                    onDelete={() => setDeleteConfirm(amenity)}
+                                    onViewBookings={() => setTab('bookings')}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="flex-1 -mx-4 sm:-mx-6 lg:-mx-8">
+                    <BookingList />
+                </div>
             )}
 
-            {/* Bookings Tab */}
-            {tab === 'bookings' && <BookingTable />}
-
-            {/* Amenity Form Modal */}
+            {/* Modals */}
             {formTarget !== undefined && (
                 <AmenityFormModal existing={formTarget} onClose={handleFormClose} />
             )}
 
-            {/* Delete Confirm */}
             {deleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-red-600">
-                            <Trash2 className="w-5 h-5" />
+                    <div className="bg-[#1e2030] border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
+                        <div className="flex items-center gap-2 text-rose-500">
                             <h2 className="text-lg font-bold">Delete Amenity?</h2>
                         </div>
-                        <p className="text-sm text-slate-600">Delete <strong>{deleteConfirm.name}</strong>? This action cannot be undone.</p>
+                        <p className="text-sm text-slate-400">Delete <strong>{deleteConfirm.name}</strong>? This action cannot be undone.</p>
                         <div className="flex gap-3">
-                            <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2 border border-slate-300 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                            <button onClick={() => handleDelete(deleteConfirm._id)} className="flex-1 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700">Delete</button>
+                            <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2 border border-slate-600 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 transition">Cancel</button>
+                            <button onClick={() => handleDelete(deleteConfirm._id)} className="flex-1 py-2 bg-rose-600 text-white rounded-xl text-sm font-semibold hover:bg-rose-700 transition">Delete</button>
                         </div>
                     </div>
                 </div>

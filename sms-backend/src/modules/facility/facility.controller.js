@@ -20,11 +20,17 @@ export const getAmenity = asyncHandler(async (req, res) => {
 });
 
 export const createAmenity = asyncHandler(async (req, res) => {
+    if (req.file) {
+        req.body.image = req.file.cloudinaryUrl;
+    }
     const amenity = await facilityService.createAmenity(req.user.societyId, req.body);
     res.status(201).json(new ApiResponse(201, { amenity }, 'Amenity created'));
 });
 
 export const updateAmenity = asyncHandler(async (req, res) => {
+    if (req.file) {
+        req.body.image = req.file.cloudinaryUrl;
+    }
     const amenity = await facilityService.updateAmenity(req.params.id, req.user.societyId, req.body);
     res.status(200).json(new ApiResponse(200, { amenity }, 'Amenity updated'));
 });

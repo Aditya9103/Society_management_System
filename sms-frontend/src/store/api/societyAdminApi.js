@@ -12,7 +12,7 @@ import { getSocket } from '../../socket/socketClient';
 export const societyAdminApi = createApi({
     reducerPath: 'societyAdminApi',
     baseQuery: axiosBaseQuery(),
-    tagTypes: ['Society', 'Tower', 'Floor', 'Unit', 'Staff', 'Resident', 'DashboardStats', 'Complaint', 'Notice', 'Invoice'],
+    tagTypes: ['Society', 'Tower', 'Floor', 'Unit', 'Staff', 'Resident', 'DashboardStats', 'Complaint', 'Notice', 'Invoice', 'Poll', 'Violation'],
 
     endpoints: (builder) => ({
 
@@ -409,6 +409,29 @@ export const societyAdminApi = createApi({
             query: (params = {}) => ({ url: '/invoices', method: 'GET', params }),
             providesTags: [{ type: 'Invoice', id: 'LIST' }],
         }),
+
+        getAllPolls: builder.query({
+            query: (params = {}) => ({ url: '/polls', method: 'GET', params }),
+            providesTags: [{ type: 'Poll', id: 'LIST' }],
+        }),
+
+        // ── Violations ───────────────────────────────────────────────────────
+        getViolations: builder.query({
+            query: (params = {}) => ({ url: '/violations', method: 'GET', params }),
+            providesTags: [{ type: 'Violation', id: 'LIST' }],
+        }),
+        getViolationStats: builder.query({
+            query: () => ({ url: '/violations/stats', method: 'GET' }),
+            providesTags: ['Violation'],
+        }),
+        createViolation: builder.mutation({
+            query: (data) => ({ url: '/violations', method: 'POST', data }),
+            invalidatesTags: [{ type: 'Violation', id: 'LIST' }, 'Violation'],
+        }),
+        updateViolationStatus: builder.mutation({
+            query: ({ id, status }) => ({ url: `/violations/${id}/status`, method: 'PATCH', data: { status } }),
+            invalidatesTags: [{ type: 'Violation', id: 'LIST' }, 'Violation'],
+        }),
     }),
 });
 
@@ -465,5 +488,11 @@ export const {
     useGetNoticeAcknowledgementsQuery,
     // Invoices
     useGetAllInvoicesQuery,
+    // Polls
+    useGetAllPollsQuery,
+    // Violations
+    useGetViolationsQuery,
+    useGetViolationStatsQuery,
+    useCreateViolationMutation,
+    useUpdateViolationStatusMutation,
 } = societyAdminApi;
-

@@ -185,8 +185,12 @@ export default function ResidentComplaintsPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {stats.map((s, i) => <StatCard key={i} {...s} />)}
+            <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {stats.map((s, i) => (
+                    <div key={i} className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                        <StatCard {...s} />
+                    </div>
+                ))}
             </div>
 
             {/* Main Content Grid */}
@@ -217,7 +221,7 @@ export default function ResidentComplaintsPage() {
                     </div>
 
                     {/* Tabs & Controls */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0f111a] p-2 rounded-[20px] border border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0f111a] p-2 rounded-[0px] md:rounded-[20px] border-y md:border border-slate-800">
                         <div className="flex items-center overflow-x-auto gap-1 snap-x no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {tabs.map(tab => (
                                 <button
@@ -261,8 +265,12 @@ export default function ResidentComplaintsPage() {
                             <p className="text-[13px] text-slate-500">You don't have any complaints matching this filter.</p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {filteredComplaints.map(c => <ComplaintCard key={c._id} complaint={c} linkPrefix="/resident/complaints" />)}
+                        <div className="space-y-0 md:space-y-4">
+                            {filteredComplaints.map(c => (
+                                <div key={c._id} className="border-b md:border-none border-slate-800">
+                                    <ComplaintCard complaint={c} linkPrefix="/resident/complaints" />
+                                </div>
+                            ))}
                         </div>
                     )}
 
@@ -345,6 +353,14 @@ export default function ResidentComplaintsPage() {
             </div>
 
             {showModal && <RaiseComplaintModal onClose={() => { setShowModal(false); refetch(); }} />}
+
+            {/* Mobile FAB */}
+            <button 
+                onClick={() => setShowModal(true)}
+                className="lg:hidden fixed bottom-20 right-4 h-14 w-14 rounded-full bg-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)] flex items-center justify-center text-white z-40 active:scale-95 transition-transform"
+            >
+                <Plus className="h-6 w-6" />
+            </button>
         </div>
     );
 }

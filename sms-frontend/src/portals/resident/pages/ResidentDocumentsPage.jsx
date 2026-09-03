@@ -192,7 +192,7 @@ export default function ResidentDocumentsPage() {
                     <FileText className="w-8 h-8 text-indigo-400" />
                     <div>
                         <h1 className="text-2xl font-bold text-white">My Documents</h1>
-                        <p className="text-white font-bold text-sm mt-1">Store and manage all your personal and society documents securely.</p>
+                        <p className="hidden text-white font-bold text-sm mt-1">Store and manage all your personal and society documents securely.</p>
                     </div>
                 </div>
                 <Button

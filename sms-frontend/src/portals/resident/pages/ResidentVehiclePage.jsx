@@ -129,8 +129,8 @@ export default function ResidentVehiclePage() {
     const activeParked = vehicles.filter(v => v.isCurrentlyParked).length;
 
     return (
-        <div className="relative text-white p-6 -m-6 md:-m-8 z-10">
-            <div className="max-w-7xl mx-auto space-y-8">
+        <div className="relative text-white z-10 font-sans pb-10">
+            <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
                 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -138,7 +138,7 @@ export default function ResidentVehiclePage() {
                         <h1 className="text-3xl font-bold text-white mb-1">Vehicles & Parking</h1>
                         <p className="text-white font-bold">Manage your vehicles and parking spaces</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex items-center gap-3">
                         <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 font-bold transition-colors">
                             <QrCode size={18} /> Scan QR
                         </button>
@@ -152,8 +152,9 @@ export default function ResidentVehiclePage() {
                 </div>
 
                 {/* Metrics Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <StatCard 
+                <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                        <StatCard 
                         icon={Car}
                         title="Total Vehicles"
                         value={vehicles.length}
@@ -163,7 +164,9 @@ export default function ResidentVehiclePage() {
                         gradient="from-[#2e1d5e]/80 to-[#1c1439]"
                         onClick={() => setActiveTab('My Vehicles')}
                     />
-                    <StatCard 
+                    </div>
+                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                        <StatCard 
                         icon={ParkingCircle}
                         title="Active Parking"
                         value={activeParked}
@@ -173,7 +176,9 @@ export default function ResidentVehiclePage() {
                         gradient="from-[#143261]/80 to-[#0b1c36]"
                         onClick={() => setActiveTab('My Parking')}
                     />
-                    <StatCard 
+                    </div>
+                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                        <StatCard 
                         icon={CheckCircle2}
                         title="Available Slots"
                         value={parkingSlots.filter(s => s.status === 'AVAILABLE' && !s.assignedVehicleId).length}
@@ -182,6 +187,7 @@ export default function ResidentVehiclePage() {
                         iconColor="text-[#4ade80]"
                         gradient="from-[#123625]/80 to-[#0a1f15]"
                     />
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -259,9 +265,9 @@ export default function ResidentVehiclePage() {
                                 <p className="text-white font-bold text-sm">Add a vehicle to manage your parking spaces or adjust your filters.</p>
                             </div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="space-y-0 sm:space-y-4">
                                 {filteredAndSortedVehicles.map(v => (
-                                    <div key={v._id} className="bg-[#131525] border border-white/5 rounded-2xl p-5 flex flex-col lg:flex-row gap-6 shadow-lg hover:border-white/10 transition-colors">
+                                    <div key={v._id} className="bg-[#131525] border-y sm:border border-white/5 rounded-none sm:rounded-2xl p-5 -mx-4 sm:mx-0 flex flex-col lg:flex-row gap-6 shadow-lg hover:border-white/10 transition-colors">
                                         
                                         {/* Left: Image Placeholder */}
                                         <div className="w-full lg:w-48 h-32 bg-gradient-to-br from-[#1c1f36] to-[#0f1120] rounded-xl flex items-center justify-center overflow-hidden border border-white/5 shrink-0 relative group">
@@ -469,7 +475,7 @@ export default function ResidentVehiclePage() {
                                             </div>
                                             <div>
                                                 <h3 className="text-lg font-bold text-white mb-1">{violation.type.replace('_', ' ')}</h3>
-                                                <p className="text-sm text-white font-bold mb-2">{violation.description || 'No description provided.'}</p>
+                                                <p className="hidden md:block text-sm text-white font-bold mb-2">{violation.description || 'No description provided.'}</p>
                                                 <div className="flex items-center gap-4 text-xs font-bold text-slate-500">
                                                     <span>{new Date(violation.createdAt).toLocaleDateString('en-GB')}</span>
                                                     <span className="font-mono text-white font-bold bg-white/5 px-2 py-0.5 rounded">{violation.vehicleId?.vehicleNumber}</span>
@@ -490,13 +496,15 @@ export default function ResidentVehiclePage() {
                 )}
                 
                 {/* Modal */}
-                {showAddModal && (
-                    <AddVehicleModal 
-                        onClose={() => setShowAddModal(false)}
-                        onAdd={handleAddVehicle}
-                        isLoading={isRegistering}
-                    />
-                )}
+                {showAddModal && <AddVehicleModal onClose={() => setShowAddModal(false)} onSubmit={handleAddVehicle} isSubmitting={isRegistering} />}
+
+                {/* Mobile FAB */}
+                <button 
+                    onClick={() => setShowAddModal(true)}
+                    className="sm:hidden fixed bottom-20 right-4 h-14 w-14 rounded-full bg-indigo-600 shadow-[0_0_20px_rgba(99,102,241,0.5)] flex items-center justify-center text-white z-40 active:scale-95 transition-transform"
+                >
+                    <Plus className="h-6 w-6" />
+                </button>
             </div>
         </div>
     );

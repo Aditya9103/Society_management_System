@@ -8,11 +8,11 @@ const violationSchema = new mongoose.Schema(
             ref: 'Society',
             required: true,
         },
-        // Reference to the associated Vehicle
+        // Reference to the associated Vehicle (Optional)
         vehicleId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Vehicle',
-            required: true,
+            required: false,
         },
         // Reference to the associated Resident
         residentId: {
@@ -23,7 +23,7 @@ const violationSchema = new mongoose.Schema(
         // Violation type
         type: {
             type: String,
-            enum: ['WRONG_PARKING', 'SPEEDING', 'OVERNIGHT_PARKING', 'NO_STICKER', 'OTHER'],
+            enum: ['WRONG_PARKING', 'SPEEDING', 'OVERNIGHT_PARKING', 'NO_STICKER', 'NOISE', 'LITTERING', 'DAMAGE', 'PET_ISSUE', 'UNAUTHORIZED_MODIFICATION', 'OTHER'],
             required: true,
         },
         description: {

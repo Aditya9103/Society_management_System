@@ -139,7 +139,7 @@ export default function ResidentPollsPage() {
             <div className="flex justify-between items-center bg-[#0B0D17] border border-white/5 rounded-2xl p-6 relative overflow-hidden">
                 <div className="relative z-10 max-w-[80%] md:max-w-none">
                     <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">Polls & Voting</h1>
-                    <p className="text-white font-bold text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
+                    <p className="hidden text-white font-bold text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
                 </div>
                 <div className="absolute top-4 right-4 md:relative md:top-auto md:right-auto z-10 w-16 h-16 md:w-[120px] md:h-[120px] opacity-80 md:opacity-100">
                     <img src="/pollbox.png" alt="Poll Box Graphic" className="w-full h-full object-contain" />

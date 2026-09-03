@@ -76,7 +76,8 @@ export function NoticeCard({ notice }) {
     };
 
     return (
-        <div className={`relative overflow-hidden rounded-[16px] md:rounded-[24px] bg-gradient-to-r ${theme.bgGradient} border ${theme.border} ${theme.glow} p-3 sm:p-4 md:p-5 lg:p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col`}>
+        <div className={`relative overflow-hidden rounded-none sm:rounded-[24px] -mx-4 sm:mx-0 bg-gradient-to-r ${theme.bgGradient} border-y sm:border ${theme.border} ${theme.glow} p-3 sm:p-4 md:p-5 lg:p-6 transition-all duration-300 ${!isAck ? 'shadow-[0_0_20px_rgba(255,255,255,0.03)] border-l-4 sm:border-l-4' : ''} ${!isAck && notice.requiresAcknowledgement ? 'border-l-[#8560ff]' : ''}`}>
+            
             {/* Absolute positioning for the background image spanning the entire card */}
             <div className="absolute inset-0 z-0 overflow-hidden opacity-[0.15]">
                 {/* Gradient overlay to ensure text readability */}

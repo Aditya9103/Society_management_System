@@ -7,15 +7,15 @@ export default function StatCard({ label, value, icon: Icon, gradient, subLabel,
         <div 
             onClick={onClick}
             className={cn(
-                'relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:shadow-xl', 
+                'relative overflow-hidden rounded-xl p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:shadow-xl', 
                 gradient,
                 (onClick || to) ? 'cursor-pointer' : ''
             )}
         >
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-sm font-medium text-white/75">{label}</p>
-                    <p className="mt-1 text-4xl font-bold tracking-tight">
+                    <p className="text-xs font-medium text-white/75">{label}</p>
+                    <p className="mt-1 text-2xl font-bold tracking-tight">
                         {value ?? <span className="text-white/40">—</span>}
                     </p>
                     {subLabel && (
@@ -24,8 +24,8 @@ export default function StatCard({ label, value, icon: Icon, gradient, subLabel,
                         </p>
                     )}
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-                    <Icon className="h-6 w-6 text-white" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/15 backdrop-blur-sm">
+                    <Icon className="h-5 w-5 text-white" />
                 </div>
             </div>
             {/* Decorative blob */}

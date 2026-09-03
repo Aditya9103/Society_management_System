@@ -66,6 +66,16 @@ const amenitySchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        // Image for banner
+        image: {
+            type: String,
+            default: null
+        },
+        // Location
+        location: {
+            type: String,
+            default: null
+        },
         // Capacity
         capacity: {
             type: Number,

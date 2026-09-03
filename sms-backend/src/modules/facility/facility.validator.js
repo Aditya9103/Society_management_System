@@ -17,6 +17,8 @@ export const createAmenitySchema = Joi.object({
     ).required(),
     customAmenityType: Joi.string().allow(null, '').optional(),
     description: Joi.string().allow(null, '').optional(),
+    image: Joi.string().allow(null, '').optional(),
+    location: Joi.string().allow(null, '').optional(),
     capacity: Joi.number().integer().min(1).allow(null).optional(),
     amenitiesIncluded: Joi.array().items(Joi.string()).optional(),
     bookingUnit: Joi.string().valid('HOURLY', 'HALF_DAY', 'FULL_DAY', 'SLOT').optional(),

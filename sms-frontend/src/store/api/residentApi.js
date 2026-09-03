@@ -8,7 +8,7 @@ import { getSocket } from '../../socket/socketClient';
 export const residentApi = createApi({
     reducerPath: 'residentApi',
     baseQuery: axiosBaseQuery(),
-    tagTypes: ['ResidentProfile', 'ResidentStatus', 'Complaint', 'Notice', 'Visitor', 'Invoice', 'FamilyMember', 'DomesticStaff'],
+    tagTypes: ['ResidentProfile', 'ResidentStatus', 'Complaint', 'Notice', 'Visitor', 'Invoice', 'FamilyMember', 'DomesticStaff', 'Violation'],
     endpoints: (builder) => ({
 
         // ── Profile ──────────────────────────────────────────────────────────
@@ -174,6 +174,18 @@ export const residentApi = createApi({
             invalidatesTags: (r, e, id) => [{ type: 'Notice', id }, { type: 'Notice', id: 'LIST' }],
         }),
 
+        // ── Family Members & Staff ───────────────────────────────────────────
+        getMyFamilyMembers: builder.query({
+            query: () => ({ url: '/family', method: 'GET' }),
+            providesTags: [{ type: 'FamilyMember', id: 'LIST' }],
+        }),
+
+        // ── Violations ───────────────────────────────────────────────────────
+        getMyViolations: builder.query({
+            query: () => ({ url: '/violations/me', method: 'GET' }),
+            providesTags: [{ type: 'Violation', id: 'LIST' }],
+        }),
+
         // ── Visitors ──────────────────────────────────────────────────────────
 
         getMyVisitors: builder.query({
@@ -242,6 +254,8 @@ export const {
     useIncrementViewMutation,
     useGetNoticeByIdQuery,
     useAcknowledgeNoticeMutation,
+    useGetMyFamilyMembersQuery,
+    useGetMyViolationsQuery,
     useGetMyVisitorsQuery,
     useCreateVisitorPassMutation,
     useCancelVisitorPassMutation,

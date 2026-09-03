@@ -45,7 +45,7 @@ export default function ComplaintCard({ complaint, linkPrefix = '/admin/complain
     const unit = complaint.raisedBy?.unitId?.unitNumber || 'N/A';
     
     return (
-        <div className={`relative bg-[#151722] border border-white/5 rounded-2xl p-5 pl-6 transition-all hover:bg-white/[0.02] overflow-hidden flex flex-col lg:flex-row lg:items-center gap-6 group`}>
+        <div className={`relative bg-[#151722] border-y md:border border-white/5 rounded-none md:rounded-2xl p-5 pl-6 transition-all hover:bg-white/[0.02] overflow-hidden flex flex-col lg:flex-row lg:items-center gap-6 group -mx-4 md:mx-0`}>
             {/* Make entire card clickable except for z-10 actions */}
             <Link to={`${linkPrefix}/${complaint._id}`} className="absolute inset-0 z-0" />
 

@@ -90,16 +90,16 @@ export default function ResidentEmergencyPage() {
     const strokeDashoffset = circumference - (holdProgress / 100) * circumference;
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6 pb-24 sm:pb-0 font-sans">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 -mx-4 px-4 sm:mx-0 sm:px-0">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center shrink-0">
                         <ShieldAlert className="w-6 h-6 text-red-500" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white leading-tight">Emergency (SOS)</h1>
-                        <p className="text-sm text-white font-bold">Instant help when you need it most. We're here to keep you safe.</p>
+                        <p className="hidden text-sm text-white font-bold">Instant help when you need it most. We're here to keep you safe.</p>
                     </div>
                 </div>
                 
@@ -113,10 +113,10 @@ export default function ResidentEmergencyPage() {
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 -mx-4 sm:mx-0">
                 
                 {/* Left: SOS Button Block */}
-                <div className="bg-[#131525] border border-white/5 rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
+                <div className="bg-[#131525] sm:border border-white/5 rounded-none sm:rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
                     {/* Background glow effects */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-red-500/10 blur-[100px] rounded-full pointer-events-none" />
                     
@@ -168,15 +168,15 @@ export default function ResidentEmergencyPage() {
 
                     <div className="text-center mt-6 z-10">
                         <p className="text-lg font-bold text-white mb-1">Press and hold for 3 seconds</p>
-                        <p className="text-sm text-white font-bold">Release to cancel</p>
+                        <p className="hidden md:block text-sm text-white font-bold">Release to cancel</p>
                     </div>
 
                     {/* Warning Banner inside the card */}
                     <div className="mt-8 bg-red-500/5 border border-red-500/10 rounded-xl p-4 w-full flex items-center gap-4 z-10">
                         <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
                         <div>
-                            <p className="text-sm text-white font-bold">False alarms will be recorded.</p>
-                            <p className="text-sm text-white font-bold">Use only in genuine emergencies.</p>
+                            <p className="hidden md:block text-sm text-white font-bold">False alarms will be recorded.</p>
+                            <p className="hidden md:block text-sm text-white font-bold">Use only in genuine emergencies.</p>
                         </div>
                     </div>
                 </div>

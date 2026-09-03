@@ -33,7 +33,7 @@ export function VisitorCard({ visitor }) {
     const formattedTime = visitor.expectedArrival ? new Date(visitor.expectedArrival).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
 
     return (
-        <div className="bg-[#151822] border border-slate-800 rounded-3xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center transition-all hover:bg-[#1a1e2b] group">
+        <div className="bg-[#151822] border-y lg:border border-slate-800 rounded-none lg:rounded-3xl p-5 -mx-4 lg:mx-0 flex flex-col md:flex-row justify-between items-start md:items-center transition-all hover:bg-[#1a1e2b] group">
             
             <div className="flex items-start gap-4 flex-1">
                 {/* Avatar/Initial */}

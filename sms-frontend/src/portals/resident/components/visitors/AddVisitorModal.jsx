@@ -112,9 +112,9 @@ export function AddVisitorModal({ onClose }) {
                     onChange={set('vehicleNumber')}
                     placeholder="MH01AB1234" 
                 />
-                <div className="flex justify-end gap-3 pt-6 border-t border-slate-800/80 mt-6">
-                    <DarkButton type="button" variant="secondary" onClick={onClose}>Cancel</DarkButton>
-                    <DarkButton type="submit" variant="primary" isLoading={isLoading}>Create Pass</DarkButton>
+                <div className="absolute sm:relative bottom-0 left-0 right-0 p-4 sm:p-0 bg-[#0B0D17]/95 backdrop-blur sm:bg-transparent border-t border-slate-800/80 sm:border-t flex justify-end gap-3 sm:pt-6 sm:mt-6 z-20 pb-8 sm:pb-0">
+                    <DarkButton type="button" variant="secondary" onClick={onClose} className="flex-1 sm:flex-none">Cancel</DarkButton>
+                    <DarkButton type="submit" variant="primary" isLoading={isLoading} className="flex-[2] sm:flex-none">Create Pass</DarkButton>
                 </div>
             </form>
         </DarkModal>

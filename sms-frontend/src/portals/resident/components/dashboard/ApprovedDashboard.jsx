@@ -176,7 +176,8 @@ export function ApprovedDashboard({ profile, user }) {
             </div>
 
             {/* ── Stats Grid ──────────────────────────────────────────────── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Total Complaints" 
                     value="12" 
@@ -189,6 +190,8 @@ export function ApprovedDashboard({ profile, user }) {
                     colors="from-[#4a1216]/80 to-[#2b0a0d]"
                     svgPoints="0,22 10,25 20,15 25,25 35,20 45,5 55,18 65,22 75,10 85,20 95,25 100,22"
                 />
+                </div>
+                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Pending Visitors" 
                     value="3" 
@@ -201,6 +204,8 @@ export function ApprovedDashboard({ profile, user }) {
                     colors="from-[#123625]/80 to-[#0a1f15]"
                     svgPoints="0,25 10,20 20,25 30,15 40,25 50,5 60,15 70,25 80,15 90,25 100,20"
                 />
+                </div>
+                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Unpaid Invoices" 
                     value="2" 
@@ -213,6 +218,8 @@ export function ApprovedDashboard({ profile, user }) {
                     colors="from-[#4a3212]/80 to-[#261909]"
                     svgPoints="0,25 15,15 25,22 35,15 45,25 55,5 65,18 75,22 85,10 95,20 100,25"
                 />
+                </div>
+                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Active Notices" 
                     value="5" 
@@ -225,11 +232,12 @@ export function ApprovedDashboard({ profile, user }) {
                     colors="from-[#143261]/80 to-[#0b1c36]"
                     svgPoints="0,22 10,20 25,25 35,12 45,20 55,5 65,15 75,25 85,15 95,22 100,20"
                 />
+                </div>
             </div>
 
             {/* ── SOS Banner ──────────────────────────────────────────────── */}
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-fuchsia-600/80 via-slate-800 to-red-600/80 shadow-[0_0_40px_rgba(239,68,68,0.15)] mt-4 mb-8">
-                <div className="relative w-full h-full overflow-hidden rounded-[15px] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6"
+            <div className="relative rounded-none sm:rounded-2xl p-0 sm:p-[1px] bg-gradient-to-r from-fuchsia-600/80 via-slate-800 to-red-600/80 shadow-[0_0_40px_rgba(239,68,68,0.15)] mt-4 mb-8 -mx-4 sm:mx-0">
+                <div className="relative w-full h-full overflow-hidden rounded-none sm:rounded-[15px] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6"
                      style={{ background: 'linear-gradient(90deg, rgba(30,10,50,0.5) 0%, rgba(10,11,18,1) 40%, rgba(60,10,10,0.6) 100%)' }}>
                     
                     {/* Radar glow and rings (Left) */}
@@ -325,8 +333,9 @@ export function ApprovedDashboard({ profile, user }) {
                         <Pencil size={14} /> Edit
                     </button>
                 </div>
-                <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
-                    <QuickAccessBtn 
+                <div className="flex overflow-x-auto gap-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
+                        <QuickAccessBtn 
                         icon={<Coffee size={28} className="text-[#d946ef] filter drop-shadow-[0_0_5px_rgba(217,70,239,0.5)]" strokeWidth={2} />} 
                         label="Amenities" 
                         sub="Book Facilities" 
@@ -335,6 +344,8 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#d946ef]/20"
                         gradient="from-[#3a1342]/80 to-[#1e0a23]"
                     />
+                    </div>
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
                     <QuickAccessBtn 
                         icon={<Users size={28} className="text-[#10b981] filter drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" strokeWidth={2} />} 
                         label="Visitor Passes" 
@@ -344,6 +355,8 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#10b981]/20"
                         gradient="from-[#123625]/80 to-[#0a1f15]"
                     />
+                    </div>
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
                     <QuickAccessBtn 
                         icon={<MessageCircle size={28} className="text-[#f43f5e] filter drop-shadow-[0_0_5px_rgba(244,63,94,0.5)]" strokeWidth={2} />} 
                         label="Complaints" 
@@ -353,6 +366,8 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#f43f5e]/20"
                         gradient="from-[#4a1226]/80 to-[#2b0a16]"
                     />
+                    </div>
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
                     <QuickAccessBtn 
                         icon={<Receipt size={28} className="text-[#f59e0b] filter drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]" strokeWidth={2} />} 
                         label="Invoices" 
@@ -362,6 +377,8 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#f59e0b]/20"
                         gradient="from-[#4a3212]/80 to-[#261909]"
                     />
+                    </div>
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
                     <QuickAccessBtn 
                         icon={<Folder size={28} className="text-[#3b82f6] filter drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" strokeWidth={2} />} 
                         label="Documents" 
@@ -371,6 +388,8 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#3b82f6]/20"
                         gradient="from-[#143261]/80 to-[#0b1c36]"
                     />
+                    </div>
+                    <div className="w-[30vw] sm:w-auto shrink-0 snap-start">
                     <QuickAccessBtn 
                         icon={<Car size={28} className="text-[#06b6d4] filter drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]" strokeWidth={2} />} 
                         label="Vehicles" 
@@ -380,13 +399,14 @@ export function ApprovedDashboard({ profile, user }) {
                         bgClass="bg-[#06b6d4]/20"
                         gradient="from-[#104a57]/80 to-[#092b33]"
                     />
+                    </div>
                 </div>
             </div>
 
             {/* ── Lists ───────────────────────────────────────────────────── */}
             <div className="grid lg:grid-cols-2 gap-6">
                 {/* Recent Notices */}
-                <div className="rounded-2xl bg-[#0a0b12] border border-slate-800/80 p-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
+                <div className="rounded-none sm:rounded-2xl -mx-4 px-4 sm:mx-0 sm:px-5 bg-[#0a0b12] border-y sm:border border-slate-800/80 py-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-[40px] pointer-events-none"></div>
                     <div className="flex items-center justify-between mb-5 relative z-10">
                         <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
@@ -406,7 +426,7 @@ export function ApprovedDashboard({ profile, user }) {
                 </div>
 
                 {/* Upcoming Amenities */}
-                <div className="rounded-2xl bg-[#0a0b12] border border-slate-800/80 p-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
+                <div className="rounded-none sm:rounded-2xl -mx-4 px-4 sm:mx-0 sm:px-5 bg-[#0a0b12] border-y sm:border border-slate-800/80 py-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-600/5 rounded-full blur-[40px] pointer-events-none"></div>
                     <div className="flex items-center justify-between mb-5 relative z-10">
                         <h3 className="text-[15px] font-bold text-white flex items-center gap-2">

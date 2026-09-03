@@ -22,10 +22,13 @@ import ResidentVehiclePage from './pages/ResidentVehiclePage';
 import ResidentPollsPage from './pages/ResidentPollsPage';
 import ResidentDocumentsPage from './pages/ResidentDocumentsPage';
 import ResidentAmenitiesPage from './pages/ResidentAmenitiesPage';
+import ResidentMyBookingsPage from './pages/ResidentMyBookingsPage';
+import ResidentBookingDetailsPage from './pages/ResidentBookingDetailsPage';
+import ResidentViolationsPage from './pages/ResidentViolationsPage';
 import ResidentWalkInListener from './components/ResidentWalkInListener';
 import { PendingApprovalScreen } from './components/dashboard/PendingApprovalScreen';
 import { RejectedScreen } from './components/dashboard/RejectedScreen';
-import { FileText } from 'lucide-react';
+import { FileText, AlertOctagon } from 'lucide-react';
 const SIDEBAR_CONFIG = {
     brand: { title: 'Green Valley', subtitle: 'Apartment', Icon: Leaf },
     accentFrom: 'from-purple-600',
@@ -36,6 +39,7 @@ const SIDEBAR_CONFIG = {
         { to: '/resident/notices', label: 'Notices', Icon: Bell, badge: 3 },
         { to: '/resident/profile', label: 'My Profile', Icon: User },
         { to: '/resident/complaints', label: 'Complaints', Icon: MessageSquareWarning },
+        { to: '/resident/violations', label: 'My Violations', Icon: AlertOctagon },
         { to: '/resident/visitors', label: 'Visitor Passes', Icon: UserCheck },
         { to: '/resident/vehicles', label: 'Vehicles & Parking', Icon: Car },
         { to: '/resident/amenities', label: 'Amenities', Icon: Building2 },
@@ -79,6 +83,7 @@ export default function ResidentApp() {
                 <Route path="profile" element={<ResidentProfilePage />} />
                 <Route path="complaints" element={<ResidentComplaintsPage />} />
                 <Route path="complaints/:id" element={<ResidentComplaintDetailsPage />} />
+                <Route path="violations" element={<ResidentViolationsPage />} />
                 <Route path="emergency" element={<ResidentEmergencyPage />} />
                 <Route path="vehicles" element={<ResidentVehiclePage />} />
                 <Route path="visitors" element={<ResidentVisitorPage />} />
@@ -86,6 +91,8 @@ export default function ResidentApp() {
                 <Route path="invoices" element={<ResidentInvoicesPage />} />
                 <Route path="documents" element={<ResidentDocumentsPage />} />
                 <Route path="amenities" element={<ResidentAmenitiesPage />} />
+                <Route path="amenities/bookings" element={<ResidentMyBookingsPage />} />
+                <Route path="amenities/bookings/:id" element={<ResidentBookingDetailsPage />} />
                 <Route path="*" element={<Navigate to="/resident" replace />} />
             </Routes>
         </PortalLayout>

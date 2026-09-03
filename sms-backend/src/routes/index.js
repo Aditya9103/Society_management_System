@@ -13,6 +13,7 @@ import notificationRoutes from '../modules/notification/notification.routes.js';
 import emergencyRoutes   from '../modules/emergency/emergency.routes.js';
 import vehicleRoutes     from '../modules/vehicle/vehicle.routes.js';
 import pollRoutes        from '../modules/poll/poll.routes.js';
+import violationRoutes from '../modules/violation/violation.routes.js';
 import documentRoutes    from '../modules/document/document.routes.js';
 import idCardRoutes      from '../modules/idCard/idCard.routes.js';
 import facilityRoutes    from '../modules/facility/facility.routes.js';
@@ -52,7 +53,9 @@ router.use('/invoices',   paymentRoutes);      // Invoice & Payment module
 router.use('/notifications', notificationRoutes); // Notification module
 router.use('/emergencies', emergencyRoutes);   // Emergency module
 router.use('/vehicles',    vehicleRoutes);     // Vehicle module
-router.use('/polls',       pollRoutes);        // Polls & Voting module
+router.use('/payments',   paymentRoutes);      // Payments module
+router.use('/polls',      pollRoutes);         // Polls module
+router.use('/violations', violationRoutes);    // Violation tracking module
 router.use('/documents',   documentRoutes);    // Document Management module
 router.use('/id-cards',    idCardRoutes);      // Digital ID Card module
 router.use('/facilities',  facilityRoutes);    // Amenity & Booking module

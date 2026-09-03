@@ -67,8 +67,9 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
             onClose={onClose} 
             title="Register New Vehicle"
             theme="dark"
+            className="!fixed sm:!relative inset-0 sm:inset-auto !h-[100dvh] sm:!h-auto !rounded-none sm:!rounded-3xl flex flex-col z-50 overflow-hidden"
         >
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 pb-24 sm:pb-0">
                 <Input theme="dark" 
                     label="Vehicle Number *" 
                     placeholder="e.g. MH 12 AB 1234" 
@@ -231,11 +232,11 @@ export default function AddVehicleModal({ onClose, onAdd, isLoading }) {
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
-                    <Button type="button" variant="outline" className="border-white/20 text-white font-bold hover:bg-white/5" onClick={onClose} disabled={isLoading}>
+                <div className="fixed sm:relative bottom-0 left-0 right-0 p-4 sm:p-0 bg-[#131525]/95 backdrop-blur sm:bg-transparent border-t border-white/10 sm:border-0 flex justify-end gap-3 sm:pt-4 sm:mt-6 z-20 pb-8 sm:pb-0">
+                    <Button type="button" variant="outline" className="border-white/20 text-white font-bold hover:bg-white/5 flex-1 sm:flex-none" onClick={onClose} disabled={isLoading}>
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-bold">
+                    <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] hover:opacity-90 transition-all text-white font-bold flex-[2] sm:flex-none">
                         {isLoading ? 'Registering...' : 'Register Vehicle'}
                     </Button>
                 </div>

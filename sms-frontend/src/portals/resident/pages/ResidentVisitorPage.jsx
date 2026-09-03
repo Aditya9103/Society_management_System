@@ -39,7 +39,7 @@ export default function ResidentVisitorPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Visitor Passes</h1>
-                        <p className="text-white font-bold text-sm">Create, manage and track all your visitor entries</p>
+                        <p className="hidden text-white font-bold text-sm">Create, manage and track all your visitor entries</p>
                     </div>
                     <button 
                         onClick={() => setShowModal(true)}
@@ -50,9 +50,10 @@ export default function ResidentVisitorPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 lg:mx-0 lg:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] mb-4 lg:mb-8">
                     {stats.map((stat, idx) => (
-                        <div key={idx} className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${stat.gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg`}>
+                        <div key={idx} className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                            <div className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${stat.gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg`}>
                             {/* Abstract Background Waves (CSS based) */}
                             <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
                                 <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,11 +72,12 @@ export default function ResidentVisitorPage() {
                                     <p className="text-white font-bold text-[10px] font-bold">{stat.sublabel}</p>
                                 </div>
                             </div>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 -mx-4 lg:mx-0">
                     {/* Main Content Area */}
                     <div className="lg:col-span-8 space-y-6">
                         {/* Tabs */}
@@ -110,7 +112,11 @@ export default function ResidentVisitorPage() {
                                     <p className="text-[13px] text-slate-500">You don't have any passes matching this filter.</p>
                                 </div>
                             ) : (
-                                filteredVisitors.map(v => <VisitorCard key={v._id} visitor={v} />)
+                                filteredVisitors.map(v => (
+                                    <div key={v._id} className="border-b lg:border-none border-slate-800">
+                                        <VisitorCard visitor={v} />
+                                    </div>
+                                ))
                             )}
                         </div>
                     </div>
@@ -201,6 +207,14 @@ export default function ResidentVisitorPage() {
             </div>
 
             {showModal && <AddVisitorModal onClose={() => { setShowModal(false); refetch(); }} />}
+
+            {/* Mobile FAB */}
+            <button 
+                onClick={() => setShowModal(true)}
+                className="lg:hidden fixed bottom-20 right-4 h-14 w-14 rounded-full bg-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)] flex items-center justify-center text-white z-40 active:scale-95 transition-transform"
+            >
+                <Plus className="h-6 w-6" />
+            </button>
         </div>
     );
 }

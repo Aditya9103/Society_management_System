@@ -1,7 +1,7 @@
 import Vehicle from './vehicle.model.js';
 import VehicleLog from './vehicleLog.model.js';
 import ParkingSlot from './parkingSlot.model.js';
-import Violation from './violation.model.js';
+import Violation from '../violation/violation.model.js';
 
 // --- VEHICLE CRUD ---
 

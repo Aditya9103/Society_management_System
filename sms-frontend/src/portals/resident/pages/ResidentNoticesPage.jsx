@@ -94,7 +94,7 @@ export default function ResidentNoticesPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Notice Board</h1>
-                    <p className="text-sm text-white font-bold">Stay informed with important announcements & updates from your society</p>
+                    <p className="hidden text-sm text-white font-bold">Stay informed with important announcements & updates from your society</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -115,7 +115,8 @@ export default function ResidentNoticesPage() {
             </div>
 
             {/* Top Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] mb-4 md:mb-8">
+                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
                 <StatCard 
                     icon={Calendar}
                     title="Total Notices"
@@ -126,6 +127,8 @@ export default function ResidentNoticesPage() {
                     gradient="from-[#2e1d5e]/80 to-[#1c1439]"
                     onClick={() => setActiveTab('All')}
                 />
+                </div>
+                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
                 <StatCard 
                     icon={Bell}
                     title="Unread"
@@ -136,6 +139,8 @@ export default function ResidentNoticesPage() {
                     gradient="from-[#143261]/80 to-[#0b1c36]"
                     onClick={() => setActiveTab('All')}
                 />
+                </div>
+                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
                 <StatCard 
                     icon={AlertTriangle}
                     title="High Priority"
@@ -146,6 +151,8 @@ export default function ResidentNoticesPage() {
                     gradient="from-[#4a1216]/80 to-[#2b0a0d]"
                     onClick={() => setActiveTab('Urgent')}
                 />
+                </div>
+                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
                 <StatCard 
                     icon={Clock}
                     title="This Month"
@@ -156,6 +163,7 @@ export default function ResidentNoticesPage() {
                     gradient="from-[#123625]/80 to-[#0a1f15]"
                     onClick={() => setActiveTab('General')}
                 />
+                </div>
             </div>
 
             {/* Main Layout */}
@@ -165,7 +173,7 @@ export default function ResidentNoticesPage() {
                 <div className="lg:col-span-8">
 
                     {/* Category Tabs */}
-                    <div className="flex items-center overflow-x-auto gap-2 md:gap-3 mb-6 md:mb-8 snap-x pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="flex items-center overflow-x-auto gap-2 md:gap-3 px-4 md:px-0 mb-6 md:mb-8 snap-x pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {categories.map(cat => (
                             <button
                                 key={cat}
@@ -181,7 +189,7 @@ export default function ResidentNoticesPage() {
                     </div>
 
                     {/* Notices Stream */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 md:space-y-6">
                         {isLoading ? (
                             <div className="space-y-4">
                                 {[1, 2, 3].map(i => (
@@ -196,7 +204,7 @@ export default function ResidentNoticesPage() {
                             <div className="text-center py-16 bg-[#0f111a] rounded-[24px] border border-slate-800">
                                 <Bell className="h-10 w-10 text-slate-600 mx-auto mb-3" />
                                 <h3 className="text-lg font-bold text-white mb-1">No notices found</h3>
-                                <p className="text-sm text-white font-bold">Try adjusting your filters or search query.</p>
+                                <p className="hidden md:block text-sm text-white font-bold">Try adjusting your filters or search query.</p>
                             </div>
                         )}
                     </div>

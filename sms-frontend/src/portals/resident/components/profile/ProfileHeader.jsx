@@ -3,7 +3,7 @@ import { Camera, RefreshCw, ShieldCheck, Mail, Phone, Calendar, User, CheckCircl
 
 export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarChange }) {
     return (
-        <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-5 lg:px-8 lg:py-6 shadow-xl border border-indigo-500/30 mb-6 max-w-full box-border">
+        <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-5 lg:px-8 lg:py-6 shadow-xl border border-indigo-500/30 mb-6 max-w-full box-border">
             {/* Background pattern */}
             <div className="absolute inset-y-0 right-0 w-full lg:w-1/2 opacity-20 mix-blend-overlay pointer-events-none bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800')] bg-cover bg-center lg:bg-left"></div>
             <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-indigo-900 via-indigo-900/80 to-transparent"></div>
@@ -63,9 +63,9 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                 </div>
 
                 {/* ─── DESKTOP ONLY LAYOUT ─── */}
-                <div className="hidden lg:flex flex-row justify-between items-end gap-5 w-full">
+                <div className="hidden lg:flex flex-col justify-center items-center gap-5 w-full">
                     {/* Top Section: Avatar & Info */}
-                    <div className="flex items-center gap-5 w-auto flex-1">
+                    <div className="flex flex-col items-center gap-5 w-full text-center">
                         <div className="relative shrink-0 group cursor-pointer">
                             <div className="h-[90px] w-[90px] rounded-full bg-[#dfd099] flex items-center justify-center text-indigo-900 text-3xl font-bold border-2 border-indigo-300 shadow-xl overflow-hidden">
                                 {user?.profilePhotoUrl ? (
@@ -83,7 +83,7 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                             </div>
                         </div>
 
-                        <div className="flex flex-col items-start min-w-0">
+                        <div className="flex flex-col items-center min-w-0 w-full">
                             <div className="flex items-center gap-1.5 text-white text-[12px] font-bold mb-1.5 bg-indigo-500/30 px-3 py-1 rounded-full border border-indigo-400/50">
                                 <CheckCircle2 size={14} className="text-white shrink-0" /> <span>Verified Resident</span>
                             </div>
@@ -96,8 +96,8 @@ export function ProfileHeader({ user, profile, isUpdatingAvatar, handleAvatarCha
                         </div>
                     </div>
 
-                    {/* Right/Bottom Section: Desktop Stats Blocks */}
-                    <div className="flex items-center gap-4 justify-end w-auto shrink-0">
+                    {/* Bottom Section: Desktop Stats Blocks */}
+                    <div className="flex items-center justify-center gap-4 w-full mt-4">
                         <div className="shrink-0 flex flex-col items-start min-w-[140px] bg-white/10 border border-white/10 rounded-[16px] px-4 py-3 backdrop-blur-md">
                             <span className="text-[12px] text-white font-bold font-semibold mb-1.5">Member Since</span>
                             <div className="flex items-center gap-2 font-bold text-white text-[16px]">

@@ -46,7 +46,7 @@ export function RaiseComplaintModal({ onClose }) {
     };
 
     return (
-        <Modal isOpen={true} onClose={onClose} className="!bg-[#0f111a] !border !border-slate-800 !p-0 shadow-[0_0_50px_rgba(79,70,229,0.15)] max-w-2xl w-full">
+        <Modal isOpen={true} onClose={onClose} className="!bg-[#0f111a] !border-0 sm:!border sm:!border-slate-800 !p-0 shadow-[0_0_50px_rgba(79,70,229,0.15)] max-w-2xl w-full !fixed sm:!relative inset-0 sm:inset-auto !h-[100dvh] sm:!h-auto !rounded-none sm:!rounded-2xl flex flex-col z-50 overflow-hidden">
             
             {/* Custom Header */}
             <div className="relative overflow-hidden bg-gradient-to-r from-indigo-950/40 to-[#0f111a] border-b border-slate-800 px-6 py-5 flex items-start justify-between">
@@ -64,7 +64,8 @@ export function RaiseComplaintModal({ onClose }) {
                 </button>
             </div>
 
-            <div className="p-6">
+            {/* Form Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 pb-32 sm:pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {error && (
                     <div className="mb-5 flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                         <AlertCircle className="h-5 w-5 shrink-0" />
@@ -72,7 +73,7 @@ export function RaiseComplaintModal({ onClose }) {
                     </div>
                 )}
                 
-                <form onSubmit={e => handleSubmit(e, 'OPEN')} className="space-y-5">
+                <form id="complaint-form" onSubmit={e => handleSubmit(e, 'OPEN')} className="space-y-6">
                     
                     <div className="space-y-1.5">
                         <label className="text-[13px] font-bold text-white font-bold">Title <span className="text-red-400">*</span></label>
@@ -192,35 +193,28 @@ export function RaiseComplaintModal({ onClose }) {
                             </div>
                         </div>
                     </div>
-
-                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-800/50 mt-6">
-                        <button 
-                            type="button" 
-                            className="px-5 py-2.5 rounded-xl bg-transparent hover:bg-slate-800 text-white font-bold text-[13px] font-bold transition-colors" 
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            type="button" 
-                            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[13px] font-bold transition-colors disabled:opacity-50" 
-                            onClick={() => handleSubmit(null, 'DRAFT')} 
-                            disabled={isLoading}
-                        >
-                            Save Draft
-                        </button>
-                        <button 
-                            type="submit" 
-                            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold transition-colors shadow-[0_0_15px_rgba(79,70,229,0.4)] disabled:opacity-50 flex items-center justify-center min-w-[140px]" 
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <div className="h-4 w-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
-                            ) : 'Submit Complaint'}
-                        </button>
-                    </div>
-
                 </form>
+            </div>
+
+            {/* Sticky Footer */}
+            <div className="absolute sm:relative bottom-0 left-0 right-0 p-4 sm:p-6 bg-[#0f111a]/95 backdrop-blur sm:bg-transparent border-t border-slate-800/50 flex justify-end gap-3 z-20 pb-8 sm:pb-6 pt-4 sm:pt-4 sm:mt-0">
+                <button 
+                    type="button" 
+                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-transparent hover:bg-slate-800 border border-slate-700/50 sm:border-transparent text-white font-bold text-[13px] transition-colors" 
+                    onClick={onClose}
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit" 
+                    form="complaint-form"
+                    className="flex-[2] sm:flex-none px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold transition-colors shadow-[0_0_15px_rgba(79,70,229,0.4)] disabled:opacity-50 flex items-center justify-center" 
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <div className="h-4 w-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                    ) : 'Submit Complaint'}
+                </button>
             </div>
         </Modal>
     );

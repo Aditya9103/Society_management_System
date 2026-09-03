@@ -28,7 +28,8 @@ import AdminParkingPage from './pages/AdminParkingPage';
 import AdminPollsPage from './pages/AdminPollsPage';
 import AdminDocumentsPage from './pages/AdminDocumentsPage';
 import AdminAmenitiesPage from './pages/AdminAmenitiesPage';
-import { FileText } from 'lucide-react';
+import AdminViolationsPage from './pages/AdminViolationsPage';
+import { FileText, AlertOctagon } from 'lucide-react';
 
 const SIDEBAR_CONFIG = {
   brand: { title: 'Society Admin', subtitle: 'Management Portal', Icon: ShieldCheck },
@@ -44,6 +45,7 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/complaints', label: 'Complaints', Icon: MessageSquareWarning },
     { to: '/admin/emergencies', label: 'Emergencies', Icon: ShieldAlert },
     { to: '/admin/notices', label: 'Notices', Icon: Bell },
+    { to: '/admin/violations', label: 'Violations', Icon: AlertOctagon },
     { to: '/admin/invoices', label: 'Invoices', Icon: Receipt },
     { to: '/admin/vehicles', label: 'Vehicles', Icon: Car },
     { to: '/admin/parking', label: 'Parking', Icon: MapPin },
@@ -53,7 +55,7 @@ const SIDEBAR_CONFIG = {
     { to: '/admin/towers', label: 'Towers & Floors', Icon: Building2 },
 
   ],
-  bottomNavRoutes: ['/admin', '/admin/residents', '/admin/complaints', '/admin/emergencies', '/admin/notices', '/admin/amenities', '/admin/polls', '/admin/documents', '/admin/invoices'],
+  bottomNavRoutes: ['/admin', '/admin/residents', '/admin/complaints', '/admin/emergencies', '/admin/notices', '/admin/violations', '/admin/amenities', '/admin/polls', '/admin/documents', '/admin/invoices'],
 };
 
 export default function AdminApp() {
@@ -71,6 +73,7 @@ export default function AdminApp() {
         <Route path="complaints" element={<AdminComplaintsPage />} />
         <Route path="complaints/:id" element={<AdminComplaintDetailsPage />} />
         <Route path="emergencies" element={<AdminEmergencyPage />} />
+        <Route path="violations" element={<AdminViolationsPage />} />
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="notices/:id" element={<AdminNoticeDetailsPage />} />
         <Route path="invoices" element={<AdminInvoicesPage />} />

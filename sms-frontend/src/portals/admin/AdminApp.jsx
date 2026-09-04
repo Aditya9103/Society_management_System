@@ -12,6 +12,7 @@ import PortalLayout from '../../components/layout/PortalLayout';
 import DashboardPage from './pages/DashboardPage';
 import SocietyProfilePage from './pages/SocietyProfilePage';
 import TowersPage from './pages/TowersPage';
+import TowerDetailsPage from './pages/TowerDetailsPage';
 import UnitsPage from './pages/UnitsPage';
 import StaffPage from './pages/StaffPage';
 import StaffProfilePage from './pages/StaffProfilePage';
@@ -23,6 +24,7 @@ import AdminNoticesPage from './pages/AdminNoticesPage';
 import AdminNoticeDetailsPage from './pages/AdminNoticeDetailsPage';
 import AdminInvoicesPage from './pages/AdminInvoicesPage';
 import AdminEmergencyPage from './pages/AdminEmergencyPage';
+import AdminEmergencyDetailsPage from './pages/AdminEmergencyDetailsPage';
 import AdminVehiclePage from './pages/AdminVehiclePage';
 import AdminParkingPage from './pages/AdminParkingPage';
 import AdminPollsPage from './pages/AdminPollsPage';
@@ -65,6 +67,7 @@ export default function AdminApp() {
         <Route index element={<DashboardPage />} />
         <Route path="profile" element={<SocietyProfilePage />} />
         <Route path="towers" element={<TowersPage />} />
+        <Route path="towers/:towerId" element={<TowerDetailsPage />} />
         <Route path="units" element={<UnitsPage />} />
         <Route path="staff" element={<StaffPage />} />
         <Route path="staff/:id" element={<StaffProfilePage />} />
@@ -73,6 +76,7 @@ export default function AdminApp() {
         <Route path="complaints" element={<AdminComplaintsPage />} />
         <Route path="complaints/:id" element={<AdminComplaintDetailsPage />} />
         <Route path="emergencies" element={<AdminEmergencyPage />} />
+        <Route path="emergencies/:id" element={<AdminEmergencyDetailsPage />} />
         <Route path="violations" element={<AdminViolationsPage />} />
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="notices/:id" element={<AdminNoticeDetailsPage />} />

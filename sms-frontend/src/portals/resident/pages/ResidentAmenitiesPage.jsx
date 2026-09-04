@@ -69,16 +69,16 @@ export default function ResidentAmenitiesPage() {
             <div className="max-w-[1400px] mx-auto space-y-6 pb-20">
 
                 {/* Top Banner & Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 w-full">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Amenities Booking</h1>
-                        <p className="hidden text-slate-400 text-sm">Book and manage your community amenities</p>
+                        <p className="hidden md:block text-slate-400 text-sm">Book and manage your community amenities</p>
                     </div>
                     <button
                         onClick={navigateToMyBookings}
-                        className="bg-[#1e2030] hover:bg-[#25283a] border border-slate-700/50 text-slate-200 px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-colors shadow-sm"
+                        className="w-full md:w-auto justify-center bg-[#1e2030] hover:bg-[#25283a] border border-slate-700/50 text-slate-200 px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-colors shadow-sm"
                     >
-                        <CalendarDays className="w-4 h-4" /> My Bookings
+                        <CalendarDays className="w-4 h-4 shrink-0" /> My Bookings
                     </button>
                 </div>
 

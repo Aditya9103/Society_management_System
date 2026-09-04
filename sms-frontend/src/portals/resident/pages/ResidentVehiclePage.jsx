@@ -21,14 +21,14 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradi
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
                 <Icon className={`w-5 h-5 ${iconColor}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
-                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
-                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
+                <div className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[9px] sm:text-[10px] text-white/80 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
     </div>
@@ -133,27 +133,27 @@ export default function ResidentVehiclePage() {
             <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
                 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 w-full">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-1">Vehicles & Parking</h1>
-                        <p className="text-white font-bold">Manage your vehicles and parking spaces</p>
+                        <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Vehicles & Parking</h1>
+                        <p className="hidden md:block text-slate-400 text-sm">Manage your vehicles and parking spaces</p>
                     </div>
-                    <div className="hidden sm:flex items-center gap-3">
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 font-bold transition-colors">
-                            <QrCode size={18} /> Scan QR
+                    <div className="flex w-full md:w-auto items-center gap-3">
+                        <button className="flex-1 md:flex-none justify-center flex items-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 font-bold transition-colors">
+                            <QrCode size={18} shrink-0 /> Scan QR
                         </button>
                         <button 
                             onClick={() => setShowAddModal(true)} 
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:opacity-90 shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all"
+                            className="flex-1 md:flex-none justify-center flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold hover:opacity-90 shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all"
                         >
-                            <Plus size={18} /> Add Vehicle
+                            <Plus size={18} shrink-0 /> Add Vehicle
                         </button>
                     </div>
                 </div>
 
                 {/* Metrics Cards */}
                 <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                    <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                         <StatCard 
                         icon={Car}
                         title="Total Vehicles"
@@ -165,7 +165,7 @@ export default function ResidentVehiclePage() {
                         onClick={() => setActiveTab('My Vehicles')}
                     />
                     </div>
-                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                    <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                         <StatCard 
                         icon={ParkingCircle}
                         title="Active Parking"
@@ -177,7 +177,7 @@ export default function ResidentVehiclePage() {
                         onClick={() => setActiveTab('My Parking')}
                     />
                     </div>
-                    <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                    <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                         <StatCard 
                         icon={CheckCircle2}
                         title="Available Slots"

@@ -15,14 +15,14 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, gradient, onClic
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
                 <Icon className="w-5 h-5" />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
-                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
-                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
+                <div className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[9px] sm:text-[10px] text-white/80 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
     </div>
@@ -30,41 +30,49 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, gradient, onClic
 
 export function InvoiceStatsCards({ stats, formatCurrency, onCardClick }) {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard 
-                icon={Receipt}
-                title="Total Outstanding"
-                value={formatCurrency(stats.totalOutstanding)}
-                subtitle={`${stats.unpaidCount} Unpaid Invoices`}
-                iconBg="bg-[#3e248a]/50 text-[#b388ff]"
-                gradient="from-[#2e1d5e]/80 to-[#1c1439]"
-                onClick={onCardClick ? () => onCardClick('UNPAID') : undefined}
-            />
-            <StatCard 
-                icon={Wallet}
-                title="Total Paid"
-                value={formatCurrency(stats.totalPaid)}
-                subtitle={`${stats.paidCount} Paid Invoices`}
-                iconBg="bg-[#1a4d35]/50 text-[#4ade80]"
-                gradient="from-[#123625]/80 to-[#0a1f15]"
-                onClick={onCardClick ? () => onCardClick('PAID') : undefined}
-            />
-            <StatCard 
-                icon={CalendarDays}
-                title="Paid This Year"
-                value={formatCurrency(stats.paidThisYear)}
-                subtitle={`${stats.currentYear} - ${stats.currentYear + 1}`}
-                iconBg="bg-[#6b4819]/50 text-[#f59e0b]"
-                gradient="from-[#4a3212]/80 to-[#261909]"
-            />
-            <StatCard 
-                icon={FileText}
-                title="Next Due Date"
-                value={stats.nextDueDate ? format(stats.nextDueDate, 'dd MMM yyyy') : '--'}
-                subtitle={stats.nextDueDate ? formatCurrency(stats.totalOutstanding) : 'No pending dues'}
-                iconBg="bg-[#1d488c]/50 text-[#60a5fa]"
-                gradient="from-[#143261]/80 to-[#0b1c36]"
-            />
+        <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                <StatCard 
+                    icon={Receipt}
+                    title="Total Outstanding"
+                    value={formatCurrency(stats.totalOutstanding)}
+                    subtitle={`${stats.unpaidCount} Unpaid Invoices`}
+                    iconBg="bg-[#3e248a]/50 text-[#b388ff]"
+                    gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                    onClick={onCardClick ? () => onCardClick('UNPAID') : undefined}
+                />
+            </div>
+            <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                <StatCard 
+                    icon={Wallet}
+                    title="Total Paid"
+                    value={formatCurrency(stats.totalPaid)}
+                    subtitle={`${stats.paidCount} Paid Invoices`}
+                    iconBg="bg-[#1a4d35]/50 text-[#4ade80]"
+                    gradient="from-[#123625]/80 to-[#0a1f15]"
+                    onClick={onCardClick ? () => onCardClick('PAID') : undefined}
+                />
+            </div>
+            <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                <StatCard 
+                    icon={CalendarDays}
+                    title="Paid This Year"
+                    value={formatCurrency(stats.paidThisYear)}
+                    subtitle={`${stats.currentYear} - ${stats.currentYear + 1}`}
+                    iconBg="bg-[#6b4819]/50 text-[#f59e0b]"
+                    gradient="from-[#4a3212]/80 to-[#261909]"
+                />
+            </div>
+            <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                <StatCard 
+                    icon={FileText}
+                    title="Next Due Date"
+                    value={stats.nextDueDate ? format(stats.nextDueDate, 'dd MMM yyyy') : '--'}
+                    subtitle={stats.nextDueDate ? formatCurrency(stats.totalOutstanding) : 'No pending dues'}
+                    iconBg="bg-[#1d488c]/50 text-[#60a5fa]"
+                    gradient="from-[#143261]/80 to-[#0b1c36]"
+                />
+            </div>
         </div>
     );
 }

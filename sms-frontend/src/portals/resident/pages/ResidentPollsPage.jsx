@@ -25,16 +25,16 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradi
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
                 <Icon className={`w-5 h-5 ${iconColor}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
                 <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-bold text-white tracking-tight mb-1">{value}</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-1">{value}</h3>
                 </div>
-                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+                <p className="text-[9px] sm:text-[10px] text-white/80 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
     </div>
@@ -138,8 +138,8 @@ export default function ResidentPollsPage() {
             {/* Header & 3D Graphic */}
             <div className="flex justify-between items-center bg-[#0B0D17] border border-white/5 rounded-2xl p-6 relative overflow-hidden">
                 <div className="relative z-10 max-w-[80%] md:max-w-none">
-                    <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">Polls & Voting</h1>
-                    <p className="hidden text-white font-bold text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Polls & Voting</h1>
+                    <p className="hidden md:block text-slate-400 text-sm pr-2 md:pr-0">Participate in surveys, elections and help shape our community.</p>
                 </div>
                 <div className="absolute top-4 right-4 md:relative md:top-auto md:right-auto z-10 w-16 h-16 md:w-[120px] md:h-[120px] opacity-80 md:opacity-100">
                     <img src="/pollbox.png" alt="Poll Box Graphic" className="w-full h-full object-contain" />
@@ -149,46 +149,54 @@ export default function ResidentPollsPage() {
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard 
-                    icon={BarChart2}
-                    title="Active Polls"
-                    value={totalActivePolls}
-                    subtitle="Currently open"
-                    iconBg="bg-[#3e248a]/50"
-                    iconColor="text-[#b388ff]"
-                    gradient="from-[#2e1d5e]/80 to-[#1c1439]"
-                    onClick={() => setActiveTab('ACTIVE')}
-                />
-                <StatCard 
-                    icon={Users}
-                    title="Total Participants"
-                    value={totalParticipants}
-                    subtitle="Across all polls"
-                    iconBg="bg-[#1a4d35]/50"
-                    iconColor="text-[#4ade80]"
-                    gradient="from-[#123625]/80 to-[#0a1f15]"
-                    onClick={() => setActiveTab('PAST')}
-                />
-                <StatCard 
-                    icon={Activity}
-                    title="Total Votes Cast"
-                    value={totalVotesCast}
-                    subtitle="Total votes received"
-                    iconBg="bg-[#6b4819]/50"
-                    iconColor="text-[#f59e0b]"
-                    gradient="from-[#4a3212]/80 to-[#261909]"
-                    onClick={() => setActiveTab('PAST')}
-                />
-                <StatCard 
-                    icon={ShieldCheck}
-                    title="Participation Rate"
-                    value={`${participationRate}%`}
-                    subtitle="Active residents"
-                    iconBg="bg-[#1d488c]/50"
-                    iconColor="text-[#60a5fa]"
-                    gradient="from-[#143261]/80 to-[#0b1c36]"
-                />
+            <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={BarChart2}
+                        title="Active Polls"
+                        value={totalActivePolls}
+                        subtitle="Currently open"
+                        iconBg="bg-[#3e248a]/50"
+                        iconColor="text-[#b388ff]"
+                        gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                        onClick={() => setActiveTab('ACTIVE')}
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={Users}
+                        title="Total Participants"
+                        value={totalParticipants}
+                        subtitle="Across all polls"
+                        iconBg="bg-[#1a4d35]/50"
+                        iconColor="text-[#4ade80]"
+                        gradient="from-[#123625]/80 to-[#0a1f15]"
+                        onClick={() => setActiveTab('PAST')}
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={Activity}
+                        title="Total Votes Cast"
+                        value={totalVotesCast}
+                        subtitle="Total votes received"
+                        iconBg="bg-[#6b4819]/50"
+                        iconColor="text-[#f59e0b]"
+                        gradient="from-[#4a3212]/80 to-[#261909]"
+                        onClick={() => setActiveTab('PAST')}
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={ShieldCheck}
+                        title="Participation Rate"
+                        value={`${participationRate}%`}
+                        subtitle="Active residents"
+                        iconBg="bg-[#1d488c]/50"
+                        iconColor="text-[#60a5fa]"
+                        gradient="from-[#143261]/80 to-[#0b1c36]"
+                    />
+                </div>
             </div>
 
             {/* Navigation & Filters */}

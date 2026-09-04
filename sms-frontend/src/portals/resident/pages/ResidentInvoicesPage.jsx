@@ -137,16 +137,16 @@ export default function ResidentInvoicesPage() {
     return (
         <div className="max-w-[1400px] mx-auto space-y-6 pb-20">
             {/* Custom Header Area to match mockup exactly */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 w-full">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">Invoices & Billing</h1>
-                    <p className="hidden text-sm text-white font-bold">Your maintenance and society charges in one place.</p>
+                    <p className="hidden md:block text-sm text-white font-bold">Your maintenance and society charges in one place.</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button onClick={handlePayNow} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition-colors">
+                <div className="flex w-full md:w-auto items-center gap-3">
+                    <button onClick={handlePayNow} className="w-full md:w-auto justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition-colors">
                         <span>+ Pay Now</span>
                     </button>
-                    <button onClick={refetch} disabled={isFetching} className="p-2.5 bg-[#131525] border border-white/10 hover:border-white/20 text-white font-bold hover:text-white rounded-xl transition-colors">
+                    <button onClick={refetch} disabled={isFetching} className="shrink-0 p-2.5 bg-[#131525] border border-white/10 hover:border-white/20 text-white font-bold hover:text-white rounded-xl transition-colors">
                         <RefreshCw className={`w-5 h-5 ${isFetching ? 'animate-spin' : ''}`} />
                     </button>
                 </div>

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, Activity, Hourglass, CheckCircle, Archive, Search, Filter, ChevronDown, List, Grid, Mic, Plus, Eye, MoreVertical, Building2, User } from 'lucide-react';
-import { useGetAllEmergenciesQuery, useBroadcastUpdateMutation } from '../../../store/api/emergencyApi';
+import { useGetAllEmergenciesQuery } from '../../../store/api/emergencyApi';
 import { getSocket } from '../../../socket/socketClient';
-import toast from 'react-hot-toast';
-import { Button } from '../../../components/ui/Button';
 
 const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradient, onClick }) => (
     <div 
@@ -30,13 +28,11 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradi
     </div>
 );
 
-export default function AdminEmergencyPage() {
+export default function StaffEmergencyPage() {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showBroadcastModal, setShowBroadcastModal] = useState(false);
-    const [broadcastMsg, setBroadcastMsg] = useState('');
     const [isMuted, setIsMuted] = useState(false);
 
     const audioCtxRef = useRef(null);
@@ -44,7 +40,6 @@ export default function AdminEmergencyPage() {
     const tableRef = useRef(null);
 
     const { data: res, isLoading, refetch } = useGetAllEmergenciesQuery({ page, limit: 10, status: statusFilter });
-    const [broadcastUpdate, { isLoading: isBroadcasting }] = useBroadcastUpdateMutation();
 
     const emergencies = res?.data?.emergencies || [];
     const stats = res?.data?.stats || { total: 0, live: 0, inProgress: 0, resolved: 0, closed: 0 };
@@ -113,18 +108,6 @@ export default function AdminEmergencyPage() {
         );
     }, [emergencies, searchQuery]);
 
-    const handleBroadcast = async () => {
-        if (!broadcastMsg) return;
-        try {
-            await broadcastUpdate({ message: broadcastMsg }).unwrap();
-            toast.success('Broadcast sent to all residents');
-            setShowBroadcastModal(false);
-            setBroadcastMsg('');
-        } catch (error) {
-            toast.error(error.data?.message || 'Failed to send broadcast');
-        }
-    };
-
     const getStatusColor = (status) => {
         switch (status) {
             case 'ACTIVE': return 'bg-red-900/50 text-red-500 border border-red-500/30';
@@ -157,21 +140,16 @@ export default function AdminEmergencyPage() {
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-white mb-0.5">Emergencies</h1>
-                        <p className="text-slate-400 text-sm">Monitor and manage all emergency incidents in the society</p>
+                        <h1 className="text-2xl font-bold text-white mb-0.5">Emergencies (Staff)</h1>
+                        <p className="text-slate-400 text-sm">Monitor, respond to, and manage emergency incidents</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     <button 
-                        onClick={() => setShowBroadcastModal(true)}
+                        onClick={() => setIsMuted(!isMuted)}
                         className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#131525] border border-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm hover:border-slate-600 transition-colors"
                     >
-                        <Mic className="w-4 h-4" /> Broadcast Alert
-                    </button>
-                    <button 
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#6338f0] hover:bg-[#5225e2] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-                    >
-                        <Plus className="w-4 h-4" /> New Emergency <ChevronDown className="w-3 h-3 ml-1" />
+                        {isMuted ? 'Unmute Alarm' : 'Mute Alarm'}
                     </button>
                 </div>
             </div>
@@ -245,10 +223,6 @@ export default function AdminEmergencyPage() {
                         <button className="flex items-center gap-2 bg-[#131525] border border-slate-800 text-slate-300 px-4 py-2 rounded-lg text-sm hover:border-slate-700">
                             <Filter className="w-4 h-4" /> Filters <ChevronDown className="w-3 h-3 ml-1" />
                         </button>
-                        <div className="flex items-center gap-1 bg-[#131525] border border-slate-800 rounded-lg p-1 ml-auto">
-                            <button className="p-1.5 rounded-md bg-[#6338f0] text-white"><List className="w-4 h-4" /></button>
-                            <button className="p-1.5 rounded-md text-slate-500 hover:text-white"><Grid className="w-4 h-4" /></button>
-                        </div>
                     </div>
                 </div>
 
@@ -295,7 +269,7 @@ export default function AdminEmergencyPage() {
                                             : 'hover:bg-[#202236]/50';
 
                                     return (
-                                        <tr key={em._id} onClick={() => navigate(`/admin/emergencies/${em._id}`)} className={`border-b border-slate-800/30 cursor-pointer group transition-colors ${rowClasses}`}>
+                                        <tr key={em._id} onClick={() => navigate(`/staff/emergencies/${em._id}`)} className={`border-b border-slate-800/30 cursor-pointer group transition-colors ${rowClasses}`}>
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
@@ -379,11 +353,8 @@ export default function AdminEmergencyPage() {
                                             </td>
                                             <td className="px-5 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
-                                                    <button onClick={() => navigate(`/admin/emergencies/${em._id}`)} className="p-1.5 text-slate-500 hover:text-white bg-[#131525] hover:bg-slate-700 border border-slate-800 rounded transition-colors">
+                                                    <button onClick={() => navigate(`/staff/emergencies/${em._id}`)} className="p-1.5 text-slate-500 hover:text-white bg-[#131525] hover:bg-slate-700 border border-slate-800 rounded transition-colors">
                                                         <Eye className="w-4 h-4" />
-                                                    </button>
-                                                    <button className="p-1.5 text-slate-500 hover:text-white bg-[#131525] hover:bg-slate-700 border border-slate-800 rounded transition-colors">
-                                                        <MoreVertical className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </td>
@@ -413,82 +384,6 @@ export default function AdminEmergencyPage() {
                     </div>
                 )}
             </div>
-
-            {/* Bottom Insights */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#1a1c29] border border-slate-800/50 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-red-900/20 border border-red-500/20 flex items-center justify-center shrink-0">
-                        <ShieldAlert className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div className="flex-1">
-                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Emergency Insights</p>
-                        <h3 className="text-white font-bold mt-0.5">Stay Alert</h3>
-                    </div>
-                </div>
-                
-                <div className="bg-[#1a1c29] border border-slate-800/50 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
-                        <Building2 className="w-6 h-6 text-slate-400" />
-                    </div>
-                    <div>
-                        <p className="text-xs text-slate-500 font-medium">Most Emergency Prone Area</p>
-                        <h3 className="text-white font-bold mt-0.5">Tower A</h3>
-                        <p className="text-xs text-slate-400">7 emergencies</p>
-                    </div>
-                </div>
-
-                <div className="bg-[#1a1c29] border border-slate-800/50 rounded-2xl p-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-blue-900/20 border border-blue-500/20 flex items-center justify-center shrink-0">
-                            <Hourglass className="w-6 h-6 text-blue-500" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-slate-500 font-medium">Average Response Time</p>
-                            <h3 className="text-white font-bold mt-0.5">04:32 mins</h3>
-                            <p className="text-xs text-slate-400">This month</p>
-                        </div>
-                    </div>
-                    <button className="px-4 py-2 bg-[#131525] border border-slate-700 text-slate-300 rounded-lg text-sm hover:border-[#6338f0] hover:text-white transition-colors">
-                        View Analytics &rarr;
-                    </button>
-                </div>
-            </div>
-
-            {/* Broadcast Modal */}
-            {showBroadcastModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0e14]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#1a1c29] border border-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-slate-800">
-                            <h2 className="text-xl font-bold text-white">Broadcast Security Update</h2>
-                            <p className="text-sm text-slate-400 mt-1">This will send a high-priority push notification to all residents.</p>
-                        </div>
-                        <div className="p-6">
-                            <textarea
-                                value={broadcastMsg}
-                                onChange={(e) => setBroadcastMsg(e.target.value)}
-                                placeholder="E.g., Society under lockdown, please stay indoors."
-                                className="w-full h-32 p-4 bg-[#131525] border border-slate-700 text-slate-200 rounded-xl focus:ring-2 focus:ring-[#6338f0] focus:border-transparent outline-none resize-none"
-                            />
-                        </div>
-                        <div className="px-6 py-4 bg-[#131525] border-t border-slate-800 flex justify-end gap-3">
-                            <Button
-                                variant="secondary"
-                                onClick={() => setShowBroadcastModal(false)}
-                                className="bg-transparent border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleBroadcast}
-                                disabled={!broadcastMsg || isBroadcasting}
-                                className="bg-[#6338f0] hover:bg-[#5225e2] text-white disabled:opacity-50"
-                            >
-                                {isBroadcasting ? 'Sending...' : 'Send Broadcast'}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

@@ -595,21 +595,22 @@ export const listResidentProfiles = async (societyId, query = {}) => {
  */
 export const listTowers = async (societyId) => {
     const towers = await towerRepo.findBySociety(societyId);
-    // Attach floor count per tower
-    const towersWithFloors = await Promise.all(
+    // Attach floor count per tower and occupied units
+    const towersWithStats = await Promise.all(
         towers.map(async (t) => {
             const floors = await floorRepo.findByTower(t._id.toString());
-            return { ...t, floors, floorCount: floors.length };
+            const occupiedUnits = await unitRepo.countDocuments({ towerId: t._id, isOccupied: true });
+            return { ...t, floors, floorCount: floors.length, occupiedUnits };
         }),
     );
-    return towersWithFloors;
+    return towersWithStats;
 };
 
 /**
  * Create a new tower and optionally auto-generate floors.
  */
 export const createTower = async (societyId, data) => {
-    const { name, code, totalFloors, hasBasement, basementLevels, amenities, autoCreateFloors } = data;
+    const { name, code, description, buildingType, defaultUnitsPerFloor, totalFloors, hasBasement, basementLevels, amenities, autoCreateFloors } = data;
 
     const society = await societyRepo.findById(societyId);
     if (!society) throw ApiError.notFound('Society');
@@ -622,6 +623,9 @@ export const createTower = async (societyId, data) => {
         societyId,
         name,
         code: code.toUpperCase(),
+        description,
+        buildingType,
+        defaultUnitsPerFloor,
         totalFloors,
         hasBasement: hasBasement ?? false,
         basementLevels: basementLevels ?? 0,
@@ -640,7 +644,7 @@ export const createTower = async (societyId, data) => {
                     towerId: tower._id,
                     floorNumber: i,
                     floorName: floorName(i),
-                    totalUnits: 0,
+                    totalUnits: 0, // usually no residential units in basement
                 });
             }
         }
@@ -652,15 +656,49 @@ export const createTower = async (societyId, data) => {
                 towerId: tower._id,
                 floorNumber: i,
                 floorName: floorName(i),
-                totalUnits: 0,
+                totalUnits: defaultUnitsPerFloor || 0,
             });
         }
 
-        await floorRepo.createManyFloors(floorsToCreate);
+        const createdFloors = await floorRepo.createManyFloors(floorsToCreate);
+        
+        // Auto-generate units for the newly created floors
+        const unitsToCreate = [];
+        let totalGeneratedUnits = 0;
+
+        for (const floor of createdFloors) {
+            if (floor.totalUnits > 0) {
+                for (let u = 1; u <= floor.totalUnits; u++) {
+                    let unitNumStr = '';
+                    if (floor.floorNumber === 0) {
+                        unitNumStr = `G${u.toString().padStart(2, '0')}`;
+                    } else if (floor.floorNumber < 0) {
+                        unitNumStr = `B${Math.abs(floor.floorNumber)}${u.toString().padStart(2, '0')}`;
+                    } else {
+                        unitNumStr = `${floor.floorNumber}${u.toString().padStart(2, '0')}`;
+                    }
+
+                    unitsToCreate.push({
+                        societyId,
+                        towerId: tower._id,
+                        floorId: floor._id,
+                        unitNumber: unitNumStr,
+                        unitType: buildingType === 'Commercial' ? 'COMMERCIAL' : 'RESIDENTIAL',
+                    });
+                }
+                totalGeneratedUnits += floor.totalUnits;
+            }
+        }
+
+        if (unitsToCreate.length > 0) {
+            await Unit.insertMany(unitsToCreate);
+            await towerRepo.incrementUnitCount(tower._id, totalGeneratedUnits);
+            await societyRepo.incrementTotalUnits(societyId, totalGeneratedUnits);
+        }
     }
 
-    // Update society total units count (towers are a structural element)
-    return tower;
+    // Return the updated tower if units were generated
+    return await towerRepo.findById(tower._id);
 };
 
 /**

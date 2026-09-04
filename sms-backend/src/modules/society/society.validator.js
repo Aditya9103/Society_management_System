@@ -114,9 +114,12 @@ export const createTowerSchema = {
     body: Joi.object({
         name: Joi.string().trim().max(100).required(),
         code: Joi.string().trim().uppercase().max(10).required(),
+        description: Joi.string().trim().max(150).allow('', null),
+        buildingType: Joi.string().valid('Residential', 'Commercial', 'Mixed').default('Residential'),
         totalFloors: Joi.number().integer().min(1).required(),
         hasBasement: Joi.boolean().default(false),
         basementLevels: Joi.number().integer().min(0).default(0),
+        defaultUnitsPerFloor: Joi.number().integer().min(0).default(0),
         amenities: Joi.array().items(Joi.string().trim()).default([]),
         autoCreateFloors: Joi.boolean().default(true),
     }),
@@ -126,6 +129,8 @@ export const updateTowerSchema = {
     params: Joi.object({ id: mongoId.required() }),
     body: Joi.object({
         name: Joi.string().trim().max(100),
+        description: Joi.string().trim().max(150).allow('', null),
+        buildingType: Joi.string().valid('Residential', 'Commercial', 'Mixed'),
         amenities: Joi.array().items(Joi.string().trim()),
         isActive: Joi.boolean(),
     }).min(1),

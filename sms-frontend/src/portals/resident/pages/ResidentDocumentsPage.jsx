@@ -31,14 +31,14 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradi
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
                 <Icon className={`w-5 h-5 ${iconColor}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
-                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
-                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
+                <div className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[9px] sm:text-[10px] text-white/80 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
     </div>
@@ -187,61 +187,71 @@ export default function ResidentDocumentsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 w-full">
                 <div className="flex items-center gap-3">
-                    <FileText className="w-8 h-8 text-indigo-400" />
+                    <FileText className="w-8 h-8 text-indigo-400 shrink-0" />
                     <div>
                         <h1 className="text-2xl font-bold text-white">My Documents</h1>
-                        <p className="hidden text-white font-bold text-sm mt-1">Store and manage all your personal and society documents securely.</p>
+                        <p className="hidden md:block text-white font-bold text-sm mt-1">Store and manage all your personal and society documents securely.</p>
                     </div>
                 </div>
-                <Button
-                    onClick={() => setUploadModalVisible(true)}
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] flex items-center gap-2 hover:opacity-90 transition-all font-semibold"
-                >
-                    <Upload className="w-4 h-4" /> Upload Document
-                </Button>
+                <div className="w-full md:w-auto">
+                    <Button
+                        onClick={() => setUploadModalVisible(true)}
+                        className="w-full md:w-auto justify-center bg-gradient-to-r from-indigo-500 to-purple-600 border-0 shadow-[0_4px_15px_rgba(99,102,241,0.4)] flex items-center gap-2 hover:opacity-90 transition-all font-semibold"
+                    >
+                        <Upload className="w-4 h-4 shrink-0" /> Upload Document
+                    </Button>
+                </div>
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <StatCard 
-                    icon={Folder}
-                    title="Total Documents"
-                    value={totalDocsCount}
-                    subtitle="All uploaded documents"
-                    iconBg="bg-[#3e248a]/50"
-                    iconColor="text-[#b388ff]"
-                    gradient="from-[#2e1d5e]/80 to-[#1c1439]"
-                    onClick={() => setActiveTab('MY_DOCS')}
-                />
-                <StatCard 
-                    icon={ShieldCheck}
-                    title="Verified"
-                    value={verifiedCount}
-                    subtitle="Documents verified"
-                    iconBg="bg-[#1a4d35]/50"
-                    iconColor="text-[#4ade80]"
-                    gradient="from-[#123625]/80 to-[#0a1f15]"
-                />
-                <StatCard 
-                    icon={Clock}
-                    title="Pending Review"
-                    value={pendingCount}
-                    subtitle="Awaiting verification"
-                    iconBg="bg-[#6b4819]/50"
-                    iconColor="text-[#f59e0b]"
-                    gradient="from-[#4a3212]/80 to-[#261909]"
-                />
-                <StatCard 
-                    icon={FileWarning}
-                    title="Expired"
-                    value={expiredCount}
-                    subtitle="Requires attention"
-                    iconBg="bg-[#6b1e28]/50"
-                    iconColor="text-[#f87171]"
-                    gradient="from-[#4a1216]/80 to-[#2b0a0d]"
-                />
+            <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={Folder}
+                        title="Total Docs"
+                        value={totalDocsCount}
+                        subtitle="All uploads"
+                        iconBg="bg-[#3e248a]/50"
+                        iconColor="text-[#b388ff]"
+                        gradient="from-[#2e1d5e]/80 to-[#1c1439]"
+                        onClick={() => setActiveTab('MY_DOCS')}
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={ShieldCheck}
+                        title="Verified"
+                        value={verifiedCount}
+                        subtitle="Verified docs"
+                        iconBg="bg-[#1a4d35]/50"
+                        iconColor="text-[#4ade80]"
+                        gradient="from-[#123625]/80 to-[#0a1f15]"
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={Clock}
+                        title="Pending"
+                        value={pendingCount}
+                        subtitle="Awaiting review"
+                        iconBg="bg-[#6b4819]/50"
+                        iconColor="text-[#f59e0b]"
+                        gradient="from-[#4a3212]/80 to-[#261909]"
+                    />
+                </div>
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
+                    <StatCard 
+                        icon={FileWarning}
+                        title="Expired"
+                        value={expiredCount}
+                        subtitle="Needs action"
+                        iconBg="bg-[#6b1e28]/50"
+                        iconColor="text-[#f87171]"
+                        gradient="from-[#4a1216]/80 to-[#2b0a0d]"
+                    />
+                </div>
             </div>
 
             {/* Tabs */}

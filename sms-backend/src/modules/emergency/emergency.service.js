@@ -150,27 +150,50 @@ export const updateEmergencyStatus = async (id, societyId, userId, data) => {
     if (!emergency) throw ApiError.notFound('Emergency not found');
     if (emergency.societyId.toString() !== societyId.toString()) throw ApiError.forbidden('Unauthorized access to emergency');
 
-    const updateQuery = { $set: {} };
-    if (data.status) {
+    const updateQuery = { $set: {}, $push: {} };
+    let statusChanged = false;
+    
+    if (data.status && data.status !== emergency.status) {
         updateQuery.$set.status = data.status;
+        statusChanged = true;
         if (data.status === 'RESOLVED' || data.status === 'FALSE_ALARM') {
             updateQuery.$set.resolvedAt = new Date();
             updateQuery.$set.resolvedBy = userId;
         }
+        
+        updateQuery.$push.updates = {
+            message: `Emergency status updated to ${data.status}`,
+            type: 'STATUS_CHANGE',
+            authorId: userId
+        };
     }
+    
     if (data.resolutionNotes) {
         updateQuery.$set.resolutionNotes = data.resolutionNotes;
+        updateQuery.$push.updates = {
+            message: `Note added: ${data.resolutionNotes}`,
+            type: 'NOTE',
+            authorId: userId
+        };
     }
 
     // Add current user to responders if marking as RESPONDING
     if (data.status === 'RESPONDING') {
         const alreadyResponding = emergency.responders.some(r => r.userId?._id?.toString() === userId.toString() || r.userId?.toString() === userId.toString());
         if (!alreadyResponding) {
-            updateQuery.$push = {
-                responders: { userId, respondedAt: new Date(), action: 'Responded to alert' }
-            };
+            if (!updateQuery.$push.responders) updateQuery.$push.responders = [];
+            updateQuery.$push.responders = { userId, respondedAt: new Date(), action: 'Responded to alert' };
+            
+            if (!updateQuery.$push.updates) updateQuery.$push.updates = [];
+            updateQuery.$push.updates.push({
+                message: `Staff responded to emergency`,
+                type: 'SYSTEM',
+                authorId: userId
+            });
         }
     }
+
+    if (Object.keys(updateQuery.$push).length === 0) delete updateQuery.$push;
 
     const updated = await emergencyRepo.updateById(id, updateQuery);
 
@@ -179,7 +202,7 @@ export const updateEmergencyStatus = async (id, societyId, userId, data) => {
     getIO().to(room).emit('EMERGENCY_UPDATED', { emergencyId: id, status: updated.status });
 
     // Also notify the resident who triggered it
-    if (data.status === 'RESPONDING' || data.status === 'RESOLVED') {
+    if (statusChanged && (data.status === 'RESPONDING' || data.status === 'RESOLVED')) {
         try {
             const residentToNotify = await User.findById(emergency.triggeredBy).select('_id fcmTokens').lean();
             if (residentToNotify) {
@@ -208,6 +231,111 @@ export const getActiveEmergencies = async (societyId) => {
     return await emergencyRepo.findActiveBySociety(societyId);
 };
 
+export const getMyActiveEmergency = async (societyId, userId) => {
+    const emergencies = await emergencyRepo.findAllBySociety({ 
+        societyId, 
+        triggeredBy: userId, 
+        status: { $in: ['ACTIVE', 'RESPONDING', 'UNDER_CONTROL'] } 
+    }, { limit: 1 });
+    return emergencies[0] || null;
+};
+
+export const getAllEmergencies = async (societyId, query = {}) => {
+    const { page = 1, limit = 20, status, priority, search } = query;
+    const filter = { societyId };
+
+    if (status && status !== 'ALL') {
+        if (status === 'CLOSED') filter.status = { $in: ['RESOLVED', 'FALSE_ALARM'] };
+        else filter.status = status;
+    }
+
+    const emergencies = await emergencyRepo.findAllBySociety(filter, { 
+        skip: (page - 1) * limit, 
+        limit: Number(limit) 
+    });
+    
+    const total = await emergencyRepo.countDocuments(filter);
+    
+    // Stats calculation
+    const allEm = await emergencyRepo.findAllBySociety({ societyId }, { limit: 10000 });
+    const stats = {
+        total: allEm.length,
+        live: allEm.filter(e => e.status === 'ACTIVE').length,
+        inProgress: allEm.filter(e => e.status === 'RESPONDING' || e.status === 'UNDER_CONTROL').length,
+        resolved: allEm.filter(e => e.status === 'RESOLVED').length,
+        closed: allEm.filter(e => e.status === 'RESOLVED' || e.status === 'FALSE_ALARM').length,
+    };
+
+    return {
+        emergencies,
+        pagination: { page: Number(page), limit: Number(limit), total, totalPages: Math.ceil(total / limit) },
+        stats
+    };
+};
+
+export const getEmergencyById = async (id, societyId) => {
+    const emergency = await emergencyRepo.findById(id);
+    if (!emergency) throw ApiError.notFound('Emergency not found');
+    if (emergency.societyId.toString() !== societyId.toString()) throw ApiError.forbidden('Unauthorized access to emergency');
+    return emergency;
+};
+
+export const assignStaff = async (id, societyId, adminId, data) => {
+    const emergency = await emergencyRepo.findById(id);
+    if (!emergency) throw ApiError.notFound('Emergency not found');
+    if (emergency.societyId.toString() !== societyId.toString()) throw ApiError.forbidden('Unauthorized access to emergency');
+
+    const { staffIds } = data;
+    if (!staffIds || !Array.isArray(staffIds) || staffIds.length === 0) {
+        throw ApiError.badRequest('Provide an array of staffIds');
+    }
+
+    const newResponders = [];
+    const updates = [];
+
+    for (const staffId of staffIds) {
+        const alreadyResponding = emergency.responders.some(r => r.userId?._id?.toString() === staffId || r.userId?.toString() === staffId);
+        if (!alreadyResponding) {
+            newResponders.push({ userId: staffId, respondedAt: new Date(), action: 'Assigned by admin' });
+        }
+    }
+
+    if (newResponders.length > 0) {
+        updates.push({
+            message: `${newResponders.length} staff member(s) assigned to emergency`,
+            type: 'SYSTEM',
+            authorId: adminId
+        });
+        
+        await emergencyRepo.updateById(id, { 
+            $push: { 
+                responders: { $each: newResponders },
+                updates: { $each: updates }
+            } 
+        });
+        
+        // Notify assigned staff
+        const staffUsers = await User.find({ _id: { $in: staffIds }, isActive: true }).select('_id fcmTokens').lean();
+        if (staffUsers.length > 0) {
+            await sendNotification({
+                users: staffUsers,
+                societyId,
+                type: 'EMERGENCY_ASSIGNED',
+                title: `🚨 Assigned to Emergency`,
+                message: `You have been assigned to an emergency at ${emergency.locationDescription}. Please respond immediately.`,
+                priority: 'HIGH',
+                referenceType: 'EMERGENCY',
+                referenceId: id
+            });
+        }
+        
+        const room = ROOMS.SOCIETY(societyId);
+        getIO().to(room).emit('EMERGENCY_UPDATED', { emergencyId: id, status: emergency.status });
+    }
+
+    return await emergencyRepo.findById(id);
+};
+
 export const broadcastUpdate = async (societyId, adminId, data) => {
     // Broadcast a high-priority message to all active users in the society
     const users = await User.find({ societyId, isActive: true }).select('_id fcmTokens').lean();
@@ -220,6 +348,19 @@ export const broadcastUpdate = async (societyId, adminId, data) => {
             title: `⚠️ SECURITY UPDATE ⚠️`,
             message: data.message,
             priority: 'HIGH'
+        });
+    }
+
+    if (data.emergencyId) {
+        // Link broadcast to emergency timeline
+        await emergencyRepo.updateById(data.emergencyId, {
+            $push: {
+                updates: {
+                    message: `Broadcast: ${data.message}`,
+                    type: 'BROADCAST',
+                    authorId: adminId
+                }
+            }
         });
     }
 

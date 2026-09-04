@@ -16,6 +16,26 @@ export const getActiveEmergencies = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { emergencies }, 'Active emergencies fetched'));
 });
 
+export const getMyActiveEmergency = asyncHandler(async (req, res) => {
+    const userId = req.user.sub;
+    const societyId = req.user.societyId;
+    const emergency = await emergencyService.getMyActiveEmergency(societyId, userId);
+    res.status(200).json(new ApiResponse(200, { emergency }, 'My active emergency fetched'));
+});
+
+export const getAllEmergencies = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const result = await emergencyService.getAllEmergencies(societyId, req.query);
+    res.status(200).json(new ApiResponse(200, result, 'Emergencies fetched successfully'));
+});
+
+export const getEmergencyById = asyncHandler(async (req, res) => {
+    const societyId = req.user.societyId;
+    const { id } = req.params;
+    const emergency = await emergencyService.getEmergencyById(id, societyId);
+    res.status(200).json(new ApiResponse(200, { emergency }, 'Emergency fetched successfully'));
+});
+
 export const updateEmergencyStatus = asyncHandler(async (req, res) => {
     const userId = req.user.sub;
     const societyId = req.user.societyId;
@@ -23,6 +43,15 @@ export const updateEmergencyStatus = asyncHandler(async (req, res) => {
 
     const emergency = await emergencyService.updateEmergencyStatus(id, societyId, userId, req.body);
     res.status(200).json(new ApiResponse(200, { emergency }, 'Emergency status updated'));
+});
+
+export const assignEmergencyStaff = asyncHandler(async (req, res) => {
+    const adminId = req.user.sub;
+    const societyId = req.user.societyId;
+    const { id } = req.params;
+
+    const emergency = await emergencyService.assignStaff(id, societyId, adminId, req.body);
+    res.status(200).json(new ApiResponse(200, { emergency }, 'Staff assigned successfully'));
 });
 
 export const broadcastUpdate = asyncHandler(async (req, res) => {

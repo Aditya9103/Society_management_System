@@ -36,23 +36,23 @@ export default function ResidentVisitorPage() {
         <div className="relative p-4 lg:p-8 font-sans z-10">
             <div className="max-w-[1400px] mx-auto">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 w-full">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Visitor Passes</h1>
-                        <p className="hidden text-white font-bold text-sm">Create, manage and track all your visitor entries</p>
+                        <p className="hidden md:block text-white font-bold text-sm">Create, manage and track all your visitor entries</p>
                     </div>
                     <button 
                         onClick={() => setShowModal(true)}
-                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all shadow-lg shadow-purple-900/20"
+                        className="w-full md:w-auto justify-center bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all shadow-lg shadow-purple-900/20"
                     >
-                        <Plus className="w-5 h-5" /> Invite Visitor
+                        <Plus className="w-5 h-5 shrink-0" /> Invite Visitor
                     </button>
                 </div>
 
                 {/* Stats Grid */}
                 <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 lg:mx-0 lg:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] mb-4 lg:mb-8">
                     {stats.map((stat, idx) => (
-                        <div key={idx} className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                        <div key={idx} className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                             <div className={`relative overflow-hidden rounded-[20px] bg-gradient-to-br ${stat.gradient} border border-white/5 p-5 flex flex-col justify-between transition-transform hover:scale-[1.02] shadow-lg`}>
                             {/* Abstract Background Waves (CSS based) */}
                             <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
@@ -62,14 +62,14 @@ export default function ResidentVisitorPage() {
                                 </svg>
                             </div>
                             
-                            <div className="relative z-10 flex items-start gap-4">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.iconBg}`}>
+                            <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${stat.iconBg}`}>
                                     {stat.icon}
                                 </div>
                                 <div>
-                                    <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{stat.label}</p>
-                                    <p className="text-white text-2xl font-bold leading-none mb-1 tracking-tight">{stat.value}</p>
-                                    <p className="text-white font-bold text-[10px] font-bold">{stat.sublabel}</p>
+                                    <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{stat.label}</p>
+                                    <p className="text-white text-xl sm:text-2xl font-bold leading-none mb-1 tracking-tight">{stat.value}</p>
+                                    <p className="text-white/80 text-[9px] sm:text-[10px] font-bold line-clamp-1">{stat.sublabel}</p>
                                 </div>
                             </div>
                             </div>

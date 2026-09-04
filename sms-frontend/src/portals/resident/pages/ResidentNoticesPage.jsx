@@ -16,14 +16,14 @@ const StatCard = ({ icon: Icon, title, value, subtitle, iconBg, iconColor, gradi
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg} shrink-0 backdrop-blur-md`}>
                 <Icon className={`w-5 h-5 ${iconColor}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
-                <div className="text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
-                <p className="text-[10px] text-white font-bold font-bold">{subtitle}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
+                <div className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-1">{value}</div>
+                <p className="text-[9px] sm:text-[10px] text-white/80 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
     </div>
@@ -91,13 +91,13 @@ export default function ResidentNoticesPage() {
     return (
         <div className="relative text-white p-4 lg:p-8 font-sans z-10">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 w-full">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight mb-1">Notice Board</h1>
-                    <p className="hidden text-sm text-white font-bold">Stay informed with important announcements & updates from your society</p>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight mb-2">Notice Board</h1>
+                    <p className="hidden md:block text-sm text-slate-400">Stay informed with important announcements & updates from your society</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex w-full md:w-auto items-center gap-3">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white font-bold" />
                         <input
@@ -116,7 +116,7 @@ export default function ResidentNoticesPage() {
 
             {/* Top Stats Row */}
             <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] mb-4 md:mb-8">
-                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     icon={Calendar}
                     title="Total Notices"
@@ -128,7 +128,7 @@ export default function ResidentNoticesPage() {
                     onClick={() => setActiveTab('All')}
                 />
                 </div>
-                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     icon={Bell}
                     title="Unread"
@@ -140,7 +140,7 @@ export default function ResidentNoticesPage() {
                     onClick={() => setActiveTab('All')}
                 />
                 </div>
-                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     icon={AlertTriangle}
                     title="High Priority"
@@ -152,7 +152,7 @@ export default function ResidentNoticesPage() {
                     onClick={() => setActiveTab('Urgent')}
                 />
                 </div>
-                <div className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     icon={Clock}
                     title="This Month"

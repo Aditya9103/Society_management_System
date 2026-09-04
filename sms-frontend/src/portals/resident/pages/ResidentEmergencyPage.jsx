@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
     ShieldAlert, Phone, Ambulance, Flame, Shield, MapPin, 
-    ShieldCheck, AlertCircle, PhoneCall, Info, Navigation, Users, CheckCircle2 
+    ShieldCheck, AlertCircle, PhoneCall, Info, Navigation, Users, CheckCircle2, Activity 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useTriggerSOSMutation } from '../../../store/api/emergencyApi';
+import { useTriggerSOSMutation, useGetMyActiveEmergencyQuery } from '../../../store/api/emergencyApi';
 import { useGetMyProfileQuery } from '../../../store/api/residentApi';
 
 export default function ResidentEmergencyPage() {
@@ -15,18 +15,40 @@ export default function ResidentEmergencyPage() {
 
     const [triggerSOS, { isLoading }] = useTriggerSOSMutation();
     const { data: profileRes } = useGetMyProfileQuery();
+    const { data: activeRes } = useGetMyActiveEmergencyQuery(undefined, { pollingInterval: 5000 });
     
     // Configured emergency contacts from society
     const societyContacts = profileRes?.data?.profile?.societyId?.emergencyContacts || [];
+    const myActiveEmergency = activeRes?.data?.emergency;
 
     const handleSOS = async () => {
-        try {
-            await triggerSOS({
-                emergencyType: 'PANIC'
-            }).unwrap();
-            toast.success('SOS Triggered! Security has been notified.', { icon: '🚨' });
-        } catch (error) {
-            toast.error(error.data?.message || 'Failed to trigger SOS');
+        const trigger = async (lat, lng) => {
+            try {
+                await triggerSOS({
+                    emergencyType: 'PANIC',
+                    latitude: lat,
+                    longitude: lng
+                }).unwrap();
+                toast.success('SOS Triggered! Security has been notified.', { icon: '🚨' });
+            } catch (error) {
+                toast.error(error.data?.message || 'Failed to trigger SOS');
+            }
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    trigger(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    toast.error('Unable to retrieve exact location. Triggering SOS with home address.');
+                    trigger(null, null);
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        } else {
+            trigger(null, null);
         }
     };
 
@@ -34,7 +56,7 @@ export default function ResidentEmergencyPage() {
         if (e && typeof e.preventDefault === 'function') {
             e.preventDefault();
         }
-        if (isLoading) return;
+        if (isLoading || myActiveEmergency) return;
         setIsHolding(true);
         // eslint-disable-next-line react-hooks/purity
         startTimeRef.current = Date.now();
@@ -88,6 +110,65 @@ export default function ResidentEmergencyPage() {
     const radius = 130;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (holdProgress / 100) * circumference;
+
+    // Timeline calculation
+    const timeline = [];
+    if (myActiveEmergency) {
+        timeline.push({
+            type: 'SOS',
+            title: 'SOS Alert Triggered',
+            desc: `Emergency SOS button pressed`,
+            time: myActiveEmergency.createdAt,
+            icon: ShieldAlert,
+            color: 'text-red-500', bg: 'bg-red-500/20'
+        });
+
+        if (myActiveEmergency.responders?.length > 0) {
+            timeline.push({
+                type: 'ASSIGNED',
+                title: 'Staff Assigned',
+                desc: `${myActiveEmergency.responders[0]?.userId?.firstName || 'A security guard'} & ${myActiveEmergency.responders.length - 1} more staff assigned`,
+                time: myActiveEmergency.responders[0].respondedAt,
+                icon: Users,
+                color: 'text-orange-500', bg: 'bg-orange-500/20'
+            });
+        }
+
+        if (myActiveEmergency.updates?.length > 0) {
+            myActiveEmergency.updates.forEach(up => {
+                let icon = Info;
+                let color = 'text-blue-500';
+                let bg = 'bg-blue-500/20';
+
+                if (up.type === 'BROADCAST') {
+                    icon = Phone; color = 'text-purple-500'; bg = 'bg-purple-500/20';
+                } else if (up.type === 'STATUS_CHANGE') {
+                    icon = ShieldCheck; color = 'text-emerald-500'; bg = 'bg-emerald-500/20';
+                }
+
+                timeline.push({
+                    type: up.type,
+                    title: up.type === 'BROADCAST' ? 'Broadcast Sent' : 'Update',
+                    desc: up.message,
+                    time: up.timestamp,
+                    icon, color, bg
+                });
+            });
+        }
+
+        if (myActiveEmergency.status === 'RESOLVED') {
+            timeline.push({
+                type: 'RESOLVED',
+                title: 'Emergency Resolved',
+                desc: 'The emergency situation has been handled.',
+                time: myActiveEmergency.resolvedAt,
+                icon: CheckCircle2,
+                color: 'text-emerald-500', bg: 'bg-emerald-500/20'
+            });
+        }
+
+        timeline.sort((a, b) => new Date(a.time) - new Date(b.time));
+    }
 
     return (
         <div className="max-w-7xl mx-auto space-y-6 pb-24 sm:pb-0 font-sans">
@@ -158,10 +239,11 @@ export default function ResidentEmergencyPage() {
                                 />
                             </svg>
 
-                            {/* Center Button - 3D Dome Style */}
-                            <div className={`absolute inset-[30px] rounded-full bg-gradient-to-b from-[#ff5252] to-[#b91c1c] flex flex-col items-center justify-center transition-transform duration-300 z-30 shadow-[0_10px_20px_rgba(0,0,0,0.5),inset_0_8px_15px_rgba(255,255,255,0.4),inset_0_-8px_15px_rgba(0,0,0,0.5)] border border-[#ff6b6b]/30 ${isHolding ? 'scale-95 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_4px_8px_rgba(255,255,255,0.2),inset_0_-4px_8px_rgba(0,0,0,0.7)]' : 'group-hover:scale-[1.02]'}`}>
+                            <div className={`absolute inset-[30px] rounded-full bg-gradient-to-b from-[#ff5252] to-[#b91c1c] flex flex-col items-center justify-center transition-transform duration-300 z-30 shadow-[0_10px_20px_rgba(0,0,0,0.5),inset_0_8px_15px_rgba(255,255,255,0.4),inset_0_-8px_15px_rgba(0,0,0,0.5)] border border-[#ff6b6b]/30 ${isHolding && !myActiveEmergency ? 'scale-95 shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_4px_8px_rgba(255,255,255,0.2),inset_0_-4px_8px_rgba(0,0,0,0.7)]' : 'group-hover:scale-[1.02]'}`}>
                                 <ShieldAlert className="w-[60px] h-[60px] text-white mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" strokeWidth={2.5} />
-                                <span className="text-[40px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">SOS</span>
+                                <span className={`text-[40px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] ${myActiveEmergency ? 'text-2xl' : ''}`}>
+                                    {myActiveEmergency ? 'LIVE' : 'SOS'}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -243,53 +325,80 @@ export default function ResidentEmergencyPage() {
                 
                 {/* Timeline / What happens */}
                 <div className="lg:col-span-2 bg-[#131525] border border-white/5 rounded-3xl p-6">
-                    <h2 className="text-lg font-bold text-white mb-8">What happens after you trigger SOS?</h2>
-                    
-                    <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-4 px-4 pb-4">
-                        {/* Connecting Line (Desktop) */}
-                        <div className="hidden md:block absolute top-6 left-12 right-12 h-[2px] bg-white/5"></div>
-                        <div className="hidden md:block absolute top-6 left-12 right-12 h-[2px] bg-gradient-to-r from-red-500/50 via-indigo-500/50 to-emerald-500/50 blur-[2px]"></div>
-
-                        {/* Step 1 */}
-                        <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
-                            <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
-                                <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">1</div>
-                                <ShieldAlert className="w-6 h-6 text-red-400" />
+                    {myActiveEmergency ? (
+                        <>
+                            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                                <Activity className="w-5 h-5 text-red-500 animate-pulse" />
+                                Live Emergency Timeline
+                            </h2>
+                            <div className="relative pl-6 border-l border-slate-800 space-y-8 mt-4">
+                                {timeline.map((item, index) => (
+                                    <div key={index} className="relative">
+                                        <div className={`absolute -left-[37px] w-7 h-7 rounded-full ${item.bg} border border-slate-800 flex items-center justify-center ring-4 ring-[#131525]`}>
+                                            <item.icon className={`w-3.5 h-3.5 ${item.color}`} />
+                                        </div>
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                                            <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
+                                                {new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                                    </div>
+                                ))}
                             </div>
-                            <h4 className="text-sm font-bold text-white mb-1.5">Alert Sent</h4>
-                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Instant alert is sent to security and emergency contacts.</p>
-                        </div>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className="text-lg font-bold text-white mb-8">What happens after you trigger SOS?</h2>
+                            
+                            <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-4 px-4 pb-4">
+                                {/* Connecting Line (Desktop) */}
+                                <div className="hidden md:block absolute top-6 left-12 right-12 h-[2px] bg-white/5"></div>
+                                <div className="hidden md:block absolute top-6 left-12 right-12 h-[2px] bg-gradient-to-r from-red-500/50 via-indigo-500/50 to-emerald-500/50 blur-[2px]"></div>
 
-                        {/* Step 2 */}
-                        <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
-                            <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
-                                <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">2</div>
-                                <Navigation className="w-6 h-6 text-red-400" />
-                            </div>
-                            <h4 className="text-sm font-bold text-white mb-1.5">Location Shared</h4>
-                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Your location is shared for quick response.</p>
-                        </div>
+                                {/* Step 1 */}
+                                <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
+                                    <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+                                        <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">1</div>
+                                        <ShieldAlert className="w-6 h-6 text-red-400" />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-1.5">Alert Sent</h4>
+                                    <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Instant alert is sent to security and emergency contacts.</p>
+                                </div>
 
-                        {/* Step 3 */}
-                        <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
-                            <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
-                                <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">3</div>
-                                <Users className="w-6 h-6 text-red-400" />
-                            </div>
-                            <h4 className="text-sm font-bold text-white mb-1.5">Help On The Way</h4>
-                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Our team and authorities will reach you as soon as possible.</p>
-                        </div>
+                                {/* Step 2 */}
+                                <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
+                                    <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+                                        <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">2</div>
+                                        <Navigation className="w-6 h-6 text-red-400" />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-1.5">Location Shared</h4>
+                                    <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Your location is shared for quick response.</p>
+                                </div>
 
-                        {/* Step 4 */}
-                        <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
-                            <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(168,85,247,0.15)]">
-                                <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">4</div>
-                                <ShieldCheck className="w-6 h-6 text-purple-400" />
+                                {/* Step 3 */}
+                                <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
+                                    <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+                                        <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">3</div>
+                                        <Users className="w-6 h-6 text-red-400" />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-1.5">Help On The Way</h4>
+                                    <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">Our team and authorities will reach you as soon as possible.</p>
+                                </div>
+
+                                {/* Step 4 */}
+                                <div className="relative z-10 flex flex-col items-center text-center w-full md:w-1/4">
+                                    <div className="w-14 h-14 bg-[#1A1C2A] border border-white/10 rounded-2xl flex items-center justify-center mb-4 relative shadow-[0_0_20px_rgba(168,85,247,0.15)]">
+                                        <div className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">4</div>
+                                        <ShieldCheck className="w-6 h-6 text-purple-400" />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-1.5">Stay Safe</h4>
+                                    <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">We'll stay connected until you're safe.</p>
+                                </div>
                             </div>
-                            <h4 className="text-sm font-bold text-white mb-1.5">Stay Safe</h4>
-                            <p className="text-xs text-white font-bold leading-relaxed max-w-[150px]">We'll stay connected until you're safe.</p>
-                        </div>
-                    </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Safety Tips */}

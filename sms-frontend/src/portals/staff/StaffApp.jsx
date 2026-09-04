@@ -19,7 +19,8 @@ import StaffProfilePage from './pages/StaffProfilePage';
 import StaffComplaintsPage from './pages/StaffComplaintsPage';
 import StaffComplaintDetailsPage from './pages/StaffComplaintDetailsPage';
 import StaffNoticesPage from './pages/StaffNoticesPage';
-import AdminEmergencyPage from '../admin/pages/AdminEmergencyPage';
+import StaffEmergencyPage from './pages/StaffEmergencyPage';
+import StaffEmergencyDetailsPage from './pages/StaffEmergencyDetailsPage';
 import AdminAmenitiesPage from '../admin/pages/AdminAmenitiesPage';
 import AdminPollsPage from '../admin/pages/AdminPollsPage';
 import AdminDocumentsPage from '../admin/pages/AdminDocumentsPage';
@@ -125,7 +126,12 @@ export default function StaffApp() {
                 <Route path="complaints/:id" element={<StaffComplaintDetailsPage />} />
             </>
         )}
-        {canSeeEmergencies && <Route path="emergencies" element={<AdminEmergencyPage />} />}
+        {canSeeEmergencies && (
+            <>
+                <Route path="emergencies" element={<StaffEmergencyPage />} />
+                <Route path="emergencies/:id" element={<StaffEmergencyDetailsPage />} />
+            </>
+        )}
         {canSeeNotices    && <Route path="notices"    element={<StaffNoticesPage />} />}
         {canSeeAmenities  && <Route path="amenities"  element={<AdminAmenitiesPage />} />}
         {canSeePolls      && <Route path="polls"      element={<AdminPollsPage />} />}

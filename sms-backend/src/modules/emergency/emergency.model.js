@@ -120,6 +120,13 @@ const emergencySchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        // Updates timeline (for broadcasts, notes, status changes)
+        updates: [{
+            message: { type: String, required: true },
+            type: { type: String, enum: ['BROADCAST', 'NOTE', 'STATUS_CHANGE', 'SYSTEM', 'EMERGENCY_ASSIGNED'], default: 'SYSTEM' },
+            authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+            timestamp: { type: Date, default: Date.now }
+        }],
         // Resolved at
         resolvedAt: {
             type: Date,

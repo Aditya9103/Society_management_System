@@ -177,7 +177,7 @@ export function ApprovedDashboard({ profile, user }) {
 
             {/* ── Stats Grid ──────────────────────────────────────────────── */}
             <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Total Complaints" 
                     value="12" 
@@ -191,7 +191,7 @@ export function ApprovedDashboard({ profile, user }) {
                     svgPoints="0,22 10,25 20,15 25,25 35,20 45,5 55,18 65,22 75,10 85,20 95,25 100,22"
                 />
                 </div>
-                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Pending Visitors" 
                     value="3" 
@@ -205,7 +205,7 @@ export function ApprovedDashboard({ profile, user }) {
                     svgPoints="0,25 10,20 20,25 30,15 40,25 50,5 60,15 70,25 80,15 90,25 100,20"
                 />
                 </div>
-                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Unpaid Invoices" 
                     value="2" 
@@ -219,7 +219,7 @@ export function ApprovedDashboard({ profile, user }) {
                     svgPoints="0,25 15,15 25,22 35,15 45,25 55,5 65,18 75,22 85,10 95,20 100,25"
                 />
                 </div>
-                <div className="w-[85vw] sm:w-auto sm:flex-1 shrink-0 snap-start">
+                <div className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                 <StatCard 
                     title="Active Notices" 
                     value="5" 

@@ -49,16 +49,16 @@ const StatCard = ({ icon: Icon, title, value, subtitle, color, bg, border, spark
             </svg>
         </div>
         
-        <div className="relative z-10 flex items-start gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
             <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${bg} ${border} border shrink-0 backdrop-blur-md`}>
                 <Icon className={`h-5 w-5 ${color}`} />
             </div>
             <div>
-                <p className="text-[12px] font-semibold text-white font-bold mb-0.5 tracking-wide">{title}</p>
+                <p className="text-[11px] sm:text-[12px] font-semibold text-white mb-0.5 tracking-wide line-clamp-1">{title}</p>
                 <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-bold text-white tracking-tight">{value}</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">{value}</h3>
                 </div>
-                <p className="text-[10px] text-white font-bold mt-0.5 font-bold">{subtitle}</p>
+                <p className="text-[9px] sm:text-[10px] text-white/80 mt-0.5 font-bold line-clamp-1">{subtitle}</p>
             </div>
         </div>
         <div className="relative z-10">
@@ -157,14 +157,13 @@ export default function ResidentComplaintsPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-6 pb-20 md:pb-8">
             
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 w-full">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Complaints</h1>
-                    <p className="text-[13px] text-white font-bold mt-1">Raise, track and resolve issues in your society</p>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2 tracking-tight">Complaints</h1>
+                    <p className="hidden md:block text-slate-400 text-sm">Raise, track and resolve issues in your society</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex w-full md:w-auto items-center gap-3">
                     <div className="relative flex-1 md:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <input 
@@ -187,7 +186,7 @@ export default function ResidentComplaintsPage() {
             {/* Stats Grid */}
             <div className="flex overflow-x-auto pb-4 gap-4 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {stats.map((s, i) => (
-                    <div key={i} className="w-[85vw] sm:w-[250px] shrink-0 snap-start">
+                    <div key={i} className="w-[calc(50vw-24px)] md:w-auto md:flex-1 shrink-0 snap-start">
                         <StatCard {...s} />
                     </div>
                 ))}

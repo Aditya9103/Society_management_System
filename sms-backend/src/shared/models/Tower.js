@@ -42,6 +42,23 @@ const towerSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        // Description
+        description: {
+            type: String,
+            trim: true,
+            maxlength: 150
+        },
+        // Building type
+        buildingType: {
+            type: String,
+            enum: ['Residential', 'Commercial', 'Mixed'],
+            default: 'Residential'
+        },
+        // Default units per floor
+        defaultUnitsPerFloor: {
+            type: Number,
+            default: 0
+        },
         // Amenities
         amenities: {
             type: [String],

@@ -18,16 +18,40 @@ router.use(authenticate);
 router.post('/sos', authorize(ROLES.RESIDENT), validate(validator.triggerSOSSchema), emergencyController.triggerSOS);
 
 /**
+ * GET /api/v1/emergencies/my-active
+ * Resident gets their own active emergency
+ */
+router.get('/my-active', authorize(ROLES.RESIDENT), emergencyController.getMyActiveEmergency);
+
+/**
+ * GET /api/v1/emergencies
+ * Get all emergencies (Admin / Staff)
+ */
+router.get('/', authorize(ROLES.SOCIETY_ADMIN, ROLES.SECURITY_GUARD, ROLES.FACILITY_MANAGER, ROLES.COMMITTEE_MEMBER), emergencyController.getAllEmergencies);
+
+/**
  * GET /api/v1/emergencies/active
  * Get active emergencies (Admin / Staff)
  */
 router.get('/active', authorize(ROLES.SOCIETY_ADMIN, ROLES.SECURITY_GUARD, ROLES.FACILITY_MANAGER, ROLES.COMMITTEE_MEMBER), emergencyController.getActiveEmergencies);
 
 /**
+ * GET /api/v1/emergencies/:id
+ * Get emergency details
+ */
+router.get('/:id', authorize(ROLES.SOCIETY_ADMIN, ROLES.SECURITY_GUARD, ROLES.FACILITY_MANAGER, ROLES.COMMITTEE_MEMBER), emergencyController.getEmergencyById);
+
+/**
  * PATCH /api/v1/emergencies/:id/status
  * Update emergency status (Admin / Staff responding)
  */
 router.patch('/:id/status', authorize(ROLES.SOCIETY_ADMIN, ROLES.SECURITY_GUARD, ROLES.FACILITY_MANAGER, ROLES.COMMITTEE_MEMBER), validate(validator.updateEmergencyStatusSchema), emergencyController.updateEmergencyStatus);
+
+/**
+ * PATCH /api/v1/emergencies/:id/assign
+ * Assign staff to an emergency
+ */
+router.patch('/:id/assign', authorize(ROLES.SOCIETY_ADMIN), emergencyController.assignEmergencyStaff);
 
 /**
  * POST /api/v1/emergencies/broadcast
